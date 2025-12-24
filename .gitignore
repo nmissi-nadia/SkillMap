@@ -123,13 +123,6 @@ docker-volume/
 .env.ci
 .env.pipeline
 
-####################################
-# DOCUMENTATION / EXPORTS
-####################################
-*.pdf
-*.xlsx
-*.docx
-*.pptx
 
 ####################################
 # SECURITY
