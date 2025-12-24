@@ -1,24 +1,147 @@
-# Compiled class file
+####################################
+# GLOBAL
+####################################
+*.log
+*.tmp
+*.bak
+*.swp
+*.pid
+*.seed
+*.orig
+
+####################################
+# OS FILES
+####################################
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Linux
+*~
+
+####################################
+# ENV / SECRETS
+####################################
+.env
+.env.*
+!.env.example
+
+####################################
+# IDE / EDITORS
+####################################
+# IntelliJ / Android Studio
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# VS Code
+.vscode/
+!.vscode/extensions.json
+
+# Eclipse
+.project
+.classpath
+.settings/
+
+####################################
+# BACKEND - SPRING BOOT / JAVA
+####################################
+# Maven
+/backend/target/
+**/target/
+
+# Gradle
+/backend/build/
+**/build/
+.gradle/
+
+# Java
 *.class
 
-# Log file
-*.log
+# Spring Boot
+application-local.yml
+application-dev.yml
+application-prod.yml
 
-# BlueJ files
-*.ctxt
+# Logs Spring
+spring.log
 
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
+####################################
+# DATABASE
+####################################
+*.db
+*.sqlite
+*.sqlite3
+/data/
+dump.sql
 
-# Package Files #
-*.jar
-*.war
-*.nar
-*.ear
-*.zip
-*.tar.gz
-*.rar
+####################################
+# FRONTEND - ANGULAR
+####################################
+# Node
+/node_modules/
+/frontend/node_modules/
 
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
-hs_err_pid*
-replay_pid*
+# Angular build
+/frontend/dist/
+/dist/
+
+# Angular cache
+.angular/
+.cache/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+####################################
+# TESTING / COVERAGE
+####################################
+coverage/
+*.lcov
+
+####################################
+# DOCKER
+####################################
+docker-data/
+docker-volume/
+*.tar
+
+####################################
+# CI / CD
+####################################
+.env.ci
+.env.pipeline
+
+####################################
+# DOCUMENTATION / EXPORTS
+####################################
+*.pdf
+*.xlsx
+*.docx
+*.pptx
+
+####################################
+# SECURITY
+####################################
+*.jks
+*.p12
+*.pem
+*.key
+*.crt
+
+####################################
+# MISC
+####################################
+tmp/
+temp/
