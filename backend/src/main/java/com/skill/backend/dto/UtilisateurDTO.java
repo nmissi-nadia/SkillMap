@@ -1,5 +1,6 @@
 package com.skill.backend.dto;
 
+import com.skill.backend.enums.Provider;
 import com.skill.backend.enums.RoleUtilisateur;
 import lombok.Data;
 import java.time.LocalDateTime;
@@ -10,9 +11,8 @@ public class UtilisateurDTO {
     private String nom;
     private String prenom;
     private String email;
-    private String telephone;
-    private boolean actif;
+    private boolean enabled;
     private LocalDateTime dateCreation;
-    private LocalDateTime dernierLogin;
     private RoleUtilisateur role;
+    private Provider provider;
 }
