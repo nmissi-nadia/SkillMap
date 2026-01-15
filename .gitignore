@@ -1,41 +1,20 @@
 ####################################
-# GLOBAL
+# Build output & Dependencies
 ####################################
-*.log
-*.tmp
-*.bak
-*.swp
-*.pid
-*.seed
-*.orig
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+release.properties
+.mvn/
+**/target/
+**/build/
+.gradle/
 
 ####################################
-# OS FILES
+# IDEs and Editors
 ####################################
-# Windows
-Thumbs.db
-ehthumbs.db
-Desktop.ini
-
-# macOS
-.DS_Store
-.AppleDouble
-.LSOverride
-
-# Linux
-*~
-
-####################################
-# ENV / SECRETS
-####################################
-.env
-.env.*
-!.env.example
-
-####################################
-# IDE / EDITORS
-####################################
-# IntelliJ / Android Studio
+# IntelliJ
 .idea/
 *.iml
 *.iws
@@ -44,97 +23,70 @@ out/
 
 # VS Code
 .vscode/
+!.vscode/settings.json
 !.vscode/extensions.json
 
 # Eclipse
-.project
 .classpath
+.project
 .settings/
+.factorypath
+
+# NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+# STS
+.springBeans
+.sts4-cache
 
 ####################################
-# BACKEND - SPRING BOOT / JAVA
+# OS generated files
 ####################################
-# Maven
-/backend/target/
-**/target/
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
 
-# Gradle
-/backend/build/
-**/build/
-.gradle/
-
-# Java
-*.class
-
-# Spring Boot
-application-local.yml
-application-dev.yml
-application-prod.yml
-
-# Logs Spring
+####################################
+# Temporary and Log files
+####################################
+*.log
+*.tmp
+*.bak
+*.swp
+*.pid
+*.seed
+*.orig
 spring.log
 
 ####################################
-# DATABASE
+# Secrets and Local Config
 ####################################
-*.db
-*.sqlite
-*.sqlite3
-/data/
-dump.sql
+.env
+.env.*
+!.env.example
+application-*.properties
+application-*.yml
+!application-test.properties
+!application-test.yml
 
 ####################################
-# FRONTEND - ANGULAR
+# Java & JVM
 ####################################
-# Node
-/node_modules/
-/frontend/node_modules/
-
-# Angular build
-/frontend/dist/
-/dist/
-
-# Angular cache
-.angular/
-.cache/
-
-# Logs
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
+*.class
+hs_err_pid*
+replay_pid*
 
 ####################################
-# TESTING / COVERAGE
+# Other
 ####################################
-coverage/
-*.lcov
-
-####################################
-# DOCKER
-####################################
-docker-data/
-docker-volume/
-*.tar
-
-####################################
-# CI / CD
-####################################
-.env.ci
-.env.pipeline
-
-
-####################################
-# SECURITY
-####################################
-*.jks
-*.p12
-*.pem
-*.key
-*.crt
-
-####################################
-# MISC
-####################################
-tmp/
-temp/
+# Generated documentation
+**/docs/
+**/javadoc/

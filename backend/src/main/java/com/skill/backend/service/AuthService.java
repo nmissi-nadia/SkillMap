@@ -19,6 +19,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final AuditLogService auditLogService;
 
     public AuthenticationResponse register(RegisterRequest request) {
         var user = new Utilisateur();
@@ -31,6 +32,10 @@ public class AuthService {
         user.setEnabled(true);
         
         repository.save(user);
+        
+        // Log l'inscription
+        auditLogService.logAuthentication(user.getId(), "REGISTER", true);
+        
         var jwtToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
         return AuthenticationResponse.builder()
@@ -40,19 +45,30 @@ public class AuthService {
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
-                        request.getPassword()
-                )
-        );
-        var user = repository.findByEmail(request.getEmail())
-                .orElseThrow();
-        var jwtToken = jwtService.generateToken(user);
-        var refreshToken = jwtService.generateRefreshToken(user);
-        return AuthenticationResponse.builder()
-                .accessToken(jwtToken)
-                .refreshToken(refreshToken)
-                .build();
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            request.getEmail(),
+                            request.getPassword()
+                    )
+            );
+            var user = repository.findByEmail(request.getEmail())
+                    .orElseThrow();
+            
+            // Log la connexion réussie
+            auditLogService.logAuthentication(user.getId(), "LOGIN", true);
+            
+            var jwtToken = jwtService.generateToken(user);
+            var refreshToken = jwtService.generateRefreshToken(user);
+            return AuthenticationResponse.builder()
+                    .accessToken(jwtToken)
+                    .refreshToken(refreshToken)
+                    .build();
+        } catch (Exception e) {
+            // Log la connexion échouée
+            repository.findByEmail(request.getEmail())
+                    .ifPresent(user -> auditLogService.logAuthentication(user.getId(), "LOGIN", false));
+            throw e;
+        }
     }
 }

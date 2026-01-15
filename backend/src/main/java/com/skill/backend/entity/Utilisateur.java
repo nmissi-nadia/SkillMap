@@ -14,16 +14,17 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(name = "utilisateurs")
+@Inheritance(strategy = InheritanceType.JOINED)
 public class Utilisateur implements UserDetails {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String id;
 
     private String nom;
@@ -53,7 +54,11 @@ public class Utilisateur implements UserDetails {
         if (dateCreation == null) {
             dateCreation = LocalDateTime.now();
         }
+        if (this.id == null) {
+            this.id = UUID.randomUUID().toString();
+        }
     }
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

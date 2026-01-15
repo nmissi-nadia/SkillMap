@@ -7,21 +7,59 @@ services:
       dockerfile: Dockerfile
     container_name: skillmap-backend
     ports:
-      - "8080:8080"
+      - "8085:8085"
     environment:
-      # Configuration pour se connecter à PostgreSQL local (hors conteneur)
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://host.docker.internal:5432/skilldb
-      - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=ycode
-      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
-      - SPRING_JPA_SHOW_SQL=true
-    extra_hosts:
-      # Permet au conteneur d'accéder à localhost de la machine hôte
-      - "host.docker.internal:host-gateway"
-    restart: unless-stopped
+      # Database connection to containerized PostgreSQL
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/skilldb
+      SPRING_DATASOURCE_USERNAME: skillmap
+      SPRING_DATASOURCE_PASSWORD: skillmap123
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      
+      # JWT Configuration
+      APPLICATION_SECURITY_JWT_SECRET_KEY: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+      APPLICATION_SECURITY_JWT_EXPIRATION: 86400000
+      APPLICATION_SECURITY_JWT_REFRESH_TOKEN_EXPIRATION: 604800000
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - skillmap-network
+
+  db:
+    image: postgres:15-alpine
+    container_name: skillmap-db
+    environment:
+      POSTGRES_DB: skilldb
+      POSTGRES_USER: skillmap
+      POSTGRES_PASSWORD: skillmap123
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"  # Port 5433 sur l'hôte pour éviter conflit avec PostgreSQL local
+    networks:
+      - skillmap-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U skillmap -d skilldb"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: skillmap-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@skillmap.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+    ports:
+      - "5051:80"
+    depends_on:
+      - db
     networks:
       - skillmap-network
 
 networks:
   skillmap-network:
     driver: bridge
+
+volumes:
+  postgres_data:
