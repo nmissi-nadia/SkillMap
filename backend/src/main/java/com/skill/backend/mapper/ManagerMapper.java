@@ -23,6 +23,13 @@ public interface ManagerMapper {
     @Mapping(source = "projets", target = "projetIds", qualifiedByName = "projetsToIds")
     ManagerDTO toDto(Manager manager);
 
+    @Mapping(target = "employes", ignore = true)
+    @Mapping(target = "evaluations", ignore = true)
+    @Mapping(target = "projets", ignore = true)
+    @Mapping(target = "password", ignore = true)
+    @Mapping(target = "provider", ignore = true)
+    @Mapping(target = "providerId", ignore = true)
+    @Mapping(target = "enabled", ignore = true)
     Manager toEntity(ManagerDTO managerDTO);
 
     @Named("employesToIds")

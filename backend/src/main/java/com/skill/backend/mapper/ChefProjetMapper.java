@@ -23,8 +23,13 @@ public interface ChefProjetMapper {
     @Mapping(source = "messagesProjet", target = "messageProjetIds", qualifiedByName = "messagesToIds")
     ChefProjetDTO toDto(ChefProjet chefProjet);
 
-    // We will need to implement the reverse mapping in the service layer
-    // as it requires fetching entities from the database.
+    @Mapping(target = "projets", ignore = true)
+    @Mapping(target = "affectations", ignore = true)
+    @Mapping(target = "messagesProjet", ignore = true)
+    @Mapping(target = "password", ignore = true)
+    @Mapping(target = "provider", ignore = true)
+    @Mapping(target = "providerId", ignore = true)
+    @Mapping(target = "enabled", ignore = true)
     ChefProjet toEntity(ChefProjetDTO chefProjetDTO);
 
     @Named("projetsToIds")

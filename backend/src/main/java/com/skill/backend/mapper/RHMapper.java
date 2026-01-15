@@ -21,6 +21,14 @@ public interface RHMapper {
     @Mapping(source = "auditLogs", target = "auditLogIds", qualifiedByName = "auditLogsToIds")
     RHDTO toDto(RH rh);
 
+    @Mapping(target = "formations", ignore = true)
+    @Mapping(target = "projets", ignore = true)
+    @Mapping(target = "notifications", ignore = true)
+    @Mapping(target = "auditLogs", ignore = true)
+    @Mapping(target = "password", ignore = true)
+    @Mapping(target = "provider", ignore = true)
+    @Mapping(target = "providerId", ignore = true)
+    @Mapping(target = "enabled", ignore = true)
     RH toEntity(RHDTO rhdto);
 
     @Named("formationsToIds")

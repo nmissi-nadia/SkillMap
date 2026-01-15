@@ -24,6 +24,17 @@ public interface EmployeMapper {
     @Mapping(source = "formations", target = "formationIds", qualifiedByName = "formationsToIds")
     EmployeDTO toDto(Employe employe);
 
+    @Mapping(target = "manager", ignore = true)
+    @Mapping(target = "competenceEmployes", ignore = true)
+    @Mapping(target = "evaluations", ignore = true)
+    @Mapping(target = "testsTechniques", ignore = true)
+    @Mapping(target = "messagesEnvoyes", ignore = true)
+    @Mapping(target = "projets", ignore = true)
+    @Mapping(target = "formations", ignore = true)
+    @Mapping(target = "password", ignore = true)
+    @Mapping(target = "provider", ignore = true)
+    @Mapping(target = "providerId", ignore = true)
+    @Mapping(target = "enabled", ignore = true)
     Employe toEntity(EmployeDTO employeDTO);
 
     @Named("competenceEmployesToIds")
