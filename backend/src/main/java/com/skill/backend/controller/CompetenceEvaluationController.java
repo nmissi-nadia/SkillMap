@@ -40,7 +40,7 @@ public class CompetenceEvaluationController {
             @RequestBody ValidationEvaluationDTO request) {
         return ResponseEntity.ok(competenceEvaluationService.validerEvaluation(
             competenceEmployeId, 
-            request.getNiveauManager(), 
+            request.getNiveauValide() != null ? request.getNiveauValide() : 0, 
             request.getCommentaireManager()
         ));
     }

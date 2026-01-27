@@ -9,5 +9,8 @@ import java.util.List;
 
 @Repository
 public interface TestTechniqueRepository extends JpaRepository<TestTechnique, String> {
+    List<TestTechnique> findByEmployeId(String employeId);
+    List<TestTechnique> findByStatut(String statut);
+    List<TestTechnique> findByEmployeIdAndStatut(String employeId, String statut);
     List<TestTechnique> findByEmployeAndResultat(Employe employe, String resultat);
 }

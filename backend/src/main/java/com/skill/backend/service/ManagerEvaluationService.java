@@ -1,12 +1,17 @@
 package com.skill.backend.service;
 
-import com.skill.backend.entity.CompetenceEmploye;
-import com.skill.backend.repository.CompetenceEmployeRepository;
-import com.skill.backend.repository.EmployeRepository;
+import com.skill.backend.dto.EvaluationDTO;
+import com.skill.backend.dto.ValidationEvaluationDTO;
+import com.skill.backend.entity.Evaluation;
+import com.skill.backend.entity.Manager;
+import com.skill.backend.repository.EvaluationRepository;
+import com.skill.backend.repository.ManagerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -14,76 +19,119 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ManagerEvaluationService {
 
-    private final CompetenceEmployeRepository competenceEmployeRepository;
-    private final EmployeRepository employeRepository;
+    private final EvaluationRepository evaluationRepository;
+    private final ManagerRepository managerRepository;
     private final AuditLogService auditLogService;
     private final NotificationService notificationService;
 
     /**
-     * Récupérer les auto-évaluations en attente de validation pour un manager
+     * Récupérer les évaluations en attente de validation pour un manager
      */
     @PreAuthorize("hasRole('MANAGER')")
-    public List<CompetenceEmploye> getEvaluationsEnAttente(String managerId) {
-        // Récupérer tous les employés du manager
-        return employeRepository.findByManagerId(managerId).stream()
-                .flatMap(employe -> competenceEmployeRepository.findByEmploye(employe).stream())
-                .filter(ce -> ce.getNiveauAuto() > 0 && ce.getNiveauManager() == 0)
+    public List<EvaluationDTO> getPendingEvaluations(String managerId) {
+        Manager manager = managerRepository.findById(managerId)
+                .orElseThrow(() -> new RuntimeException("Manager non trouvé"));
+        
+        return evaluationRepository.findByManagerAndStatut(manager, "EN_ATTENTE").stream()
+                .map(this::toDTO)
                 .collect(Collectors.toList());
     }
 
     /**
-     * Valider une auto-évaluation avec ajustement du niveau
+     * Valider une évaluation
      */
     @PreAuthorize("hasRole('MANAGER')")
-    public CompetenceEmploye validerEvaluation(String competenceEmployeId, int niveauManager, String commentaireManager, String managerId) {
-        CompetenceEmploye competenceEmploye = competenceEmployeRepository.findById(competenceEmployeId)
+    @Transactional
+    public EvaluationDTO validateEvaluation(String evaluationId, ValidationEvaluationDTO request, String managerId) {
+        Evaluation evaluation = evaluationRepository.findById(evaluationId)
                 .orElseThrow(() -> new RuntimeException("Évaluation non trouvée"));
-
-        // Sauvegarder l'ancien état pour l'audit
-        int ancienNiveau = competenceEmploye.getNiveauManager();
         
-        // Mettre à jour
-        competenceEmploye.setNiveauManager(niveauManager);
+        // Vérifier que le manager est bien le manager de l'employé
+        if (!evaluation.getManager().getId().equals(managerId)) {
+            throw new RuntimeException("Vous n'êtes pas autorisé à valider cette évaluation");
+        }
         
-        CompetenceEmploye updated = competenceEmployeRepository.save(competenceEmploye);
-
-        // Log la validation
-        auditLogService.logValidationManager(managerId, competenceEmployeId, niveauManager);
-
-        // Notifier l'employé
-        notificationService.notifyEmployeValidation(
-            competenceEmploye.getEmploye().getId(),
-            competenceEmploye.getCompetence().getNom(),
-            true
+        // Déterminer si c'est un ajustement
+        boolean isAdjustment = !evaluation.getNiveauAutoEvalue().equals(request.getNiveauValide());
+        
+        // Mettre à jour l'évaluation
+        evaluation.setNiveauValide(request.getNiveauValide());
+        evaluation.setCommentaireManager(request.getCommentaireManager());
+        evaluation.setStatut(isAdjustment ? "AJUSTEE" : "VALIDEE");
+        evaluation.setDateValidation(LocalDateTime.now());
+        
+        Evaluation saved = evaluationRepository.save(evaluation);
+        
+        // Audit log
+        String details = String.format("Évaluation %s - Niveau auto: %d, Niveau validé: %d",
+                isAdjustment ? "ajustée" : "validée",
+                evaluation.getNiveauAutoEvalue(),
+                request.getNiveauValide());
+        auditLogService.logAction(managerId, "VALIDATE_EVALUATION", "EVALUATION", evaluationId, details);
+        
+        // Notification à l'employé
+        String notificationMessage = isAdjustment
+                ? String.format("Votre auto-évaluation pour %s a été ajustée par votre manager (niveau: %d)",
+                        evaluation.getCompetence().getNom(), request.getNiveauValide())
+                : String.format("Votre auto-évaluation pour %s a été validée par votre manager",
+                        evaluation.getCompetence().getNom());
+        
+        notificationService.sendNotification(
+                evaluation.getEmploye().getId(),
+                "Évaluation validée",
+                notificationMessage
         );
-
-        return updated;
+        
+        return toDTO(saved);
     }
 
     /**
-     * Rejeter une auto-évaluation
+     * Ajuster le niveau d'une évaluation
      */
     @PreAuthorize("hasRole('MANAGER')")
-    public CompetenceEmploye rejeterEvaluation(String competenceEmployeId, String commentaireManager, String managerId) {
-        CompetenceEmploye competenceEmploye = competenceEmployeRepository.findById(competenceEmployeId)
-                .orElseThrow(() -> new RuntimeException("Évaluation non trouvée"));
-
-        // Réinitialiser le niveau auto
-        competenceEmploye.setNiveauAuto(0);
+    @Transactional
+    public EvaluationDTO adjustEvaluationLevel(String evaluationId, int newLevel, String justification, String managerId) {
+        ValidationEvaluationDTO request = new ValidationEvaluationDTO();
+        request.setNiveauValide(newLevel);
+        request.setCommentaireManager(justification);
+        request.setAjustement(true);
         
-        CompetenceEmploye updated = competenceEmployeRepository.save(competenceEmploye);
+        return validateEvaluation(evaluationId, request, managerId);
+    }
 
-        // Log le rejet
-        auditLogService.logAction(managerId, "REJECT_EVALUATION", "COMPETENCE_EMPLOYE", 
-            competenceEmployeId, commentaireManager);
-
-        // Notifier l'employé
-        notificationService.notifyEmployeValidation(
-            competenceEmploye.getEmploye().getId(),
-            competenceEmploye.getCompetence().getNom(),
-            false
-        );
-
-        return updated;
+    /**
+     * Convertir Evaluation en DTO
+     */
+    private EvaluationDTO toDTO(Evaluation evaluation) {
+        EvaluationDTO dto = new EvaluationDTO();
+        dto.setId(evaluation.getId());
+        dto.setType(evaluation.getType());
+        dto.setScore(evaluation.getScore());
+        dto.setCommentaire(evaluation.getCommentaire());
+        dto.setDateEvaluation(evaluation.getDateEvaluation());
+        
+        if (evaluation.getEmploye() != null) {
+            dto.setEmployeId(evaluation.getEmploye().getId());
+            dto.setEmployeNom(evaluation.getEmploye().getNom() + " " + evaluation.getEmploye().getPrenom());
+        }
+        
+        if (evaluation.getManager() != null) {
+            dto.setManagerId(evaluation.getManager().getId());
+            dto.setManagerNom(evaluation.getManager().getNom() + " " + evaluation.getManager().getPrenom());
+        }
+        
+        if (evaluation.getCompetence() != null) {
+            dto.setCompetenceId(evaluation.getCompetence().getId());
+            dto.setCompetenceNom(evaluation.getCompetence().getNom());
+        }
+        
+        dto.setNiveauAutoEvalue(evaluation.getNiveauAutoEvalue());
+        dto.setNiveauValide(evaluation.getNiveauValide());
+        dto.setCommentaireEmploye(evaluation.getCommentaireEmploye());
+        dto.setCommentaireManager(evaluation.getCommentaireManager());
+        dto.setStatut(evaluation.getStatut());
+        dto.setDateValidation(evaluation.getDateValidation());
+        
+        return dto;
     }
 }

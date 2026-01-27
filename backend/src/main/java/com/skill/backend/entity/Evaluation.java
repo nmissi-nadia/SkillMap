@@ -23,6 +23,14 @@ public class Evaluation {
     private double score;
     private String commentaire;
     private LocalDateTime dateEvaluation;
+    
+    // Workflow validation manager
+    private Integer niveauAutoEvalue;      // Niveau auto-évalué (1-5)
+    private Integer niveauValide;          // Niveau validé par manager (1-5)
+    private String commentaireEmploye;     // Commentaire employé
+    private String commentaireManager;     // Commentaire manager
+    private String statut;                 // EN_ATTENTE, VALIDEE, AJUSTEE
+    private LocalDateTime dateValidation;  // Date validation manager
 
     @ManyToOne
     @JoinColumn(name = "employe_id")
@@ -31,6 +39,10 @@ public class Evaluation {
     @ManyToOne
     @JoinColumn(name = "manager_id")
     private Manager manager;
+    
+    @ManyToOne
+    @JoinColumn(name = "competence_id")
+    private Competence competence;         // Compétence évaluée
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "auditlog_id")

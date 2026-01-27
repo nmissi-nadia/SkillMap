@@ -21,6 +21,13 @@ public class AffectationProjet {
 
     private String roleDansProjet;
     private LocalDate dateAffectation;
+    
+    // Workflow affectation projet
+    private Integer tauxAllocation;        // % temps de travail (0-100)
+    private LocalDate dateDebut;
+    private LocalDate dateFin;
+    private String statut;                 // ACTIVE, TERMINEE, ANNULEE
+    private String assignePar;             // ID du chef de projet
 
     @ManyToOne
     @JoinColumn(name = "employe_id")

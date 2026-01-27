@@ -102,4 +102,11 @@ public class NotificationService {
         notifications.forEach(n -> n.setLu(true));
         notificationRepository.saveAll(notifications);
     }
+
+    /**
+     * Envoyer une notification (méthode de commodité)
+     */
+    public void sendNotification(String userId, String titre, String contenu) {
+        createNotification(userId, titre, contenu, "INFO");
+    }
 }

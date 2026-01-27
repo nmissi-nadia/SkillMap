@@ -24,10 +24,21 @@ public class TestTechnique {
     private double score;
     private String resultat; // Réussi / Échoué
     private LocalDateTime datePassage;
+    
+    // Workflow passage test technique
+    private String statut;                 // ASSIGNE, EN_COURS, TERMINE, EXPIRE
+    private LocalDateTime dateAssignation;
+    private LocalDateTime dateLimite;
+    private String assignePar;             // ID du RH ou Manager
+    private Integer niveauCompetence;      // Niveau calculé (1-5)
 
     @ManyToOne
     @JoinColumn(name = "employe_id")
     private Employe employe;
+    
+    @ManyToOne
+    @JoinColumn(name = "competence_id")
+    private Competence competence;         // Compétence testée
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "notification_id")

@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -27,6 +28,13 @@ public class Formation {
     private String statut; // Recommandée / Suivie / Validée
     private LocalDate dateDebut;
     private LocalDate dateFin;
+    
+    // Workflow suivi formations
+    private Double cout;
+    private String certification;          // Nom certification obtenue
+    private String urlCertificat;          // URL du certificat uploadé
+    private LocalDateTime dateValidation;  // Date validation RH
+    private String valideePar;             // ID du RH validateur
 
     @ManyToMany(mappedBy = "formations")
     private Set<Employe> employes = new HashSet<>();

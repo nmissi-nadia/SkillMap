@@ -26,6 +26,13 @@ public class Projet {
     private LocalDate dateDebut;
     private LocalDate dateFin;
     private String statut; // Planifié / En cours / Terminé
+    
+    // Workflow gestion projet
+    private String client;                 // Client (interne/externe)
+    private Double budget;
+    private String priorite;               // HAUTE, MOYENNE, BASSE
+    private Integer chargeEstimee;         // Jours/homme
+    private Integer progression;           // 0-100%
 
     @ManyToMany(mappedBy = "projets")
     private Set<Employe> employes = new HashSet<>();
