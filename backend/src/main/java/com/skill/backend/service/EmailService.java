@@ -1,7 +1,7 @@
 package com.skill.backend.service;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -10,16 +10,28 @@ import org.springframework.stereotype.Service;
  * Service d'envoi d'emails
  */
 @Service
-@RequiredArgsConstructor
 @Slf4j
 public class EmailService {
 
     private final JavaMailSender mailSender;
 
+    @Autowired(required = false)
+    public EmailService(JavaMailSender mailSender) {
+        this.mailSender = mailSender;
+        if (mailSender == null) {
+            log.warn("JavaMailSender n'est pas configuré. Les emails ne seront pas envoyés.");
+        }
+    }
+
     /**
      * Envoyer un email de bienvenue avec les identifiants
      */
     public void sendWelcomeEmail(String to, String fullName, String email, String temporaryPassword) {
+        if (mailSender == null) {
+            log.warn("Email non envoyé (JavaMailSender non configuré) - Destinataire: {}", to);
+            return;
+        }
+        
         try {
             SimpleMailMessage message = new SimpleMailMessage();
             message.setTo(to);
@@ -63,6 +75,11 @@ public class EmailService {
      * Envoyer un email de réinitialisation de mot de passe
      */
     public void sendPasswordResetEmail(String to, String fullName, String resetToken) {
+        if (mailSender == null) {
+            log.warn("Email de réinitialisation non envoyé (JavaMailSender non configuré) - Destinataire: {}", to);
+            return;
+        }
+        
         try {
             SimpleMailMessage message = new SimpleMailMessage();
             message.setTo(to);

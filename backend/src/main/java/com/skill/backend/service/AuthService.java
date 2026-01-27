@@ -5,7 +5,7 @@ import com.skill.backend.dto.AuthenticationResponse;
 import com.skill.backend.dto.RegisterRequest;
 import com.skill.backend.entity.*;
 import com.skill.backend.enums.Provider;
-import com.skill.backend.enums.Role;
+import com.skill.backend.enums.RoleUtilisateur;
 import com.skill.backend.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -59,7 +59,7 @@ public class AuthService {
                 employe.setPrenom(request.getPrenom());
                 employe.setEmail(request.getEmail());
                 employe.setPassword(passwordEncoder.encode(request.getPassword()));
-                employe.setRole(Role.EMPLOYE);
+                employe.setRole(RoleUtilisateur.EMPLOYE);
                 employe.setProvider(Provider.LOCAL);
                 employe.setEnabled(true);
                 // Champs spécifiques Employe peuvent être ajoutés ici
@@ -72,7 +72,7 @@ public class AuthService {
                 manager.setPrenom(request.getPrenom());
                 manager.setEmail(request.getEmail());
                 manager.setPassword(passwordEncoder.encode(request.getPassword()));
-                manager.setRole(Role.MANAGER);
+                manager.setRole(RoleUtilisateur.MANAGER);
                 manager.setProvider(Provider.LOCAL);
                 manager.setEnabled(true);
                 // Champs spécifiques Manager peuvent être ajoutés ici
@@ -85,7 +85,7 @@ public class AuthService {
                 rh.setPrenom(request.getPrenom());
                 rh.setEmail(request.getEmail());
                 rh.setPassword(passwordEncoder.encode(request.getPassword()));
-                rh.setRole(Role.RH);
+                rh.setRole(RoleUtilisateur.RH);
                 rh.setProvider(Provider.LOCAL);
                 rh.setEnabled(true);
                 // Champs spécifiques RH peuvent être ajoutés ici
@@ -98,7 +98,7 @@ public class AuthService {
                 chefProjet.setPrenom(request.getPrenom());
                 chefProjet.setEmail(request.getEmail());
                 chefProjet.setPassword(passwordEncoder.encode(request.getPassword()));
-                chefProjet.setRole(Role.CHEF_PROJET);
+                chefProjet.setRole(RoleUtilisateur.CHEF_PROJET);
                 chefProjet.setProvider(Provider.LOCAL);
                 chefProjet.setEnabled(true);
                 // Champs spécifiques ChefProjet peuvent être ajoutés ici

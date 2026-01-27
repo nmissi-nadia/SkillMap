@@ -6,13 +6,14 @@ import lombok.Data;
 import java.time.LocalDate;
 
 @Data
-public class CreateUserRequest {
+public class UpdateUserRequest {
     // Champs communs
     private String nom;
     private String prenom;
     private String email;
-    private String password; // Mot de passe temporaire
+    private String password; // Optionnel - pour réinitialisation
     private RoleUtilisateur role;
+    private Boolean enabled;
     
     // Champs spécifiques EMPLOYE
     private String matricule;
