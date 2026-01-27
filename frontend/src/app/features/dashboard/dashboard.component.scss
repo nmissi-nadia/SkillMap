@@ -1,0 +1,131 @@
+.dashboard-container {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 2rem;
+}
+
+.dashboard-header {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+
+    h1 {
+        margin: 0;
+        color: #1a202c;
+        font-size: 2rem;
+    }
+
+    .user-info {
+        flex: 1;
+        text-align: center;
+
+        p {
+            margin: 0.25rem 0;
+            color: #4a5568;
+        }
+
+        .role-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+    }
+
+    .logout-btn {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        background: #f56565;
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+
+        &:hover {
+            background: #e53e3e;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(245, 101, 101, 0.4);
+        }
+    }
+}
+
+.dashboard-content {
+    display: grid;
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.welcome-card,
+.info-card {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+
+    h2,
+    h3 {
+        margin: 0 0 1rem 0;
+        color: #1a202c;
+    }
+
+    p {
+        color: #4a5568;
+        line-height: 1.6;
+    }
+
+    .info-text {
+        margin-top: 1rem;
+        padding: 1rem;
+        background: #edf2f7;
+        border-radius: 10px;
+        font-size: 0.875rem;
+    }
+}
+
+.info-grid {
+    display: grid;
+    gap: 1rem;
+
+    .info-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 1rem;
+        background: #f7fafc;
+        border-radius: 10px;
+
+        .label {
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .value {
+            color: #4a5568;
+        }
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard-header {
+        flex-direction: column;
+        text-align: center;
+
+        h1 {
+            font-size: 1.5rem;
+        }
+    }
+}

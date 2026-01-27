@@ -1,0 +1,135 @@
+<div class="register-container">
+    <div class="register-card">
+        <div class="register-header">
+            <h1>Inscription</h1>
+            <p>Créez votre compte SkillMap</p>
+        </div>
+
+        @if (errorMessage()) {
+        <div class="error-alert">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+            <span>{{ errorMessage() }}</span>
+        </div>
+        }
+
+        <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="register-form">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="nom">Nom</label>
+                    <input type="text" id="nom" formControlName="nom" placeholder="Dupont"
+                        [class.invalid]="nom?.invalid && nom?.touched" />
+                    @if (nom?.invalid && nom?.touched) {
+                    <div class="error-message">
+                        @if (nom?.errors?.['required']) {
+                        <span>Le nom est requis</span>
+                        }
+                        @if (nom?.errors?.['minlength']) {
+                        <span>Le nom doit contenir au moins 2 caractères</span>
+                        }
+                    </div>
+                    }
+                </div>
+
+                <div class="form-group">
+                    <label for="prenom">Prénom</label>
+                    <input type="text" id="prenom" formControlName="prenom" placeholder="Jean"
+                        [class.invalid]="prenom?.invalid && prenom?.touched" />
+                    @if (prenom?.invalid && prenom?.touched) {
+                    <div class="error-message">
+                        @if (prenom?.errors?.['required']) {
+                        <span>Le prénom est requis</span>
+                        }
+                        @if (prenom?.errors?.['minlength']) {
+                        <span>Le prénom doit contenir au moins 2 caractères</span>
+                        }
+                    </div>
+                    }
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" formControlName="email" placeholder="jean.dupont@example.com"
+                    [class.invalid]="email?.invalid && email?.touched" />
+                @if (email?.invalid && email?.touched) {
+                <div class="error-message">
+                    @if (email?.errors?.['required']) {
+                    <span>L'email est requis</span>
+                    }
+                    @if (email?.errors?.['email']) {
+                    <span>Email invalide</span>
+                    }
+                </div>
+                }
+            </div>
+
+            <div class="form-group">
+                <label for="role">Rôle</label>
+                <select id="role" formControlName="role" [class.invalid]="role?.invalid && role?.touched">
+                    @for (roleValue of roles; track roleValue) {
+                    <option [value]="roleValue">{{ roleLabels[roleValue] }}</option>
+                    }
+                </select>
+                @if (role?.invalid && role?.touched) {
+                <div class="error-message">
+                    <span>Le rôle est requis</span>
+                </div>
+                }
+            </div>
+
+            <div class="form-group">
+                <label for="password">Mot de passe</label>
+                <input type="password" id="password" formControlName="password" placeholder="••••••••"
+                    [class.invalid]="password?.invalid && password?.touched" />
+                @if (password?.invalid && password?.touched) {
+                <div class="error-message">
+                    @if (password?.errors?.['required']) {
+                    <span>Le mot de passe est requis</span>
+                    }
+                    @if (password?.errors?.['minlength']) {
+                    <span>Le mot de passe doit contenir au moins 6 caractères</span>
+                    }
+                </div>
+                }
+            </div>
+
+            <div class="form-group">
+                <label for="confirmPassword">Confirmer le mot de passe</label>
+                <input type="password" id="confirmPassword" formControlName="confirmPassword" placeholder="••••••••"
+                    [class.invalid]="(confirmPassword?.invalid && confirmPassword?.touched) || (!passwordsMatch && confirmPassword?.touched)" />
+                @if (confirmPassword?.invalid && confirmPassword?.touched) {
+                <div class="error-message">
+                    @if (confirmPassword?.errors?.['required']) {
+                    <span>La confirmation du mot de passe est requise</span>
+                    }
+                </div>
+                }
+                @if (!passwordsMatch && confirmPassword?.touched && confirmPassword?.value) {
+                <div class="error-message">
+                    <span>Les mots de passe ne correspondent pas</span>
+                </div>
+                }
+            </div>
+
+            <button type="submit" class="submit-btn" [disabled]="isLoading()">
+                @if (isLoading()) {
+                <span class="spinner"></span>
+                <span>Inscription en cours...</span>
+                } @else {
+                <span>S'inscrire</span>
+                }
+            </button>
+        </form>
+
+        <div class="register-footer">
+            <p>Vous avez déjà un compte ?
+                <a routerLink="/login">Se connecter</a>
+            </p>
+        </div>
+    </div>
+</div>
