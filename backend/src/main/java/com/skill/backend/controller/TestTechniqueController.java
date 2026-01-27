@@ -1,8 +1,8 @@
 package com.skill.backend.controller;
 
-import com.skill.backend.dto.TestTechniqueRequestDTO;
-import com.skill.backend.dto.TestTechniqueResultDTO;
-import com.skill.backend.entity.TestTechnique;
+import com.skill.backend.dto.AssignTestDTO;
+import com.skill.backend.dto.SubmitTestDTO;
+import com.skill.backend.dto.TestTechniqueDTO;
 import com.skill.backend.service.TestTechniqueService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/tests-techniques")
+@RequestMapping("/api/tests")
 @RequiredArgsConstructor
 @Tag(name = "Tests Techniques", description = "Gestion des tests techniques")
 @SecurityRequirement(name = "bearerAuth")
@@ -24,31 +24,62 @@ public class TestTechniqueController {
 
     private final TestTechniqueService testTechniqueService;
 
-    @PostMapping("/assigner")
+    /**
+     * Assigner un test technique à un employé
+     */
+    @PostMapping("/assign")
     @PreAuthorize("hasAnyRole('RH', 'MANAGER')")
-    @Operation(summary = "Assigner un test technique",
-               description = "Permet au RH ou Manager d'assigner un test technique à un employé")
-    public ResponseEntity<TestTechnique> assignerTest(
-            @RequestBody TestTechniqueRequestDTO request,
+    @Operation(summary = "Assigner un test technique")
+    public ResponseEntity<TestTechniqueDTO> assignTest(
+            @RequestBody AssignTestDTO request,
             Authentication authentication) {
-        String assignedBy = authentication.getName(); // Email de l'utilisateur connecté
-        return ResponseEntity.ok(testTechniqueService.assignerTest(request, assignedBy));
+        String assignedBy = authentication.getName();
+        return ResponseEntity.ok(testTechniqueService.assignTest(request, assignedBy));
     }
 
-    @PutMapping("/{testId}/resultat")
+    /**
+     * Récupérer les tests actifs pour un employé
+     */
+    @GetMapping("/active")
     @PreAuthorize("hasRole('EMPLOYE')")
-    @Operation(summary = "Enregistrer le résultat d'un test",
-               description = "Permet à un employé d'enregistrer le résultat de son test")
-    public ResponseEntity<TestTechnique> enregistrerResultat(
-            @PathVariable String testId,
-            @RequestBody TestTechniqueResultDTO result) {
-        return ResponseEntity.ok(testTechniqueService.enregistrerResultat(testId, result));
+    @Operation(summary = "Tests actifs de l'employé connecté")
+    public ResponseEntity<List<TestTechniqueDTO>> getActiveTests(Authentication authentication) {
+        String employeId = authentication.getName();
+        return ResponseEntity.ok(testTechniqueService.getActiveTests(employeId));
     }
 
-    @GetMapping("/en-cours/{employeId}")
-    @Operation(summary = "Récupérer les tests en cours",
-               description = "Liste des tests en attente pour un employé")
-    public ResponseEntity<List<TestTechnique>> getTestsEnCours(@PathVariable String employeId) {
-        return ResponseEntity.ok(testTechniqueService.getTestsEnCours(employeId));
+    /**
+     * Soumettre les réponses d'un test
+     */
+    @PostMapping("/{testId}/submit")
+    @PreAuthorize("hasRole('EMPLOYE')")
+    @Operation(summary = "Soumettre les réponses d'un test")
+    public ResponseEntity<TestTechniqueDTO> submitTest(
+            @PathVariable String testId,
+            @RequestBody SubmitTestDTO answers,
+            Authentication authentication) {
+        String employeId = authentication.getName();
+        return ResponseEntity.ok(testTechniqueService.submitTest(testId, answers, employeId));
+    }
+
+    /**
+     * Récupérer le résultat d'un test
+     */
+    @GetMapping("/{testId}/result")
+    @Operation(summary = "Résultat d'un test")
+    public ResponseEntity<TestTechniqueDTO> getTestResult(@PathVariable String testId) {
+        // TODO: Implement getTestById in service
+        return ResponseEntity.ok(new TestTechniqueDTO());
+    }
+
+    /**
+     * Monitoring des tests (RH)
+     */
+    @GetMapping("/monitoring")
+    @PreAuthorize("hasRole('RH')")
+    @Operation(summary = "Monitoring des tests pour RH")
+    public ResponseEntity<List<TestTechniqueDTO>> getTestsMonitoring() {
+        // TODO: Implement monitoring in service
+        return ResponseEntity.ok(List.of());
     }
 }
