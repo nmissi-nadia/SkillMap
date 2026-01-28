@@ -6,6 +6,7 @@ import com.skill.backend.entity.Employe;
 import com.skill.backend.entity.Manager;
 import com.skill.backend.mapper.EmployeMapper;
 import com.skill.backend.repository.EmployeRepository;
+import com.skill.backend.repository.UtilisateurRepository;
 import com.skill.backend.repository.ManagerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -23,15 +24,31 @@ import java.util.stream.Collectors;
 public class EmployeService {
 
     private final EmployeRepository employeRepository;
+    private final UtilisateurRepository utilisateurRepository;
     private final ManagerRepository managerRepository;
     private final EmployeMapper employeMapper;
     private final AuditLogService auditLogService;
     private final NotificationService notificationService;
 
     /**
+     * Récupérer le profil de l'employé connecté
+     */
+    @Transactional(readOnly = true)
+    public EmployeDTO getMyProfile(String email) {
+        com.skill.backend.entity.Utilisateur user = utilisateurRepository.findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé: " + email));
+        
+        if (!(user instanceof Employe)) {
+            throw new RuntimeException("L'utilisateur n'est pas un employé");
+        }
+        
+        return employeMapper.toDto((Employe) user);
+    }
+
+    /**
      * Récupérer tous les employés
      */
-    @PreAuthorize("hasAnyRole('RH', 'MANAGER', 'CHEF_PROJET')")
+    @PreAuthorize("hasAnyAuthority('ROLE_RH', 'ROLE_MANAGER', 'ROLE_CHEF_PROJET', 'ROLE_EMPLOYE')")
     public List<EmployeDTO> getAllEmployes() {
         return employeRepository.findAll().stream()
             .map(employeMapper::toDto)
@@ -41,11 +58,22 @@ public class EmployeService {
     /**
      * Récupérer un employé par ID
      */
-    @PreAuthorize("hasAnyRole('RH', 'MANAGER', 'CHEF_PROJET', 'EMPLOYE')")
+    @PreAuthorize("hasAnyAuthority('ROLE_RH', 'ROLE_MANAGER', 'ROLE_CHEF_PROJET', 'ROLE_EMPLOYE')")
     public EmployeDTO getEmployeById(String employeId) {
         Employe employe = employeRepository.findById(employeId)
             .orElseThrow(() -> new RuntimeException("Employé non trouvé avec l'ID: " + employeId));
         return employeMapper.toDto(employe);
+    }
+
+    /**
+     * Mapper un employé vers DTO (méthode utilitaire)
+     */
+    @Transactional(readOnly = true)
+    public EmployeDTO mapToDto(Employe employe) {
+        // Si l'employé est détaché, on le recharge pour éviter LazyInitializationException
+        Employe attachedEmploye = employeRepository.findById(employe.getId())
+            .orElse(employe);
+        return employeMapper.toDto(attachedEmploye);
     }
 
     /**

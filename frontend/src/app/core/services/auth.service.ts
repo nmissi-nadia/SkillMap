@@ -32,7 +32,10 @@ export class AuthService {
     login(credentials: LoginRequest): Observable<AuthResponse> {
         return this.http.post<AuthResponse>(`${this.apiUrl}/authenticate`, credentials)
             .pipe(
-                tap(response => this.handleAuthResponse(response))
+                tap(response => {
+                    this.handleAuthResponse(response);
+                    this.redirectBasedOnRole(response.role);
+                })
             );
     }
 
@@ -42,7 +45,10 @@ export class AuthService {
     register(userData: RegisterRequest): Observable<AuthResponse> {
         return this.http.post<AuthResponse>(`${this.apiUrl}/register`, userData)
             .pipe(
-                tap(response => this.handleAuthResponse(response))
+                tap(response => {
+                    this.handleAuthResponse(response);
+                    this.redirectBasedOnRole(response.role);
+                })
             );
     }
 
@@ -81,8 +87,12 @@ export class AuthService {
    * Gérer la réponse d'authentification
    */
     private handleAuthResponse(response: AuthResponse): void {
+        console.log('🔐 handleAuthResponse - Réponse reçue:', response);
+
         // Sauvegarder les tokens
+        console.log('💾 Sauvegarde des tokens...');
         this.tokenService.saveTokens(response.access_token, response.refresh_token);
+        console.log('✅ Tokens sauvegardés');
 
         // Créer l'objet utilisateur depuis la réponse
         const user: User = {
@@ -93,9 +103,49 @@ export class AuthService {
             role: response.role
         };
 
+        console.log('👤 Utilisateur créé:', user);
+
         // Sauvegarder l'utilisateur
         this.saveUser(user);
+        console.log('✅ Utilisateur sauvegardé dans localStorage');
+
         this.currentUser.set(user);
+        console.log('✅ Signal currentUser mis à jour');
+    }
+
+    /**
+     * Obtenir l'URL du dashboard selon le rôle de l'utilisateur
+     */
+    getDashboardUrl(role?: string): string {
+        const userRole = role || this.currentUser()?.role;
+        console.log('🔍 getDashboardUrl - Role reçu:', role);
+        console.log('🔍 getDashboardUrl - Role utilisateur actuel:', this.currentUser()?.role);
+        console.log('🔍 getDashboardUrl - Role final utilisé:', userRole);
+
+        switch (userRole) {
+            case 'EMPLOYE':
+                console.log('✅ Redirection vers /employee/dashboard');
+                return '/employee/dashboard';
+            case 'MANAGER':
+            case 'RH':
+            case 'CHEF_PROJET':
+            case 'ADMIN':
+                console.log('✅ Redirection vers /dashboard');
+                return '/dashboard';
+            default:
+                console.log('⚠️ Rôle non reconnu, redirection par défaut vers /dashboard');
+                return '/dashboard';
+        }
+    }
+
+    /**
+     * Rediriger l'utilisateur selon son rôle
+     */
+    private redirectBasedOnRole(role: string): void {
+        console.log('🚀 redirectBasedOnRole appelé avec role:', role);
+        const dashboardUrl = this.getDashboardUrl(role);
+        console.log('🎯 Navigation vers:', dashboardUrl);
+        this.router.navigate([dashboardUrl]);
     }
 
     /**

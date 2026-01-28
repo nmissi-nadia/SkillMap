@@ -19,7 +19,7 @@ public class AuthenticationResponse {
     private String refreshToken;
     
     // Informations utilisateur
-    private Long id;
+    private String id;
     private String email;
     private String nom;
     private String prenom;

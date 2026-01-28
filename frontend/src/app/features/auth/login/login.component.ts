@@ -42,9 +42,9 @@ export class LoginComponent {
 
         this.authService.login(credentials).subscribe({
             next: () => {
-                // Récupérer l'URL de retour ou rediriger vers le dashboard
-                const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/dashboard';
-                this.router.navigate([returnUrl]);
+                // La redirection est gérée automatiquement par auth.service.login()
+                // selon le rôle de l'utilisateur (EMPLOYE → /employee/dashboard, autres → /dashboard)
+                this.isLoading.set(false);
             },
             error: (error) => {
                 this.isLoading.set(false);

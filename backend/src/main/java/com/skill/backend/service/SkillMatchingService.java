@@ -131,7 +131,9 @@ public class SkillMatchingService {
                     .orElse(null);
 
             if (ce != null) {
-                int niveauEmploye = ce.getNiveauManager() != null ? ce.getNiveauManager() : ce.getNiveauAuto();
+                Integer niveauManager = ce.getNiveauManager();
+                Integer niveauAuto = ce.getNiveauAuto();
+                int niveauEmploye = (niveauManager != null) ? niveauManager : (niveauAuto != null ? niveauAuto : 0);
                 int niveauRequis = requise.getNiveauRequis();
 
                 // Calculer le score pour cette compétence
@@ -237,7 +239,9 @@ public class SkillMatchingService {
                     .orElse(null);
 
             if (ce != null) {
-                int niveauEmploye = ce.getNiveauManager() != null ? ce.getNiveauManager() : ce.getNiveauAuto();
+                Integer niveauManager = ce.getNiveauManager();
+                Integer niveauAuto = ce.getNiveauAuto();
+                int niveauEmploye = (niveauManager != null) ? niveauManager : (niveauAuto != null ? niveauAuto : 0);
                 cm.setNiveauEmploye(niveauEmploye);
                 
                 double score = calculateCompetenceScore(niveauEmploye, requise.getNiveauRequis(), requise.getPriorite());

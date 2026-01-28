@@ -22,7 +22,7 @@ public class CompetenceEvaluationController {
     private final CompetenceEvaluationService competenceEvaluationService;
 
     @PostMapping("/auto/{employeId}")
-    @PreAuthorize("hasRole('EMPLOYE')")
+    @PreAuthorize("hasAuthority('ROLE_EMPLOYE')")
     @Operation(summary = "Auto-évaluation d'une compétence", 
                description = "Permet à un employé de s'auto-évaluer sur une compétence (niveau 1-5)")
     public ResponseEntity<CompetenceEmploye> autoEvaluer(
@@ -32,7 +32,7 @@ public class CompetenceEvaluationController {
     }
 
     @PutMapping("/{competenceEmployeId}/valider")
-    @PreAuthorize("hasRole('MANAGER')")
+    @PreAuthorize("hasAuthority('ROLE_MANAGER')")
     @Operation(summary = "Validation manager d'une évaluation",
                description = "Permet au manager de valider et noter l'auto-évaluation d'un employé")
     public ResponseEntity<CompetenceEmploye> validerEvaluation(

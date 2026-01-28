@@ -29,7 +29,7 @@ export interface AuthResponse {
     access_token: string;
     refresh_token: string;
     // Informations utilisateur
-    id: number;
+    id: string;
     email: string;
     nom: string;
     prenom: string;
@@ -40,7 +40,7 @@ export interface AuthResponse {
  * Informations utilisateur décodées du JWT
  */
 export interface User {
-    id: number;
+    id: string;
     email: string;
     nom?: string;
     prenom?: string;

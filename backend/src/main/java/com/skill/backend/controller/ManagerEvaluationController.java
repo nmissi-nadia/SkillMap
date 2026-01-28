@@ -27,7 +27,7 @@ public class ManagerEvaluationController {
      * Récupérer les évaluations en attente de validation
      */
     @GetMapping("/pending")
-    @PreAuthorize("hasRole('MANAGER')")
+    @PreAuthorize("hasAuthority('ROLE_MANAGER')")
     @Operation(summary = "Récupérer les évaluations en attente")
     public ResponseEntity<List<EvaluationDTO>> getPendingEvaluations(Authentication authentication) {
         String managerId = authentication.getName();
@@ -38,7 +38,7 @@ public class ManagerEvaluationController {
      * Valider une évaluation
      */
     @PutMapping("/{evaluationId}/validate")
-    @PreAuthorize("hasRole('MANAGER')")
+    @PreAuthorize("hasAuthority('ROLE_MANAGER')")
     @Operation(summary = "Valider une évaluation")
     public ResponseEntity<EvaluationDTO> validateEvaluation(
             @PathVariable String evaluationId,
@@ -52,7 +52,7 @@ public class ManagerEvaluationController {
      * Ajuster le niveau d'une évaluation
      */
     @PutMapping("/{evaluationId}/adjust")
-    @PreAuthorize("hasRole('MANAGER')")
+    @PreAuthorize("hasAuthority('ROLE_MANAGER')")
     @Operation(summary = "Ajuster le niveau d'une évaluation")
     public ResponseEntity<EvaluationDTO> adjustEvaluationLevel(
             @PathVariable String evaluationId,
@@ -67,7 +67,7 @@ public class ManagerEvaluationController {
      * Récupérer l'historique des validations
      */
     @GetMapping("/history")
-    @PreAuthorize("hasRole('MANAGER')")
+    @PreAuthorize("hasAuthority('ROLE_MANAGER')")
     @Operation(summary = "Historique des validations")
     public ResponseEntity<List<EvaluationDTO>> getValidationHistory(Authentication authentication) {
         String managerId = authentication.getName();

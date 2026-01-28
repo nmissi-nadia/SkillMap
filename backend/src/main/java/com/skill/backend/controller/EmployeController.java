@@ -2,6 +2,7 @@ package com.skill.backend.controller;
 
 import com.skill.backend.dto.EmployeDTO;
 import com.skill.backend.dto.UpdateEmployeRequest;
+import com.skill.backend.entity.Employe;
 import com.skill.backend.service.EmployeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -24,15 +25,15 @@ public class EmployeController {
     private final EmployeService employeService;
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('RH', 'MANAGER', 'CHEF_PROJET')")
+    @PreAuthorize("hasAnyAuthority('ROLE_RH', 'ROLE_MANAGER', 'ROLE_CHEF_PROJET', 'ROLE_EMPLOYE')")
     @Operation(summary = "Lister tous les employés",
-               description = "Récupère la liste de tous les employés (accessible par RH, Manager, Chef de Projet)")
+               description = "Récupère la liste de tous les employés")
     public ResponseEntity<List<EmployeDTO>> getAllEmployes() {
         return ResponseEntity.ok(employeService.getAllEmployes());
     }
 
     @GetMapping("/{employeId}")
-    @PreAuthorize("hasAnyRole('RH', 'MANAGER', 'CHEF_PROJET', 'EMPLOYE')")
+    @PreAuthorize("hasAnyAuthority('ROLE_RH', 'ROLE_MANAGER', 'ROLE_CHEF_PROJET', 'ROLE_EMPLOYE')")
     @Operation(summary = "Récupérer un employé par ID",
                description = "Récupère les détails d'un employé spécifique")
     public ResponseEntity<EmployeDTO> getEmployeById(@PathVariable String employeId) {
@@ -40,16 +41,16 @@ public class EmployeController {
     }
 
     @GetMapping("/me")
-    @PreAuthorize("hasRole('EMPLOYE')")
+    @PreAuthorize("hasAuthority('ROLE_EMPLOYE')")
     @Operation(summary = "Récupérer son propre profil",
                description = "Permet à un employé de récupérer son propre profil")
     public ResponseEntity<EmployeDTO> getMyProfile(Authentication authentication) {
-        String currentUserId = authentication.getName();
-        return ResponseEntity.ok(employeService.getEmployeById(currentUserId));
+        System.out.println("🎯 EmployeController.getMyProfile - Request received for: " + authentication.getName());
+        return ResponseEntity.ok(employeService.getMyProfile(authentication.getName()));
     }
 
     @PutMapping("/{employeId}")
-    @PreAuthorize("hasRole('RH')")
+    @PreAuthorize("hasAuthority('ROLE_RH')")
     @Operation(summary = "Mettre à jour un employé",
                description = "Met à jour les informations d'un employé (RH uniquement)")
     public ResponseEntity<EmployeDTO> updateEmploye(
@@ -61,7 +62,7 @@ public class EmployeController {
     }
 
     @PutMapping("/{employeId}/profile")
-    @PreAuthorize("hasRole('EMPLOYE')")
+    @PreAuthorize("hasAuthority('ROLE_EMPLOYE')")
     @Operation(summary = "Mettre à jour son propre profil",
                description = "Permet à un employé de mettre à jour son propre profil (champs limités)")
     public ResponseEntity<EmployeDTO> updateMyProfile(
@@ -73,7 +74,7 @@ public class EmployeController {
     }
 
     @DeleteMapping("/{employeId}")
-    @PreAuthorize("hasRole('RH')")
+    @PreAuthorize("hasAuthority('ROLE_RH')")
     @Operation(summary = "Supprimer un employé",
                description = "Supprime un employé (soft delete - désactivation du compte)")
     public ResponseEntity<Void> deleteEmploye(

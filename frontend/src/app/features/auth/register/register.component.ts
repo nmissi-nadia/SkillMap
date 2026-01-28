@@ -67,8 +67,9 @@ export class RegisterComponent {
 
         this.authService.register(registerData).subscribe({
             next: () => {
-                // Rediriger vers le dashboard après inscription réussie
-                this.router.navigate(['/dashboard']);
+                // La redirection est gérée automatiquement par auth.service.register()
+                // selon le rôle de l'utilisateur
+                this.isLoading.set(false);
             },
             error: (error) => {
                 this.isLoading.set(false);

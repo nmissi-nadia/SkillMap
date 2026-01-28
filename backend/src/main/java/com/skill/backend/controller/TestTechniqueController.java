@@ -28,7 +28,7 @@ public class TestTechniqueController {
      * Assigner un test technique à un employé
      */
     @PostMapping("/assign")
-    @PreAuthorize("hasAnyRole('RH', 'MANAGER')")
+    @PreAuthorize("hasAnyAuthority('ROLE_RH', 'ROLE_MANAGER')")
     @Operation(summary = "Assigner un test technique")
     public ResponseEntity<TestTechniqueDTO> assignTest(
             @RequestBody AssignTestDTO request,
@@ -41,7 +41,7 @@ public class TestTechniqueController {
      * Récupérer les tests actifs pour un employé
      */
     @GetMapping("/active")
-    @PreAuthorize("hasRole('EMPLOYE')")
+    @PreAuthorize("hasAuthority('ROLE_EMPLOYE')")
     @Operation(summary = "Tests actifs de l'employé connecté")
     public ResponseEntity<List<TestTechniqueDTO>> getActiveTests(Authentication authentication) {
         String employeId = authentication.getName();
@@ -52,7 +52,7 @@ public class TestTechniqueController {
      * Soumettre les réponses d'un test
      */
     @PostMapping("/{testId}/submit")
-    @PreAuthorize("hasRole('EMPLOYE')")
+    @PreAuthorize("hasAuthority('ROLE_EMPLOYE')")
     @Operation(summary = "Soumettre les réponses d'un test")
     public ResponseEntity<TestTechniqueDTO> submitTest(
             @PathVariable String testId,
@@ -76,7 +76,7 @@ public class TestTechniqueController {
      * Monitoring des tests (RH)
      */
     @GetMapping("/monitoring")
-    @PreAuthorize("hasRole('RH')")
+    @PreAuthorize("hasAuthority('ROLE_RH')")
     @Operation(summary = "Monitoring des tests pour RH")
     public ResponseEntity<List<TestTechniqueDTO>> getTestsMonitoring() {
         // TODO: Implement monitoring in service
