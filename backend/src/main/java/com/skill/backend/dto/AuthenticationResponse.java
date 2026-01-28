@@ -1,6 +1,7 @@
 package com.skill.backend.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.skill.backend.enums.RoleUtilisateur;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,4 +17,11 @@ public class AuthenticationResponse {
     private String accessToken;
     @JsonProperty("refresh_token")
     private String refreshToken;
+    
+    // Informations utilisateur
+    private Long id;
+    private String email;
+    private String nom;
+    private String prenom;
+    private RoleUtilisateur role;
 }

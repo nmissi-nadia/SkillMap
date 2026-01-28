@@ -43,6 +43,11 @@ public class AuthService {
         return AuthenticationResponse.builder()
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
+                .id(user.getId())
+                .email(user.getEmail())
+                .nom(user.getNom())
+                .prenom(user.getPrenom())
+                .role(user.getRole())
                 .build();
     }
 
@@ -139,6 +144,11 @@ public class AuthService {
             return AuthenticationResponse.builder()
                     .accessToken(jwtToken)
                     .refreshToken(refreshToken)
+                    .id(user.getId())
+                    .email(user.getEmail())
+                    .nom(user.getNom())
+                    .prenom(user.getPrenom())
+                    .role(user.getRole())
                     .build();
         } catch (Exception e) {
             // Log la connexion échouée

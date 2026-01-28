@@ -28,6 +28,12 @@ export interface RegisterRequest {
 export interface AuthResponse {
     access_token: string;
     refresh_token: string;
+    // Informations utilisateur
+    id: number;
+    email: string;
+    nom: string;
+    prenom: string;
+    role: RoleUtilisateur;
 }
 
 /**

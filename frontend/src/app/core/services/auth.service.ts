@@ -51,6 +51,7 @@ export class AuthService {
      */
     logout(): void {
         this.tokenService.removeTokens();
+        localStorage.removeItem('current_user');
         this.currentUser.set(null);
         this.router.navigate(['/login']);
     }
@@ -77,23 +78,53 @@ export class AuthService {
     }
 
     /**
-     * Gérer la réponse d'authentification
-     */
+   * Gérer la réponse d'authentification
+   */
     private handleAuthResponse(response: AuthResponse): void {
+        // Sauvegarder les tokens
         this.tokenService.saveTokens(response.access_token, response.refresh_token);
-        this.loadUserFromToken();
+
+        // Créer l'objet utilisateur depuis la réponse
+        const user: User = {
+            id: response.id,
+            email: response.email,
+            nom: response.nom,
+            prenom: response.prenom,
+            role: response.role
+        };
+
+        // Sauvegarder l'utilisateur
+        this.saveUser(user);
+        this.currentUser.set(user);
     }
 
     /**
-     * Charger l'utilisateur depuis le token
+     * Sauvegarder l'utilisateur dans le localStorage
+     */
+    private saveUser(user: User): void {
+        localStorage.setItem('current_user', JSON.stringify(user));
+    }
+
+    /**
+     * Charger l'utilisateur depuis le localStorage
      */
     private loadUserFromToken(): void {
         const token = this.tokenService.getAccessToken();
         if (token && !this.tokenService.isTokenExpired(token)) {
-            const user = this.tokenService.decodeToken(token);
-            this.currentUser.set(user);
+            // Charger l'utilisateur depuis le localStorage
+            const userJson = localStorage.getItem('current_user');
+            if (userJson) {
+                try {
+                    const user = JSON.parse(userJson) as User;
+                    this.currentUser.set(user);
+                } catch (error) {
+                    console.error('Erreur lors du chargement de l\'utilisateur:', error);
+                    this.currentUser.set(null);
+                }
+            }
         } else {
             this.currentUser.set(null);
+            localStorage.removeItem('current_user');
         }
     }
 }
