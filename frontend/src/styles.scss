@@ -2,13 +2,17 @@
 :root {
     /* Palette principale */
     --primary: #4B3F72;
+    --primary-rgb: 75, 63, 114;
     --secondary: #8B83BA;
     --accent: #6D5BD0;
     --background: #F6F7FB;
     --white: #FFFFFF;
+    --white-rgb: 255, 255, 255;
+    --surface: #FFFFFF;
+    --surface-hover: #F9FAFB;
 
     /* Texte */
-    --text-primary: #000000;
+    --text-primary: #111827;
     --text-secondary: #6B7280;
     --text-light: #9CA3AF;
 
@@ -19,8 +23,9 @@
     --info: #3B82F6;
 
     /* Bordures et ombres */
+    --border: #E5E7EB;
     --border-color: #E5E7EB;
-    --shadow-sm: 0 1px 2px 0 rgba(75, 63, 114, 0.05);
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
     --shadow-md: 0 4px 6px -1px rgba(75, 63, 114, 0.1);
     --shadow-lg: 0 10px 15px -3px rgba(75, 63, 114, 0.15);
     --shadow-xl: 0 20px 25px -5px rgba(75, 63, 114, 0.2);

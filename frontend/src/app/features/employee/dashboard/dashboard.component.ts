@@ -5,10 +5,12 @@ import { EmployeeService } from '../../../core/services/employee.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { Employee, EmployeeKPI, TodoItem, Notification } from '../../../core/models/employee.model';
 
+import { SidebarComponent } from './sidebar/sidebar.component';
+
 @Component({
   selector: 'app-employee-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, SidebarComponent],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss']
 })
@@ -24,6 +26,7 @@ export class DashboardComponent implements OnInit {
   notifications = signal<Notification[]>([]);
   loading = signal(true);
   error = signal<string | null>(null);
+  today = new Date();
 
   ngOnInit() {
     console.log('🏠 Employee Dashboard Component - ngOnInit appelé');

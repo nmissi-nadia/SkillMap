@@ -56,10 +56,18 @@ export class AuthService {
      * Déconnexion de l'utilisateur
      */
     logout(): void {
-        this.tokenService.removeTokens();
-        localStorage.removeItem('current_user');
-        this.currentUser.set(null);
-        this.router.navigate(['/login']);
+        console.log('🚪 Déconnexion en cours...');
+        this.http.post(`${this.apiUrl}/logout`, {}).subscribe({
+            next: () => console.log('✅ Déconnexion backend réussie'),
+            error: (err) => console.error('❌ Erreur déconnexion backend:', err),
+            complete: () => {
+                this.tokenService.removeTokens();
+                localStorage.removeItem('current_user');
+                this.currentUser.set(null);
+                this.router.navigate(['/login']);
+                console.log('👋 Déconnexion locale terminée');
+            }
+        });
     }
 
     /**

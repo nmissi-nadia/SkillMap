@@ -1,0 +1,195 @@
+import { Component, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { AuthService } from '../../../../core/services/auth.service';
+
+@Component({
+    selector: 'app-employee-sidebar',
+    standalone: true,
+    imports: [CommonModule, RouterLink, RouterLinkActive],
+    template: `
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <span class="logo-icon">🚀</span>
+          <span class="logo-text">SkillMap</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <ul>
+          <li>
+            <a routerLink="/employee/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+              <span class="nav-icon">🏠</span>
+              <span class="nav-text">Dashboard</span>
+            </a>
+          </li>
+          <li>
+            <a routerLink="/employee/profile" routerLinkActive="active">
+              <span class="nav-icon">👤</span>
+              <span class="nav-text">Mon Profil</span>
+            </a>
+          </li>
+          <li>
+            <a routerLink="/employee/competencies" routerLinkActive="active">
+              <span class="nav-icon">🎯</span>
+              <span class="nav-text">Compétences</span>
+            </a>
+          </li>
+          <li>
+            <a routerLink="/employee/tests" routerLinkActive="active">
+              <span class="nav-icon">📝</span>
+              <span class="nav-text">Tests Techniques</span>
+            </a>
+          </li>
+          <li>
+            <a routerLink="/employee/formations" routerLinkActive="active">
+              <span class="nav-icon">📚</span>
+              <span class="nav-text">Formations</span>
+            </a>
+          </li>
+          <li>
+            <a routerLink="/employee/messaging" routerLinkActive="active">
+              <span class="nav-icon">💬</span>
+              <span class="nav-text">Messagerie</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button class="btn-logout" (click)="logout()">
+          <span class="nav-icon">🚪</span>
+          <span class="nav-text">Déconnexion</span>
+        </button>
+      </div>
+    </aside>
+  `,
+    styles: [`
+    :host {
+      display: block;
+      height: 100%;
+    }
+
+    .sidebar {
+      width: 260px;
+      height: 100vh;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      position: sticky;
+      top: 0;
+      transition: all 0.3s ease;
+      z-index: 100;
+    }
+
+    .sidebar-header {
+      padding: 2rem 1.5rem;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .logo-icon {
+      font-size: 1.5rem;
+    }
+
+    .logo-text {
+      font-size: 1.25rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.02em;
+    }
+
+    .sidebar-nav {
+      flex: 1;
+      padding: 0 0.75rem;
+    }
+
+    .sidebar-nav ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .sidebar-nav a {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      text-decoration: none;
+      color: var(--text-secondary);
+      border-radius: 0.5rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+
+    .sidebar-nav a:hover {
+      background: var(--surface-hover);
+      color: var(--text-primary);
+    }
+
+    .sidebar-nav a.active {
+      background: rgba(var(--primary-rgb), 0.1);
+      color: var(--primary);
+    }
+
+    .nav-icon {
+      font-size: 1.25rem;
+    }
+
+    .sidebar-footer {
+      padding: 1rem 0.75rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .btn-logout {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      background: transparent;
+      border: none;
+      color: var(--error);
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 500;
+      border-radius: 0.5rem;
+      transition: all 0.2s ease;
+    }
+
+    .btn-logout:hover {
+      background: rgba(239, 68, 68, 0.1);
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        width: 80px;
+      }
+      .nav-text, .logo-text {
+        display: none;
+      }
+      .sidebar-header, .sidebar-nav a, .btn-logout {
+        justify-content: center;
+      }
+    }
+  `]
+})
+export class SidebarComponent {
+    private authService = inject(AuthService);
+
+    logout() {
+        this.authService.logout();
+    }
+}
