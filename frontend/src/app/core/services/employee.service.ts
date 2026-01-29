@@ -2,7 +2,7 @@ import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { Employee, EmployeeKPI, TodoItem, Notification } from '../models/employee.model';
+import { Employee, EmployeeKPI, TodoItem, Notification, EmployeeCompetence } from '../models/employee.model';
 
 /**
  * Service pour gérer les données de l'employé
@@ -30,11 +30,33 @@ export class EmployeeService {
     /**
      * Mettre à jour son propre profil
      */
-    updateMyProfile(employeeId: string, data: Partial<Employee>): Observable<Employee> {
-        return this.http.put<Employee>(`${this.apiUrl}/${employeeId}/profile`, data)
+    updateMyProfile(data: Partial<Employee>): Observable<Employee> {
+        return this.http.put<Employee>(`${this.apiUrl}/me`, data)
             .pipe(
                 tap(profile => this.employeeProfile.set(profile))
             );
+    }
+
+    /**
+     * Récupérer les compétences de l'employé
+     */
+    getMyCompetencies(): Observable<EmployeeCompetence[]> {
+        // TODO: Vérifier si le backend expose ce endpoint, sinon utiliser getMyProfile
+        return this.http.get<EmployeeCompetence[]>(`${this.apiUrl}/me/competencies`);
+    }
+
+    /**
+     * Auto-évaluer une compétence
+     */
+    evaluateCompetence(competenceId: string, niveau: number, commentaire: string): Observable<EmployeeCompetence> {
+        const employeId = this.employeeProfile()?.id;
+        if (!employeId) throw new Error("Profil non chargé");
+
+        return this.http.post<EmployeeCompetence>(`${environment.apiUrl}/evaluations/competences/auto/${employeId}`, {
+            competenceId,
+            niveauAuto: niveau,
+            commentaire
+        });
     }
 
     /**

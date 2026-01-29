@@ -1,0 +1,119 @@
+<div class="profile-container">
+    @if (loading()) {
+    <div class="loading-state">
+        <div class="spinner"></div>
+    </div>
+    } @else if (error()) {
+    <div class="error-state">
+        <p>{{ error() }}</p>
+        <button class="btn-primary" (click)="loadProfile()">Réessayer</button>
+    </div>
+    } @else if (employee()) {
+    <div class="profile-header">
+        <div class="cover-image"></div>
+        <div class="profile-info-card">
+            <div class="avatar-large">
+                {{ employee()!.prenom[0] }}{{ employee()!.nom[0] }}
+            </div>
+            <div class="info-content">
+                <h1>{{ employee()!.prenom }} {{ employee()!.nom }}</h1>
+                <p class="role-badge">{{ employee()!.role }}</p>
+                <div class="meta-info">
+                    <span>📧 {{ employee()!.email }}</span>
+                    @if (employee()!.matricule) {
+                    <span>🆔 {{ employee()!.matricule }}</span>
+                    }
+                </div>
+            </div>
+            <button class="btn-edit" (click)="openEditModal()">
+                ✏️ Modifier
+            </button>
+        </div>
+    </div>
+
+    <div class="profile-grid">
+        <!-- Professional Info -->
+        <div class="card info-section">
+            <h2>Informations Professionnelles</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <label>Poste actuel</label>
+                    <p>{{ employee()!.poste || 'Non renseigné' }}</p>
+                </div>
+                <div class="info-item">
+                    <label>Département</label>
+                    <p>{{ employee()!.departement || 'Non assigné' }}</p>
+                </div>
+                <div class="info-item">
+                    <label>Niveau d'expérience</label>
+                    <p>{{ employee()!.niveauExperience || 'Non renseigné' }}</p>
+                </div>
+                <div class="info-item">
+                    <label>Date d'embauche</label>
+                    <p>{{ employee()!.dateEmbauche | date:'dd MMMM yyyy' || 'Non renseignée' }}</p>
+                </div>
+                <div class="info-item">
+                    <label>Disponibilité</label>
+                    <span class="status-badge" [class.available]="employee()!.disponibilite"
+                        [class.busy]="!employee()!.disponibilite">
+                        {{ employee()!.disponibilite ? 'Disponible' : 'Occupé' }}
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Manager Info -->
+        @if (employee()!.manager) {
+        <div class="card manager-section">
+            <h2>Mon Manager</h2>
+            <div class="manager-card">
+                <div class="manager-avatar">
+                    {{ employee()!.manager!.prenom[0] }}{{ employee()!.manager!.nom[0] }}
+                </div>
+                <div class="manager-details">
+                    <h3>{{ employee()!.manager!.prenom }} {{ employee()!.manager!.nom }}</h3>
+                    <p>Referent technique & hiérarchique</p>
+                </div>
+            </div>
+        </div>
+        }
+    </div>
+
+    <!-- Edit Modal -->
+    @if (showEditModal()) {
+    <div class="modal-overlay" (click)="closeEditModal()">
+        <div class="modal-content" (click)="$event.stopPropagation()">
+            <div class="modal-header">
+                <h2>Modifier mon profil</h2>
+                <button class="btn-close" (click)="closeEditModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Poste</label>
+                    <input type="text" [(ngModel)]="editForm.poste" placeholder="Ex: Développeur Fullstack">
+                </div>
+                <div class="form-group">
+                    <label>Niveau d'expérience</label>
+                    <select [(ngModel)]="editForm.niveauExperience">
+                        <option value="">Sélectionner</option>
+                        <option value="Junior">Junior</option>
+                        <option value="Intermédiaire">Intermédiaire</option>
+                        <option value="Senior">Senior</option>
+                    </select>
+                </div>
+                <div class="form-group checkbox-group">
+                    <label>
+                        <input type="checkbox" [(ngModel)]="editForm.disponibilite">
+                        Disponible pour de nouveaux projets
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" (click)="closeEditModal()">Annuler</button>
+                <button class="btn-primary" (click)="saveProfile()">Enregistrer</button>
+            </div>
+        </div>
+    </div>
+    }
+    }
+</div>

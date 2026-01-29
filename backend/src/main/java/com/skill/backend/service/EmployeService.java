@@ -8,6 +8,9 @@ import com.skill.backend.mapper.EmployeMapper;
 import com.skill.backend.repository.EmployeRepository;
 import com.skill.backend.repository.UtilisateurRepository;
 import com.skill.backend.repository.ManagerRepository;
+import com.skill.backend.repository.CompetenceEmployeRepository;
+import com.skill.backend.mapper.CompetenceEmployeMapper;
+import com.skill.backend.dto.CompetenceEmployeDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -29,6 +32,8 @@ public class EmployeService {
     private final EmployeMapper employeMapper;
     private final AuditLogService auditLogService;
     private final NotificationService notificationService;
+    private final CompetenceEmployeRepository competenceEmployeRepository;
+    private final CompetenceEmployeMapper competenceEmployeMapper;
 
     /**
      * Récupérer le profil de l'employé connecté
@@ -160,16 +165,21 @@ public class EmployeService {
     /**
      * Mettre à jour son propre profil (par l'employé lui-même)
      */
-    @PreAuthorize("hasRole('EMPLOYE')")
+    /**
+     * Mettre à jour son propre profil (par l'employé lui-même)
+     */
+    @PreAuthorize("hasAuthority('ROLE_EMPLOYE')")
     @Transactional
-    public EmployeDTO updateEmployeProfile(String employeId, UpdateEmployeRequest request, String currentUserId) {
-        // Vérifier que l'employé modifie bien son propre profil
-        if (!employeId.equals(currentUserId)) {
-            throw new RuntimeException("Vous ne pouvez modifier que votre propre profil");
+    public EmployeDTO updateEmployeProfile(String email, UpdateEmployeRequest request) {
+        com.skill.backend.entity.Utilisateur user = utilisateurRepository.findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé: " + email));
+
+        if (!(user instanceof Employe)) {
+            throw new RuntimeException("L'utilisateur n'est pas un employé");
         }
 
-        Employe employe = employeRepository.findById(employeId)
-            .orElseThrow(() -> new RuntimeException("Employé non trouvé avec l'ID: " + employeId));
+        Employe employe = (Employe) user;
+        String employeId = employe.getId();
 
         StringBuilder changes = new StringBuilder("Auto-modification du profil: ");
 
@@ -190,7 +200,7 @@ public class EmployeService {
         Employe updated = employeRepository.save(employe);
 
         // Log la mise à jour
-        auditLogService.logAction(currentUserId, "UPDATE_PROFILE", "EMPLOYE", 
+        auditLogService.logAction(email, "UPDATE_PROFILE", "EMPLOYE", 
             employeId, changes.toString());
 
         // Notifier le manager si l'employé en a un
@@ -203,7 +213,25 @@ public class EmployeService {
             );
         }
 
-        return employeMapper.toDto(updated);
+        return mapToDto(updated);
+    }
+
+    /**
+     * Récupérer les compétences de l'employé
+     */
+    @PreAuthorize("hasAuthority('ROLE_EMPLOYE')")
+    @Transactional(readOnly = true)
+    public List<CompetenceEmployeDTO> getMyCompetencies(String email) {
+        com.skill.backend.entity.Utilisateur user = utilisateurRepository.findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé: " + email));
+
+        if (!(user instanceof Employe)) {
+            throw new RuntimeException("L'utilisateur n'est pas un employé");
+        }
+
+        return competenceEmployeRepository.findByEmploye((Employe) user).stream()
+            .map(competenceEmployeMapper::toDto)
+            .collect(Collectors.toList());
     }
 
     /**

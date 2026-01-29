@@ -29,6 +29,16 @@ export const routes: Routes = [
         canActivate: [authGuard]
     },
     {
+        path: 'employee/profile',
+        loadComponent: () => import('./features/employee/profile/profile.component').then(m => m.ProfileComponent),
+        canActivate: [authGuard]
+    },
+    {
+        path: 'employee/competencies',
+        loadComponent: () => import('./features/employee/competencies/competencies.component').then(m => m.CompetenciesComponent),
+        canActivate: [authGuard]
+    },
+    {
         path: '**',
         redirectTo: '/login'
     }

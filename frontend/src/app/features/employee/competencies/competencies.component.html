@@ -1,0 +1,120 @@
+<div class="competencies-container">
+    <div class="page-header">
+        <div class="header-content">
+            <h1>Mes Compétences</h1>
+            <p>Gérez et évaluez vos compétences techniques et professionnelles</p>
+        </div>
+        <button class="btn-primary" (click)="openEvaluationModal()">
+            + Ajouter / Évaluer
+        </button>
+    </div>
+
+    @if (loading()) {
+    <div class="loading-state">
+        <div class="spinner"></div>
+    </div>
+    } @else {
+    <div class="competencies-grid">
+        @for (comp of competencies(); track comp.id) {
+        <div class="competence-card" (click)="openEvaluationModal(comp)">
+            <div class="card-header">
+                <h3>{{ comp.competence.nom }}</h3>
+                <span class="category-badge">{{ comp.competence.categorie || 'Technique' }}</span>
+            </div>
+
+            <div class="levels-display">
+                <div class="level-box auto">
+                    <span class="label">Auto-évaluation</span>
+                    <div class="stars">
+                        @for (star of [1,2,3,4,5]; track star) {
+                        <span class="star" [class.filled]="star <= comp.niveauAuto">★</span>
+                        }
+                    </div>
+                </div>
+                <div class="level-box manager">
+                    <span class="label">Manager</span>
+                    @if (comp.niveauManager) {
+                    <div class="stars">
+                        @for (star of [1,2,3,4,5]; track star) {
+                        <span class="star" [class.filled]="star <= comp.niveauManager!">★</span>
+                        }
+                    </div>
+                    } @else {
+                    <span class="pending">En attente</span>
+                    }
+                </div>
+            </div>
+
+            <div class="card-footer">
+                <span class="date">Évalué le {{ comp.dateEvaluation | date:'shortDate' }}</span>
+            </div>
+        </div>
+        } @empty {
+        <div class="empty-state">
+            <p>Aucune compétence déclarée pour le moment.</p>
+            <button class="btn-secondary" (click)="openEvaluationModal()">Commencer maintenant</button>
+        </div>
+        }
+    </div>
+    }
+
+    <!-- Evaluation Modal -->
+    @if (showModal()) {
+    <div class="modal-overlay" (click)="closeModal()">
+        <div class="modal-content" (click)="$event.stopPropagation()">
+            <div class="modal-header">
+                <h2>Évaluer une compétence</h2>
+                <button class="btn-close" (click)="closeModal()">✕</button>
+            </div>
+
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Compétence</label>
+                    <select [(ngModel)]="selectedCompetenceId"
+                        [disabled]="!!evaluationForm.commentaire && evaluationForm.commentaire.length > 0">
+                        <option value="">Sélectionner une compétence</option>
+                        @for (c of allCompetencies; track c.id) {
+                        <option [value]="c.id">{{ c.nom }}</option>
+                        }
+                        <!-- Fallback if listing all system competencies is not yet implemented -->
+                        @if (allCompetencies.length === 0) {
+                        <option value="" disabled>Chargement des compétences...</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Niveau (1-5)</label>
+                    <div class="rating-input">
+                        @for (star of [1,2,3,4,5]; track star) {
+                        <span class="star-input" [class.active]="star <= evaluationForm.niveauAuto"
+                            (click)="evaluationForm.niveauAuto = star">★</span>
+                        }
+                    </div>
+                    <p class="rating-label">
+                        @switch (evaluationForm.niveauAuto) {
+                        @case (1) { Débutant }
+                        @case (2) { Notions }
+                        @case (3) { Autonome }
+                        @case (4) { Maîtrise }
+                        @case (5) { Expert }
+                        }
+                    </p>
+                </div>
+
+                <div class="form-group">
+                    <label>Commentaire</label>
+                    <textarea [(ngModel)]="evaluationForm.commentaire" rows="3"
+                        placeholder="Ex: Certification obtenue en 2024, utilisé sur le projet X..."></textarea>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn-secondary" (click)="closeModal()">Annuler</button>
+                <button class="btn-primary" (click)="submitEvaluation()"
+                    [disabled]="!selectedCompetenceId">Enregistrer</button>
+            </div>
+        </div>
+    </div>
+    }
+</div>

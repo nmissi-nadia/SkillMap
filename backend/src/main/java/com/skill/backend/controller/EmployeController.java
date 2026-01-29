@@ -49,6 +49,14 @@ public class EmployeController {
         return ResponseEntity.ok(employeService.getMyProfile(authentication.getName()));
     }
 
+    @GetMapping("/me/competences")
+    @PreAuthorize("hasAuthority('ROLE_EMPLOYE')")
+    @Operation(summary = "Récupérer ses compétences",
+               description = "Permet à un employé de récupérer la liste de ses compétences")
+    public ResponseEntity<List<com.skill.backend.dto.CompetenceEmployeDTO>> getMyCompetencies(Authentication authentication) {
+        return ResponseEntity.ok(employeService.getMyCompetencies(authentication.getName()));
+    }
+
     @PutMapping("/{employeId}")
     @PreAuthorize("hasAuthority('ROLE_RH')")
     @Operation(summary = "Mettre à jour un employé",
@@ -61,16 +69,15 @@ public class EmployeController {
         return ResponseEntity.ok(employeService.updateEmploye(employeId, request, updatedBy));
     }
 
-    @PutMapping("/{employeId}/profile")
+    @PutMapping("/me")
     @PreAuthorize("hasAuthority('ROLE_EMPLOYE')")
     @Operation(summary = "Mettre à jour son propre profil",
                description = "Permet à un employé de mettre à jour son propre profil (champs limités)")
     public ResponseEntity<EmployeDTO> updateMyProfile(
-            @PathVariable String employeId,
             @RequestBody UpdateEmployeRequest request,
             Authentication authentication) {
-        String currentUserId = authentication.getName();
-        return ResponseEntity.ok(employeService.updateEmployeProfile(employeId, request, currentUserId));
+        String email = authentication.getName();
+        return ResponseEntity.ok(employeService.updateEmployeProfile(email, request));
     }
 
     @DeleteMapping("/{employeId}")

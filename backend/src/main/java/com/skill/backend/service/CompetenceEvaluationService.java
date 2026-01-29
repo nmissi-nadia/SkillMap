@@ -27,6 +27,7 @@ public class CompetenceEvaluationService {
      * Auto-évaluation d'une compétence par un employé
      */
     @PreAuthorize("hasRole('EMPLOYE')")
+    @PreAuthorize("hasAuthority('ROLE_EMPLOYE')")
     public CompetenceEmploye autoEvaluer(String employeId, CompetenceEmployeRequestDTO request) {
         Employe employe = employeRepository.findById(employeId)
                 .orElseThrow(() -> new RuntimeException("Employé non trouvé"));
@@ -34,12 +35,18 @@ public class CompetenceEvaluationService {
         Competence competence = competenceRepository.findById(request.getCompetenceId())
                 .orElseThrow(() -> new RuntimeException("Compétence non trouvée"));
 
-        CompetenceEmploye competenceEmploye = new CompetenceEmploye();
-        competenceEmploye.setEmploye(employe);
-        competenceEmploye.setCompetence(competence);
+        // Chercher si l'évaluation existe déjà ou créer une nouvelle
+        CompetenceEmploye competenceEmploye = competenceEmployeRepository.findByEmployeIdAndCompetenceId(employeId, request.getCompetenceId())
+                .orElse(new CompetenceEmploye());
+
+        if (competenceEmploye.getId() == null) {
+            competenceEmploye.setEmploye(employe);
+            competenceEmploye.setCompetence(competence);
+        }
+        
         competenceEmploye.setNiveauAuto(request.getNiveauAuto());
         competenceEmploye.setCommentaire(request.getCommentaire());
-        competenceEmploye.setDateEvaluation(LocalDate.now());
+        competenceEmploye.setDateEvaluation(java.time.LocalDate.now());
         
         CompetenceEmploye saved = competenceEmployeRepository.save(competenceEmploye);
 
