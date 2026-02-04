@@ -1,5 +1,4 @@
-
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { EmployeeService } from '../../../core/services/employee.service';
@@ -13,22 +12,60 @@ import { EmployeeCompetence } from '../../../core/models/employee.model';
     styleUrls: ['./competencies.component.scss']
 })
 export class CompetenciesComponent implements OnInit {
+    // Data Signals
     competencies = signal<EmployeeCompetence[]>([]);
+    allCompetencies = signal<{ id: string, nom: string, categorie?: string }[]>([]);
     loading = signal(true);
     showModal = signal(false);
     errorMessage = signal<string | null>(null);
     successMessage = signal<string | null>(null);
 
+    // Filter Signals
+    searchTerm = signal('');
+    selectedCategory = signal('');
+    selectedLevel = signal<number | null>(null);
+
+    // Computed: Filtered list
+    filteredCompetencies = computed(() => {
+        return this.competencies().filter((comp: EmployeeCompetence) => {
+            const matchesSearch = comp.competence.nom.toLowerCase().includes(this.searchTerm().toLowerCase());
+            const matchesCategory = !this.selectedCategory() || comp.competence.categorie === this.selectedCategory();
+            const matchesLevel = !this.selectedLevel() || comp.niveauAuto === this.selectedLevel();
+            return matchesSearch && matchesCategory && matchesLevel;
+        });
+    });
+
+    // Computed: KPIs
+    stats = computed(() => {
+        const list = this.competencies();
+        const validated = list.filter((c: EmployeeCompetence) => !!c.niveauManager).length;
+        const average = list.length > 0
+            ? (list.reduce((acc: number, curr: EmployeeCompetence) => acc + curr.niveauAuto, 0) / list.length).toFixed(1)
+            : '0.0';
+
+        return {
+            total: list.length,
+            validated: validated,
+            pending: list.length - validated,
+            average: average
+        };
+    });
+
+    // Unique categories for the filter
+    categories = computed(() => {
+        const cats = this.competencies()
+            .map((c: EmployeeCompetence) => c.competence.categorie)
+            .filter((v: string | undefined, i: number, a: (string | undefined)[]) => !!v && a.indexOf(v) === i);
+        return cats as string[];
+    });
+
     // Evaluation Form
     selectedCompetenceId = '';
-    isEditMode = false; // true si on modifie une compétence existante
+    isEditMode = false;
     evaluationForm = {
         niveauAuto: 1,
         commentaire: ''
     };
-
-    // Liste de toutes les compétences disponibles dans le système
-    allCompetencies: { id: string, nom: string, categorie?: string }[] = [];
 
     constructor(private employeeService: EmployeeService) { }
 
@@ -37,9 +74,6 @@ export class CompetenciesComponent implements OnInit {
         this.loadAllCompetencies();
     }
 
-    /**
-     * Charger les compétences de l'employé
-     */
     loadCompetencies() {
         this.loading.set(true);
         this.errorMessage.set(null);
@@ -48,7 +82,6 @@ export class CompetenciesComponent implements OnInit {
             next: (competencies) => {
                 this.competencies.set(competencies);
                 this.loading.set(false);
-                console.log('✅ Compétences chargées:', competencies);
             },
             error: (error) => {
                 console.error('❌ Erreur lors du chargement des compétences:', error);
@@ -58,33 +91,22 @@ export class CompetenciesComponent implements OnInit {
         });
     }
 
-    /**
-     * Charger toutes les compétences disponibles dans le système
-     * Pour permettre à l'employé de choisir lesquelles ajouter
-     */
     loadAllCompetencies() {
         this.employeeService.getAllCompetencies().subscribe({
             next: (competencies) => {
-                this.allCompetencies = competencies;
-                console.log('✅ Toutes les compétences disponibles:', competencies);
+                this.allCompetencies.set(competencies);
             },
             error: (error) => {
                 console.error('❌ Erreur lors du chargement des compétences disponibles:', error);
-                // Fallback: utiliser une liste vide, l'employé ne pourra pas ajouter de nouvelles compétences
-                this.allCompetencies = [];
             }
         });
     }
 
-    /**
-     * Ouvrir le modal pour ajouter ou modifier une compétence
-     */
     openEvaluationModal(comp?: EmployeeCompetence) {
         this.errorMessage.set(null);
         this.successMessage.set(null);
 
         if (comp) {
-            // Mode édition: modifier une compétence existante
             this.isEditMode = true;
             this.selectedCompetenceId = comp.competence.id;
             this.evaluationForm = {
@@ -92,7 +114,6 @@ export class CompetenciesComponent implements OnInit {
                 commentaire: comp.commentaire || ''
             };
         } else {
-            // Mode création: ajouter une nouvelle compétence
             this.isEditMode = false;
             this.selectedCompetenceId = '';
             this.evaluationForm = {
@@ -109,55 +130,30 @@ export class CompetenciesComponent implements OnInit {
         this.successMessage.set(null);
     }
 
-    /**
-     * Soumettre l'auto-évaluation (création ou modification)
-     */
     submitEvaluation() {
         if (!this.selectedCompetenceId) {
             this.errorMessage.set('Veuillez sélectionner une compétence');
             return;
         }
 
-        this.errorMessage.set(null);
-        console.log('📝 Soumission évaluation:', {
-            competenceId: this.selectedCompetenceId,
-            niveau: this.evaluationForm.niveauAuto,
-            commentaire: this.evaluationForm.commentaire
-        });
-
         this.employeeService.evaluateCompetence(
             this.selectedCompetenceId,
             this.evaluationForm.niveauAuto,
             this.evaluationForm.commentaire
         ).subscribe({
-            next: (result) => {
-                console.log('✅ Évaluation enregistrée:', result);
+            next: () => {
                 this.successMessage.set(
-                    this.isEditMode
-                        ? 'Compétence mise à jour avec succès'
-                        : 'Compétence ajoutée avec succès'
+                    this.isEditMode ? 'Mise à jour réussie' : 'Ajout réussi'
                 );
-
-                // Recharger les compétences
                 this.loadCompetencies();
-
-                // Fermer le modal après un court délai
-                setTimeout(() => {
-                    this.closeModal();
-                }, 1500);
+                setTimeout(() => this.closeModal(), 1500);
             },
             error: (error) => {
-                console.error('❌ Erreur lors de l\'enregistrement:', error);
-                this.errorMessage.set(
-                    error.error?.message || 'Une erreur est survenue lors de l\'enregistrement'
-                );
+                this.errorMessage.set(error.error?.message || 'Une erreur est survenue');
             }
         });
     }
 
-    /**
-     * Obtenir le label du niveau de compétence
-     */
     getNiveauLabel(niveau: number): string {
         const labels: { [key: number]: string } = {
             1: 'Débutant',

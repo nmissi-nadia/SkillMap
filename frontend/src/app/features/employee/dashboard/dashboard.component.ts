@@ -5,12 +5,10 @@ import { EmployeeService } from '../../../core/services/employee.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { Employee, EmployeeKPI, TodoItem, Notification } from '../../../core/models/employee.model';
 
-import { SidebarComponent } from './sidebar/sidebar.component';
-
 @Component({
   selector: 'app-employee-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, SidebarComponent],
+  imports: [CommonModule, RouterLink],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss']
 })

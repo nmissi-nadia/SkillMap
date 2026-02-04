@@ -1,184 +1,178 @@
-<div class="dashboard-layout">
-    <app-employee-sidebar></app-employee-sidebar>
-
-    <main class="dashboard-main">
-        <div class="dashboard-container">
-            <!-- Header -->
-            <header class="dashboard-header">
-                <div class="header-content">
-                    <h1>Mon Espace</h1>
-                    @if (employee()) {
-                    <p class="welcome-text">Bonjour, {{ employee()!.prenom }} {{ employee()!.nom }}</p>
-                    }
-                </div>
-                <div class="header-actions">
-                    <button class="btn-icon" title="Notifications">
-                        <span class="notification-badge" *ngIf="getUnreadCount() > 0">{{ getUnreadCount() }}</span>
-                        🔔
-                    </button>
-                    <div class="user-profile-mini" *ngIf="employee()">
-                        <div class="avatar-mini">{{ employee()!.prenom[0] }}{{ employee()!.nom[0] }}</div>
-                    </div>
-                </div>
-            </header>
-
-            <!-- Loading State -->
-            @if (loading()) {
-            <div class="loading-state">
-                <div class="spinner"></div>
-                <p>Chargement de votre espace...</p>
-            </div>
-            }
-
-            <!-- Error State -->
-            @if (error()) {
-            <div class="error-state">
-                <p>{{ error() }}</p>
-                <button class="btn-primary" (click)="loadDashboardData()">Réessayer</button>
-            </div>
-            }
-
-            <!-- Dashboard Content -->
-            @if (!loading() && !error()) {
-            <div class="dashboard-content">
-                <!-- KPI Cards -->
-                <section class="kpi-section">
-                    <div class="section-header">
-                        <h2>Vue d'ensemble</h2>
-                        <span class="date-text">Aujourd'hui, {{ today | date:'dd MMMM yyyy' : '' : 'fr-FR' }}</span>
-                    </div>
-                    <div class="kpi-grid">
-                        @if (kpis()) {
-                        <div class="kpi-card">
-                            <div class="kpi-icon" style="background: rgba(99, 102, 241, 0.1); color: #6366f1;">📊</div>
-                            <div class="kpi-content">
-                                <h3>{{ kpis()!.niveauGlobalCompetences }}%</h3>
-                                <p>Niveau global</p>
-                            </div>
-                        </div>
-
-                        <div class="kpi-card">
-                            <div class="kpi-icon" style="background: rgba(34, 197, 94, 0.1); color: #22c55e;">✓</div>
-                            <div class="kpi-content">
-                                <h3>{{ kpis()!.competencesValidees }}</h3>
-                                <p>Compétences validées</p>
-                            </div>
-                        </div>
-
-                        <div class="kpi-card">
-                            <div class="kpi-icon" style="background: rgba(59, 130, 246, 0.1); color: #3b82f6;">📚</div>
-                            <div class="kpi-content">
-                                <h3>{{ kpis()!.formationsEnCours }}</h3>
-                                <p>Formations en cours</p>
-                            </div>
-                        </div>
-
-                        <div class="kpi-card">
-                            <div class="kpi-icon" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;">📋</div>
-                            <div class="kpi-content">
-                                <h3>{{ kpis()!.projetsActifs }}</h3>
-                                <p>Projets actifs</p>
-                            </div>
-                        </div>
-                        }
-                    </div>
-                </section>
-
-                <!-- Main Grid -->
-                <div class="main-grid">
-                    <!-- À faire -->
-                    <section class="todo-section card">
-                        <div class="card-header">
-                            <h2>À faire</h2>
-                            <button class="btn-text">Voir tout</button>
-                        </div>
-                        @if (todos().length > 0) {
-                        <div class="todo-list">
-                            @for (todo of todos(); track todo.id) {
-                            <div class="todo-item">
-                                <div class="todo-status" [style.background]="getPriorityColor(todo.priority)"></div>
-                                <div class="todo-body">
-                                    <p class="todo-title">{{ todo.title }}</p>
-                                    <div class="todo-meta">
-                                        <span class="todo-type">{{ todo.type }}</span>
-                                        @if (todo.dueDate) {
-                                        <span class="todo-date">📅 {{ todo.dueDate | date:'dd/MM/yyyy' }}</span>
-                                        }
-                                    </div>
-                                </div>
-                                <div class="todo-action">
-                                    <button class="btn-check">○</button>
-                                </div>
-                            </div>
-                            }
-                        </div>
-                        } @else {
-                        <p class="empty-state">Aucune tâche en attente 🎉</p>
-                        }
-                    </section>
-
-                    <!-- Notifications -->
-                    <section class="notifications-section card">
-                        <div class="card-header">
-                            <h2>Dernières activités</h2>
-                            <a routerLink="/employee/notifications" class="btn-text">Tout voir</a>
-                        </div>
-                        @if (notifications().length > 0) {
-                        <div class="notifications-list">
-                            @for (notification of notifications().slice(0, 5); track notification.id) {
-                            <div class="notification-item" [class.unread]="!notification.read">
-                                <div class="notification-icon" [style.background]="'rgba(16, 185, 129, 0.1)'">{{
-                                    getNotificationIcon(notification.type) }}</div>
-                                <div class="notification-content">
-                                    <h4>{{ notification.title }}</h4>
-                                    <p>{{ notification.message }}</p>
-                                    <span class="notification-time">{{ getRelativeTime(notification.date) }}</span>
-                                </div>
-                            </div>
-                            }
-                        </div>
-                        } @else {
-                        <p class="empty-state">Aucune notification récemment</p>
-                        }
-                    </section>
-                </div>
-
-                <!-- Quick Links Cards -->
-                <section class="quick-links">
-                    <h2>Raccourcis</h2>
-                    <div class="links-grid">
-                        <a routerLink="/employee/profile" class="quick-link-card">
-                            <div class="link-icon-container">👤</div>
-                            <div class="link-info">
-                                <h3>Profil</h3>
-                                <p>Gérez vos infos</p>
-                            </div>
-                        </a>
-                        <a routerLink="/employee/competencies" class="quick-link-card">
-                            <div class="link-icon-container">🎯</div>
-                            <div class="link-info">
-                                <h3>Compétences</h3>
-                                <p>Suivez vos acquis</p>
-                            </div>
-                        </a>
-                        <a routerLink="/employee/tests" class="quick-link-card">
-                            <div class="link-icon-container">📝</div>
-                            <div class="link-info">
-                                <h3>Tests</h3>
-                                <p>Validez vos skills</p>
-                            </div>
-                        </a>
-                        <a routerLink="/employee/formations" class="quick-link-card">
-                            <div class="link-icon-container">📚</div>
-                            <div class="link-info">
-                                <h3>Formations</h3>
-                                <p>Apprenez plus</p>
-                            </div>
-                        </a>
-                    </div>
-                </section>
-            </div>
+<div class="dashboard-container">
+    <!-- Header -->
+    <header class="dashboard-header">
+        <div class="header-content">
+            <h1>Mon Espace</h1>
+            @if (employee()) {
+            <p class="welcome-text">Bonjour, {{ employee()!.prenom }} {{ employee()!.nom }}</p>
             }
         </div>
-    </main>
+        <div class="header-actions">
+            <button class="btn-icon" title="Notifications">
+                <span class="notification-badge" *ngIf="getUnreadCount() > 0">{{ getUnreadCount() }}</span>
+                🔔
+            </button>
+            <div class="user-profile-mini" *ngIf="employee()">
+                <div class="avatar-mini">{{ employee()!.prenom[0] }}{{ employee()!.nom[0] }}</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Loading State -->
+    @if (loading()) {
+    <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Chargement de votre espace...</p>
+    </div>
+    }
+
+    <!-- Error State -->
+    @if (error()) {
+    <div class="error-state">
+        <p>{{ error() }}</p>
+        <button class="btn-primary" (click)="loadDashboardData()">Réessayer</button>
+    </div>
+    }
+
+    <!-- Dashboard Content -->
+    @if (!loading() && !error()) {
+    <div class="dashboard-content">
+        <!-- KPI Cards -->
+        <section class="kpi-section">
+            <div class="section-header">
+                <h2>Vue d'ensemble</h2>
+                <span class="date-text">Aujourd'hui, {{ today | date:'dd MMMM yyyy' : '' : 'fr-FR' }}</span>
+            </div>
+            <div class="kpi-grid">
+                @if (kpis()) {
+                <div class="kpi-card">
+                    <div class="kpi-icon" style="background: rgba(99, 102, 241, 0.1); color: #6366f1;">📊</div>
+                    <div class="kpi-content">
+                        <h3>{{ kpis()!.niveauGlobalCompetences }}%</h3>
+                        <p>Niveau global</p>
+                    </div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-icon" style="background: rgba(34, 197, 94, 0.1); color: #22c55e;">✓</div>
+                    <div class="kpi-content">
+                        <h3>{{ kpis()!.competencesValidees }}</h3>
+                        <p>Compétences validées</p>
+                    </div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-icon" style="background: rgba(59, 130, 246, 0.1); color: #3b82f6;">📚</div>
+                    <div class="kpi-content">
+                        <h3>{{ kpis()!.formationsEnCours }}</h3>
+                        <p>Formations en cours</p>
+                    </div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-icon" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;">📋</div>
+                    <div class="kpi-content">
+                        <h3>{{ kpis()!.projetsActifs }}</h3>
+                        <p>Projets actifs</p>
+                    </div>
+                </div>
+                }
+            </div>
+        </section>
+
+        <!-- Main Grid -->
+        <div class="main-grid">
+            <!-- À faire -->
+            <section class="todo-section card">
+                <div class="card-header">
+                    <h2>À faire</h2>
+                    <button class="btn-text">Voir tout</button>
+                </div>
+                @if (todos().length > 0) {
+                <div class="todo-list">
+                    @for (todo of todos(); track todo.id) {
+                    <div class="todo-item">
+                        <div class="todo-status" [style.background]="getPriorityColor(todo.priority)"></div>
+                        <div class="todo-body">
+                            <p class="todo-title">{{ todo.title }}</p>
+                            <div class="todo-meta">
+                                <span class="todo-type">{{ todo.type }}</span>
+                                @if (todo.dueDate) {
+                                <span class="todo-date">📅 {{ todo.dueDate | date:'dd/MM/yyyy' }}</span>
+                                }
+                            </div>
+                        </div>
+                        <div class="todo-action">
+                            <button class="btn-check">○</button>
+                        </div>
+                    </div>
+                    }
+                </div>
+                } @else {
+                <p class="empty-state">Aucune tâche en attente 🎉</p>
+                }
+            </section>
+
+            <!-- Notifications -->
+            <section class="notifications-section card">
+                <div class="card-header">
+                    <h2>Dernières activités</h2>
+                    <a routerLink="/employee/notifications" class="btn-text">Tout voir</a>
+                </div>
+                @if (notifications().length > 0) {
+                <div class="notifications-list">
+                    @for (notification of notifications().slice(0, 5); track notification.id) {
+                    <div class="notification-item" [class.unread]="!notification.read">
+                        <div class="notification-icon" [style.background]="'rgba(16, 185, 129, 0.1)'">{{
+                            getNotificationIcon(notification.type) }}</div>
+                        <div class="notification-content">
+                            <h4>{{ notification.title }}</h4>
+                            <p>{{ notification.message }}</p>
+                            <span class="notification-time">{{ getRelativeTime(notification.date) }}</span>
+                        </div>
+                    </div>
+                    }
+                </div>
+                } @else {
+                <p class="empty-state">Aucune notification récemment</p>
+                }
+            </section>
+        </div>
+
+        <!-- Quick Links Cards -->
+        <section class="quick-links">
+            <h2>Raccourcis</h2>
+            <div class="links-grid">
+                <a routerLink="/employee/profile" class="quick-link-card">
+                    <div class="link-icon-container">👤</div>
+                    <div class="link-info">
+                        <h3>Profil</h3>
+                        <p>Gérez vos infos</p>
+                    </div>
+                </a>
+                <a routerLink="/employee/competencies" class="quick-link-card">
+                    <div class="link-icon-container">🎯</div>
+                    <div class="link-info">
+                        <h3>Compétences</h3>
+                        <p>Suivez vos acquis</p>
+                    </div>
+                </a>
+                <a routerLink="/employee/tests" class="quick-link-card">
+                    <div class="link-icon-container">📝</div>
+                    <div class="link-info">
+                        <h3>Tests</h3>
+                        <p>Validez vos skills</p>
+                    </div>
+                </a>
+                <a routerLink="/employee/formations" class="quick-link-card">
+                    <div class="link-icon-container">📚</div>
+                    <div class="link-info">
+                        <h3>Formations</h3>
+                        <p>Apprenez plus</p>
+                    </div>
+                </a>
+            </div>
+        </section>
+    </div>
+    }
 </div>

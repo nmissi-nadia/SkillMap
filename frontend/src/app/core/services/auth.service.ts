@@ -78,6 +78,13 @@ export class AuthService {
     }
 
     /**
+     * Vérifier si l'utilisateur a un rôle spécifique
+     */
+    hasRole(role: string): boolean {
+        return this.currentUser()?.role === role;
+    }
+
+    /**
      * Récupérer le token d'accès
      */
     getToken(): string | null {

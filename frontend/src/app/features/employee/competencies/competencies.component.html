@@ -1,51 +1,120 @@
 <div class="competencies-container">
-    <div class="page-header">
+    <!-- Page Header -->
+    <header class="page-header">
         <div class="header-content">
             <h1>Mes Compétences</h1>
             <p>Gérez et évaluez vos compétences techniques et professionnelles</p>
         </div>
         <button class="btn-primary" (click)="openEvaluationModal()">
-            + Ajouter / Évaluer
+            <span class="btn-icon">+</span>
+            Ajouter / Évaluer
         </button>
+    </header>
+
+    <!-- KPI Dashboard -->
+    <section class="stats-dashboard">
+        <div class="stat-card total">
+            <div class="stat-icon">📈</div>
+            <div class="stat-info">
+                <h3>{{ stats().total }}</h3>
+                <p>Total Déclarées</p>
+            </div>
+        </div>
+        <div class="stat-card validated">
+            <div class="stat-icon">✅</div>
+            <div class="stat-info">
+                <h3>{{ stats().validated }}</h3>
+                <p>Validées par Manager</p>
+            </div>
+        </div>
+        <div class="stat-card pending">
+            <div class="stat-icon">⏳</div>
+            <div class="stat-info">
+                <h3>{{ stats().pending }}</h3>
+                <p>En attente</p>
+            </div>
+        </div>
+        <div class="stat-card average">
+            <div class="stat-icon">⭐</div>
+            <div class="stat-info">
+                <h3>{{ stats().average }}/5</h3>
+                <p>Niveau Moyen</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Toolbar: Search & Filters -->
+    <div class="toolbar glass">
+        <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input type="text" placeholder="Rechercher une compétence..." [ngModel]="searchTerm()"
+                (ngModelChange)="searchTerm.set($event)">
+        </div>
+
+        <div class="filters">
+            <select [ngModel]="selectedCategory()" (ngModelChange)="selectedCategory.set($event)">
+                <option value="">Toutes les catégories</option>
+                @for (cat of categories(); track cat) {
+                <option [value]="cat">{{ cat }}</option>
+                }
+            </select>
+
+            <select [ngModel]="selectedLevel()" (ngModelChange)="selectedLevel.set($event ? +$event : null)">
+                <option value="">Tous les niveaux</option>
+                <option value="1">1 - Débutant</option>
+                <option value="2">2 - Notions</option>
+                <option value="3">3 - Autonome</option>
+                <option value="4">4 - Maîtrise</option>
+                <option value="5">5 - Expert</option>
+            </select>
+        </div>
     </div>
 
     <!-- Messages d'erreur et de succès -->
     @if (errorMessage()) {
-    <div class="alert alert-error">
+    <div class="alert alert-error animate-fade-in">
         <span>⚠️ {{ errorMessage() }}</span>
         <button (click)="errorMessage.set(null)">✕</button>
     </div>
     }
     @if (successMessage()) {
-    <div class="alert alert-success">
+    <div class="alert alert-success animate-fade-in">
         <span>✅ {{ successMessage() }}</span>
     </div>
     }
 
+    <!-- Main Content -->
     @if (loading()) {
     <div class="loading-state">
         <div class="spinner"></div>
+        <p>Synchronisation de vos compétences...</p>
     </div>
     } @else {
     <div class="competencies-grid">
-        @for (comp of competencies(); track comp.id) {
+        @for (comp of filteredCompetencies(); track comp.id) {
         <div class="competence-card" (click)="openEvaluationModal(comp)">
             <div class="card-header">
-                <h3>{{ comp.competence.nom }}</h3>
-                <span class="category-badge">{{ comp.competence.categorie || 'Technique' }}</span>
+                <div class="title-area">
+                    <h3>{{ comp.competence.nom }}</h3>
+                    <span class="category-badge">{{ comp.competence.categorie || 'Technique' }}</span>
+                </div>
+                <div class="status-indicator" [class.is-validated]="comp.niveauManager">
+                    {{ comp.niveauManager ? 'Validée' : 'Auto-évaluée' }}
+                </div>
             </div>
 
             <div class="levels-display">
                 <div class="level-box auto">
-                    <span class="label">Auto-évaluation</span>
+                    <span class="label">Votre Niveau</span>
                     <div class="stars">
                         @for (star of [1,2,3,4,5]; track star) {
                         <span class="star" [class.filled]="star <= comp.niveauAuto">★</span>
                         }
                     </div>
                 </div>
-                <div class="level-box manager">
-                    <span class="label">Manager</span>
+
+                <div class="level-box manager" [class.pending]="!comp.niveauManager">
+                    <span class="label">Validation Manager</span>
                     @if (comp.niveauManager) {
                     <div class="stars">
                         @for (star of [1,2,3,4,5]; track star) {
@@ -53,19 +122,25 @@
                         }
                     </div>
                     } @else {
-                    <span class="pending">En attente</span>
+                    <span class="pending-text">En attente de revue</span>
                     }
                 </div>
             </div>
 
             <div class="card-footer">
-                <span class="date">Évalué le {{ comp.dateEvaluation | date:'shortDate' }}</span>
+                <span class="date">📅 {{ comp.dateEvaluation | date:'shortDate' }}</span>
             </div>
         </div>
         } @empty {
         <div class="empty-state">
-            <p>Aucune compétence déclarée pour le moment.</p>
-            <button class="btn-secondary" (click)="openEvaluationModal()">Commencer maintenant</button>
+            <img src="/c:/Users/youco/.gemini/antigravity/brain/b5bb226c-36f7-46d1-992b-7e04ff4ac649/no_competencies_illustration_1770215389035.png"
+                alt="Aucune compétence" class="empty-illustration">
+            <h2>Prêt à briller ?</h2>
+            <p>Vous n'avez pas encore ajouté de compétences. Commencez par déclarer vos talents pour booster votre
+                profil.</p>
+            <button class="btn-primary" (click)="openEvaluationModal()">
+                Déclarer une compétence
+            </button>
         </div>
         }
     </div>
@@ -74,71 +149,50 @@
     <!-- Evaluation Modal -->
     @if (showModal()) {
     <div class="modal-overlay" (click)="closeModal()">
-        <div class="modal-content" (click)="$event.stopPropagation()">
-            <div class="modal-header">
-                <h2>Évaluer une compétence</h2>
+        <div class="modal-content glass" (click)="$event.stopPropagation()">
+            <header class="modal-header">
+                <h2>{{ isEditMode ? 'Mettre à jour' : 'Nouvelle compétence' }}</h2>
                 <button class="btn-close" (click)="closeModal()">✕</button>
-            </div>
+            </header>
 
             <div class="modal-body">
-                <!-- Messages dans le modal -->
-                @if (errorMessage()) {
-                <div class="alert alert-error">
-                    ⚠️ {{ errorMessage() }}
-                </div>
-                }
-                @if (successMessage()) {
-                <div class="alert alert-success">
-                    ✅ {{ successMessage() }}
-                </div>
-                }
-
                 <div class="form-group">
-                    <label>Compétence</label>
-                    <select [(ngModel)]="selectedCompetenceId"
-                        [disabled]="!!evaluationForm.commentaire && evaluationForm.commentaire.length > 0">
-                        <option value="">Sélectionner une compétence</option>
-                        @for (c of allCompetencies; track c.id) {
-                        <option [value]="c.id">{{ c.nom }}</option>
-                        }
-                        <!-- Fallback if listing all system competencies is not yet implemented -->
-                        @if (allCompetencies.length === 0) {
-                        <option value="" disabled>Chargement des compétences...</option>
+                    <label>Quelle est votre compétence ?</label>
+                    <select [(ngModel)]="selectedCompetenceId" [disabled]="isEditMode">
+                        <option value="">Sélectionner dans la liste...</option>
+                        @for (c of allCompetencies(); track c.id) {
+                        <option [value]="c.id">{{ c.nom }} ({{ c.categorie }})</option>
                         }
                     </select>
                 </div>
 
                 <div class="form-group">
-                    <label>Niveau (1-5)</label>
+                    <label>Comment vous évaluez-vous ?</label>
                     <div class="rating-input">
                         @for (star of [1,2,3,4,5]; track star) {
                         <span class="star-input" [class.active]="star <= evaluationForm.niveauAuto"
                             (click)="evaluationForm.niveauAuto = star">★</span>
                         }
                     </div>
-                    <p class="rating-label">
-                        @switch (evaluationForm.niveauAuto) {
-                        @case (1) { Débutant }
-                        @case (2) { Notions }
-                        @case (3) { Autonome }
-                        @case (4) { Maîtrise }
-                        @case (5) { Expert }
-                        }
+                    <p class="rating-description">
+                        Niveau {{ evaluationForm.niveauAuto }} :
+                        <strong>{{ getNiveauLabel(evaluationForm.niveauAuto) }}</strong>
                     </p>
                 </div>
 
                 <div class="form-group">
-                    <label>Commentaire</label>
-                    <textarea [(ngModel)]="evaluationForm.commentaire" rows="3"
-                        placeholder="Ex: Certification obtenue en 2024, utilisé sur le projet X..."></textarea>
+                    <label>Contextualisez (Projets, Certifications...)</label>
+                    <textarea [(ngModel)]="evaluationForm.commentaire" prev="4"
+                        placeholder="Décrivez brièvement comment vous utilisez cette compétence..."></textarea>
                 </div>
             </div>
 
-            <div class="modal-footer">
+            <footer class="modal-footer">
                 <button class="btn-secondary" (click)="closeModal()">Annuler</button>
-                <button class="btn-primary" (click)="submitEvaluation()"
-                    [disabled]="!selectedCompetenceId">Enregistrer</button>
-            </div>
+                <button class="btn-primary" (click)="submitEvaluation()" [disabled]="!selectedCompetenceId">
+                    Enregistrer
+                </button>
+            </footer>
         </div>
     </div>
     }

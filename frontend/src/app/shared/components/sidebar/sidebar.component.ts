@@ -1,14 +1,14 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
-import { AuthService } from '../../../../core/services/auth.service';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
-    selector: 'app-employee-sidebar',
+    selector: 'app-sidebar',
     standalone: true,
     imports: [CommonModule, RouterLink, RouterLinkActive],
     template: `
-    <aside class="sidebar">
+    <aside class="sidebar" *ngIf="authService.isAuthenticated()">
       <div class="sidebar-header">
         <div class="logo">
           <span class="logo-icon">🚀</span>
@@ -17,7 +17,9 @@ import { AuthService } from '../../../../core/services/auth.service';
       </div>
 
       <nav class="sidebar-nav">
-        <ul>
+        <!-- Menu Employé -->
+        <ul *ngIf="isEmployee()">
+          <li class="menu-label">MENU EMPLOYÉ</li>
           <li>
             <a routerLink="/employee/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
               <span class="nav-icon">🏠</span>
@@ -48,16 +50,46 @@ import { AuthService } from '../../../../core/services/auth.service';
               <span class="nav-text">Formations</span>
             </a>
           </li>
+        </ul>
+
+        <!-- Menu Manager -->
+        <ul *ngIf="isManager()">
+          <li class="menu-label">MENU MANAGER</li>
           <li>
-            <a routerLink="/employee/messaging" routerLinkActive="active">
-              <span class="nav-icon">💬</span>
-              <span class="nav-text">Messagerie</span>
+            <a routerLink="/manager/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+              <span class="nav-icon">📊</span>
+              <span class="nav-text">Dashboard Team</span>
+            </a>
+          </li>
+          <li>
+            <a routerLink="/manager/team" routerLinkActive="active">
+              <span class="nav-icon">👥</span>
+              <span class="nav-text">Mon Équipe</span>
+            </a>
+          </li>
+          <li>
+            <a routerLink="/manager/evaluations" routerLinkActive="active">
+              <span class="nav-icon">⭐</span>
+              <span class="nav-text">Évaluations</span>
+            </a>
+          </li>
+          <li>
+            <a routerLink="/manager/projects" routerLinkActive="active">
+              <span class="nav-icon">🚀</span>
+              <span class="nav-text">Projets</span>
             </a>
           </li>
         </ul>
       </nav>
 
       <div class="sidebar-footer">
+        <div class="user-info" *ngIf="user()">
+          <div class="user-avatar">{{ user()?.prenom?.[0] }}{{ user()?.nom?.[0] }}</div>
+          <div class="user-details">
+            <span class="user-name">{{ user()?.prenom }} {{ user()?.nom }}</span>
+            <span class="user-role">{{ user()?.role }}</span>
+          </div>
+        </div>
         <button class="btn-logout" (click)="logout()">
           <span class="nav-icon">🚪</span>
           <span class="nav-text">Déconnexion</span>
@@ -68,7 +100,6 @@ import { AuthService } from '../../../../core/services/auth.service';
     styles: [`
     :host {
       display: block;
-      height: 100%;
     }
 
     .sidebar {
@@ -110,15 +141,24 @@ import { AuthService } from '../../../../core/services/auth.service';
     .sidebar-nav {
       flex: 1;
       padding: 0 0.75rem;
+      overflow-y: auto;
     }
 
     .sidebar-nav ul {
       list-style: none;
       padding: 0;
-      margin: 0;
+      margin: 0 0 1.5rem 0;
       display: flex;
       flex-direction: column;
       gap: 0.25rem;
+    }
+
+    .menu-label {
+      padding: 0.5rem 1rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-tertiary);
+      letter-spacing: 0.05em;
     }
 
     .sidebar-nav a {
@@ -150,6 +190,49 @@ import { AuthService } from '../../../../core/services/auth.service';
     .sidebar-footer {
       padding: 1rem 0.75rem;
       border-top: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.5rem;
+    }
+
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 0.875rem;
+    }
+
+    .user-details {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .user-name {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .user-role {
+      font-size: 0.75rem;
+      color: var(--text-tertiary);
     }
 
     .btn-logout {
@@ -177,17 +260,26 @@ import { AuthService } from '../../../../core/services/auth.service';
       .sidebar {
         width: 80px;
       }
-      .nav-text, .logo-text {
+      .nav-text, .logo-text, .menu-label, .user-details {
         display: none;
       }
-      .sidebar-header, .sidebar-nav a, .btn-logout {
+      .sidebar-header, .sidebar-nav a, .btn-logout, .user-info {
         justify-content: center;
       }
     }
   `]
 })
 export class SidebarComponent {
-    private authService = inject(AuthService);
+    public authService = inject(AuthService);
+    protected user = this.authService.currentUser;
+
+    isEmployee(): boolean {
+        return this.authService.hasRole('EMPLOYE');
+    }
+
+    isManager(): boolean {
+        return this.authService.hasRole('MANAGER');
+    }
 
     logout() {
         this.authService.logout();
