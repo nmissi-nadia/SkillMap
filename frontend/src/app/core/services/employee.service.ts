@@ -2,7 +2,8 @@ import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { Employee, EmployeeKPI, TodoItem, Notification, EmployeeCompetence } from '../models/employee.model';
+import { Employee, EmployeeKPI, TodoItem, Notification } from '../models/employee.model';
+import { EmployeeCompetence } from '../models/employee.model';
 
 /**
  * Service pour gérer les données de l'employé
@@ -41,8 +42,15 @@ export class EmployeeService {
      * Récupérer les compétences de l'employé
      */
     getMyCompetencies(): Observable<EmployeeCompetence[]> {
-        // TODO: Vérifier si le backend expose ce endpoint, sinon utiliser getMyProfile
-        return this.http.get<EmployeeCompetence[]>(`${this.apiUrl}/me/competencies`);
+        return this.http.get<EmployeeCompetence[]>(`${this.apiUrl}/me/competences`);
+    }
+
+    /**
+     * Récupérer toutes les compétences disponibles dans le système
+     * Pour que l'employé puisse choisir lesquelles ajouter à son profil
+     */
+    getAllCompetencies(): Observable<{ id: string, nom: string, categorie?: string }[]> {
+        return this.http.get<{ id: string, nom: string, categorie?: string }[]>(`${environment.apiUrl}/competences`);
     }
 
     /**

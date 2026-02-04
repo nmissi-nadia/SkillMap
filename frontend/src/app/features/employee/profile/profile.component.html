@@ -50,7 +50,7 @@
                 </div>
                 <div class="info-item">
                     <label>Date d'embauche</label>
-                    <p>{{ employee()!.dateEmbauche | date:'dd MMMM yyyy' || 'Non renseignée' }}</p>
+                    <p>{{ (employee()!.dateEmbauche | date:'dd MMMM yyyy') || 'Non renseignée' }}</p>
                 </div>
                 <div class="info-item">
                     <label>Disponibilité</label>

@@ -9,6 +9,19 @@
         </button>
     </div>
 
+    <!-- Messages d'erreur et de succès -->
+    @if (errorMessage()) {
+    <div class="alert alert-error">
+        <span>⚠️ {{ errorMessage() }}</span>
+        <button (click)="errorMessage.set(null)">✕</button>
+    </div>
+    }
+    @if (successMessage()) {
+    <div class="alert alert-success">
+        <span>✅ {{ successMessage() }}</span>
+    </div>
+    }
+
     @if (loading()) {
     <div class="loading-state">
         <div class="spinner"></div>
@@ -68,6 +81,18 @@
             </div>
 
             <div class="modal-body">
+                <!-- Messages dans le modal -->
+                @if (errorMessage()) {
+                <div class="alert alert-error">
+                    ⚠️ {{ errorMessage() }}
+                </div>
+                }
+                @if (successMessage()) {
+                <div class="alert alert-success">
+                    ✅ {{ successMessage() }}
+                </div>
+                }
+
                 <div class="form-group">
                     <label>Compétence</label>
                     <select [(ngModel)]="selectedCompetenceId"

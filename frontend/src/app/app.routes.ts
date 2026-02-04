@@ -23,6 +23,23 @@ export const routes: Routes = [
         loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent),
         canActivate: [authGuard]
     },
+    // Manager routes
+    {
+        path: 'manager/dashboard',
+        loadComponent: () => import('./features/manager/dashboard/manager-dashboard.component').then(m => m.ManagerDashboardComponent),
+        canActivate: [authGuard]
+    },
+    {
+        path: 'manager/team',
+        loadComponent: () => import('./features/manager/team/team-list.component').then(m => m.TeamListComponent),
+        canActivate: [authGuard]
+    },
+    {
+        path: 'manager',
+        redirectTo: 'manager/dashboard',
+        pathMatch: 'full'
+    },
+    // Employee routes
     {
         path: 'employee/dashboard',
         loadComponent: () => import('./features/employee/dashboard/dashboard.component').then(m => m.DashboardComponent),

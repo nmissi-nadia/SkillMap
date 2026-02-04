@@ -14,6 +14,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 @RestController
 @RequestMapping("/api/employes")
@@ -46,7 +48,23 @@ public class EmployeController {
                description = "Permet à un employé de récupérer son propre profil")
     public ResponseEntity<EmployeDTO> getMyProfile(Authentication authentication) {
         System.out.println("🎯 EmployeController.getMyProfile - Request received for: " + authentication.getName());
+        System.out.println("🔑 Current user authorities: " + authentication.getAuthorities());
+        System.out.println("👤 Authentication principal type: " + authentication.getPrincipal().getClass().getName());
         return ResponseEntity.ok(employeService.getMyProfile(authentication.getName()));
+    }
+
+    @GetMapping("/debug/auth")
+    @Operation(summary = "Debug - Vérifier l'authentification actuelle")
+    public ResponseEntity<Map<String, Object>> debugAuth(Authentication authentication) {
+        Map<String, Object> debug = new HashMap<>();
+        debug.put("username", authentication.getName());
+        debug.put("authorities", authentication.getAuthorities().stream()
+                .map(a -> a.getAuthority())
+                .collect(java.util.stream.Collectors.toList()));
+        debug.put("authenticated", authentication.isAuthenticated());
+        debug.put("principalType", authentication.getPrincipal().getClass().getName());
+        System.out.println("🐛 DEBUG AUTH: " + debug);
+        return ResponseEntity.ok(debug);
     }
 
     @GetMapping("/me/competences")

@@ -136,10 +136,15 @@ public class AuthService {
             var user = repository.findByEmail(request.getEmail())
                     .orElseThrow();
             
+            System.out.println("✅ User authenticated: " + user.getEmail());
+            System.out.println("👤 User role: " + user.getRole());
+            System.out.println("🔑 User authorities: " + user.getAuthorities());
+            
             // Log la connexion réussie
             auditLogService.logAuthentication(user.getId(), "LOGIN", true);
             
             var jwtToken = jwtService.generateToken(user);
+            System.out.println("🎫 JWT token generated (first 30 chars): " + jwtToken.substring(0, Math.min(30, jwtToken.length())) + "...");
             var refreshToken = jwtService.generateRefreshToken(user);
             return AuthenticationResponse.builder()
                     .accessToken(jwtToken)

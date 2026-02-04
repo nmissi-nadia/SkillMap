@@ -1,3 +1,52 @@
+// Alert messages
+.alert {
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    animation: slideIn 0.3s ease-out;
+
+    &.alert-error {
+        background: #FEE2E2;
+        border: 1px solid #FECACA;
+        color: #DC2626;
+    }
+
+    &.alert-success {
+        background: #D1FAE5;
+        border: 1px solid #A7F3D0;
+        color: #059669;
+    }
+
+    button {
+        background: none;
+        border: none;
+        font-size: 1.2rem;
+        cursor: pointer;
+        padding: 0;
+        margin-left: 1rem;
+        opacity: 0.6;
+
+        &:hover {
+            opacity: 1;
+        }
+    }
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 .competencies-container {
     max-width: 1400px;
     margin: 0 auto;

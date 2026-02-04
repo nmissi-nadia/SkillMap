@@ -31,4 +31,11 @@ public class AuthController {
     ) {
         return ResponseEntity.ok(service.authenticate(request));
     }
+
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout() {
+        // Avec JWT, le logout est géré côté client en supprimant le token
+        // Ici on retourne juste un message de confirmation
+        return ResponseEntity.ok("Déconnexion réussie");
+    }
 }

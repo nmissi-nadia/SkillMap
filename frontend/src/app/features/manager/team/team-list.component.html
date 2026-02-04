@@ -1,0 +1,85 @@
+<div class="team-container">
+    <div class="page-header">
+        <div class="header-content">
+            <h1>Mon Équipe</h1>
+            <p>Gérez et suivez les membres de votre équipe</p>
+        </div>
+    </div>
+
+    @if (errorMessage()) {
+    <div class="alert alert-error">
+        <span>⚠️ {{ errorMessage() }}</span>
+        <button (click)="errorMessage.set(null)">✕</button>
+    </div>
+    }
+
+    @if (loading()) {
+    <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Chargement de votre équipe...</p>
+    </div>
+    } @else {
+    @if (team().length === 0) {
+    <div class="empty-state">
+        <p>👥 Aucun employé dans votre équipe</p>
+    </div>
+    } @else {
+    <div class="team-table-container">
+        <table class="team-table">
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Poste</th>
+                    <th>Département</th>
+                    <th>Expérience</th>
+                    <th>Disponibilité</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (member of team(); track member.id) {
+                <tr>
+                    <td>
+                        <div class="member-info">
+                            <div class="member-avatar">
+                                {{ member.prenom.charAt(0) }}{{ member.nom.charAt(0) }}
+                            </div>
+                            <div class="member-details">
+                                <div class="member-name">{{ member.prenom }} {{ member.nom }}</div>
+                                <div class="member-email">{{ member.email }}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>{{ member.poste || 'Non défini' }}</td>
+                    <td>{{ member.departement || 'Non défini' }}</td>
+                    <td>
+                        <span class="badge badge-info">
+                            {{ member.niveauExperience || 'Non défini' }}
+                        </span>
+                    </td>
+                    <td>
+                        <span [class]="'badge ' + getDisponibiliteClass(member.disponibilite)">
+                            {{ getDisponibiliteLabel(member.disponibilite) }}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="actions">
+                            <button class="btn-icon" title="Voir le profil">
+                                👤
+                            </button>
+                            <button class="btn-icon" title="Évaluer">
+                                ⭐
+                            </button>
+                            <button class="btn-icon" title="Assigner un test">
+                                📝
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    }
+    }
+</div>

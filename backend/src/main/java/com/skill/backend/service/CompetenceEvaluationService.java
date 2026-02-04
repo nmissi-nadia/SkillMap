@@ -26,7 +26,6 @@ public class CompetenceEvaluationService {
     /**
      * Auto-évaluation d'une compétence par un employé
      */
-    @PreAuthorize("hasRole('EMPLOYE')")
     @PreAuthorize("hasAuthority('ROLE_EMPLOYE')")
     public CompetenceEmploye autoEvaluer(String employeId, CompetenceEmployeRequestDTO request) {
         Employe employe = employeRepository.findById(employeId)
