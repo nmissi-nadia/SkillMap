@@ -35,6 +35,11 @@ export const routes: Routes = [
         canActivate: [authGuard]
     },
     {
+        path: 'manager/evaluations',
+        loadComponent: () => import('./features/manager/evaluations/pending-evaluations.component').then(m => m.PendingEvaluationsComponent),
+        canActivate: [authGuard]
+    },
+    {
         path: 'manager',
         redirectTo: 'manager/dashboard',
         pathMatch: 'full'

@@ -43,7 +43,7 @@ public class EmployeController {
     }
 
     @GetMapping("/me")
-    @PreAuthorize("hasAuthority('ROLE_EMPLOYE')")
+    @PreAuthorize("hasAnyAuthority('ROLE_EMPLOYE', 'ROLE_MANAGER')")
     @Operation(summary = "Récupérer son propre profil",
                description = "Permet à un employé de récupérer son propre profil")
     public ResponseEntity<EmployeDTO> getMyProfile(Authentication authentication) {

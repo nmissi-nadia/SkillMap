@@ -1,0 +1,438 @@
+.evaluations-container {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.page-header {
+    margin-bottom: 2rem;
+
+    h1 {
+        margin: 0;
+        font-size: 1.75rem;
+        color: var(--text-primary);
+    }
+
+    p {
+        margin: 0.25rem 0 0 0;
+        color: var(--text-secondary);
+    }
+}
+
+// Alerts
+.alert {
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    &.alert-error {
+        background: #FEE2E2;
+        border: 1px solid #FECACA;
+        color: #DC2626;
+    }
+
+    &.alert-success {
+        background: #D1FAE5;
+        border: 1px solid #A7F3D0;
+        color: #059669;
+    }
+
+    button {
+        background: none;
+        border: none;
+        font-size: 1.2rem;
+        cursor: pointer;
+        opacity: 0.6;
+
+        &:hover {
+            opacity: 1;
+        }
+    }
+}
+
+// Loading
+.loading-state {
+    min-height: 400px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+
+    .spinner {
+        width: 48px;
+        height: 48px;
+        border: 4px solid rgba(var(--primary-rgb), 0.1);
+        border-top-color: var(--primary);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+// Empty state
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: var(--white);
+    border-radius: 20px;
+    border: 2px dashed var(--border);
+
+    p {
+        font-size: 1.125rem;
+        margin: 0 0 0.5rem 0;
+        color: var(--text-primary);
+    }
+
+    small {
+        color: var(--text-secondary);
+    }
+}
+
+// Evaluations grid
+.evaluations-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 1.5rem;
+}
+
+.evaluation-card {
+    background: var(--white);
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    transition: all 0.2s;
+
+    &:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .card-header {
+        padding: 1.5rem;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+
+        .employee-info {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+
+            .employee-avatar {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+                color: white;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: 600;
+                font-size: 0.875rem;
+                flex-shrink: 0;
+            }
+
+            .employee-name {
+                font-weight: 600;
+                color: var(--text-primary);
+            }
+
+            .competence-name {
+                font-size: 0.875rem;
+                color: var(--primary);
+                font-weight: 500;
+            }
+        }
+
+        .date-badge {
+            background: var(--surface);
+            padding: 0.25rem 0.75rem;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+    }
+
+    .card-body {
+        padding: 1.5rem;
+
+        .niveau-section {
+            margin-bottom: 1rem;
+
+            label {
+                display: block;
+                font-size: 0.875rem;
+                color: var(--text-secondary);
+                margin-bottom: 0.5rem;
+            }
+
+            .stars {
+                display: flex;
+                align-items: center;
+                gap: 0.25rem;
+                font-size: 1.25rem;
+                color: #D1D5DB;
+
+                span.filled {
+                    color: #F59E0B;
+                }
+
+                .niveau-label {
+                    margin-left: 0.5rem;
+                    font-size: 0.875rem;
+                    font-weight: 600;
+                    color: var(--primary);
+                }
+            }
+        }
+
+        .commentaire-section {
+            label {
+                display: block;
+                font-size: 0.875rem;
+                color: var(--text-secondary);
+                margin-bottom: 0.5rem;
+            }
+
+            .commentaire {
+                background: var(--surface);
+                padding: 0.75rem;
+                border-radius: 8px;
+                font-size: 0.875rem;
+                color: var(--text-primary);
+                margin: 0;
+                line-height: 1.5;
+            }
+        }
+    }
+
+    .card-footer {
+        padding: 1rem 1.5rem;
+        border-top: 1px solid var(--border);
+        background: var(--surface);
+
+        .btn-primary {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+
+            &:hover {
+                background: var(--primary-dark);
+            }
+        }
+    }
+}
+
+// Modal
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(4px);
+}
+
+.modal-content {
+    background: var(--white);
+    padding: 2rem;
+    border-radius: 24px;
+    width: 100%;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: var(--shadow-xl);
+
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+
+        h2 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .btn-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+        }
+    }
+
+    .modal-body {
+        .employee-section {
+            padding: 1rem;
+            background: var(--surface);
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            text-align: center;
+
+            strong {
+                color: var(--text-primary);
+            }
+
+            .separator {
+                margin: 0 0.5rem;
+                color: var(--text-secondary);
+            }
+
+            span {
+                color: var(--primary);
+                font-weight: 500;
+            }
+        }
+
+        .auto-eval-section {
+            padding: 1rem;
+            background: #F0F9FF;
+            border: 1px solid #BAE6FD;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+
+            label {
+                display: block;
+                font-size: 0.875rem;
+                color: var(--text-secondary);
+                margin-bottom: 0.5rem;
+            }
+
+            .stars.large {
+                font-size: 1.5rem;
+                margin-bottom: 0.75rem;
+            }
+
+            .commentaire {
+                font-size: 0.875rem;
+                color: var(--text-primary);
+                font-style: italic;
+                margin: 0.5rem 0 0 0;
+            }
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+
+            label {
+                display: block;
+                margin-bottom: 0.5rem;
+                font-weight: 600;
+                font-size: 0.875rem;
+            }
+
+            .rating-input {
+                display: flex;
+                gap: 0.5rem;
+                margin-bottom: 0.5rem;
+
+                .star-input {
+                    font-size: 2rem;
+                    color: #D1D5DB;
+                    cursor: pointer;
+                    transition: color 0.1s;
+
+                    &:hover,
+                    &.active {
+                        color: #F59E0B;
+                    }
+                }
+            }
+
+            .rating-label {
+                margin: 0;
+                font-size: 0.875rem;
+                font-weight: 600;
+                color: var(--primary);
+            }
+
+            textarea {
+                width: 100%;
+                padding: 0.75rem;
+                border: 1px solid var(--border);
+                border-radius: 12px;
+                font-size: 1rem;
+                font-family: inherit;
+                resize: vertical;
+
+                &:focus {
+                    outline: none;
+                    border-color: var(--primary);
+                    box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1);
+                }
+            }
+        }
+    }
+
+    .modal-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+        margin-top: 2rem;
+
+        button {
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            border: none;
+            cursor: pointer;
+
+            &.btn-secondary {
+                background: var(--surface);
+                color: var(--text-secondary);
+            }
+
+            &.btn-primary {
+                background: var(--primary);
+                color: white;
+
+                &:disabled {
+                    opacity: 0.5;
+                    cursor: not-allowed;
+                }
+            }
+        }
+    }
+}
+
+.stars {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    color: #D1D5DB;
+
+    span.filled {
+        color: #F59E0B;
+    }
+
+    .niveau-label {
+        margin-left: 0.5rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--primary);
+    }
+}

@@ -1,6 +1,7 @@
 package com.skill.backend.config;
 
 import com.skill.backend.service.JwtService;
+import com.skill.backend.service.TokenBlacklistService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,6 +28,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
+    private final TokenBlacklistService tokenBlacklistService;
 
     @Override
     protected void doFilterInternal(
@@ -48,6 +50,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         
         jwt = authHeader.substring(7);
         System.out.println("📝 JWT Token extracted (first 20 chars): " + jwt.substring(0, Math.min(20, jwt.length())) + "...");
+        
+        // Vérifier si le token est blacklisté
+        if (tokenBlacklistService.isTokenBlacklisted(jwt)) {
+            System.out.println("🚫 Token is blacklisted - rejecting request");
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("{\"error\": \"Token has been revoked\"}");
+            return;
+        }
         
         userEmail = jwtService.extractUsername(jwt);
         System.out.println("👤 Extracted username from JWT: " + userEmail);

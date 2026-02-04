@@ -1,7 +1,10 @@
 package com.skill.backend.controller;
 
 import com.skill.backend.dto.EmployeDTO;
+import com.skill.backend.dto.PendingEvaluationDTO;
 import com.skill.backend.dto.TeamStatsDTO;
+import com.skill.backend.dto.ValidationRequestDTO;
+import com.skill.backend.entity.CompetenceEmploye;
 import com.skill.backend.service.ManagerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -52,4 +55,42 @@ public class ManagerController {
         EmployeDTO employe = managerService.getTeamMemberDetails(authentication.getName(), employeId);
         return ResponseEntity.ok(employe);
     }
+
+    // ========== Évaluation des compétences ==========
+
+    @GetMapping("/me/evaluations/pending")
+    @PreAuthorize("hasAuthority('ROLE_MANAGER')")
+    @Operation(summary = "Récupérer les évaluations en attente",
+               description = "Permet à un manager de récupérer les auto-évaluations en attente de validation")
+    public ResponseEntity<List<PendingEvaluationDTO>> getPendingEvaluations(Authentication authentication) {
+        System.out.println("🎯 ManagerController.getPendingEvaluations - Request received for: " + authentication.getName());
+        List<PendingEvaluationDTO> evaluations = managerService.getPendingEvaluations(authentication.getName());
+        return ResponseEntity.ok(evaluations);
+    }
+
+    @PutMapping("/evaluations/{evaluationId}/validate")
+    @PreAuthorize("hasAuthority('ROLE_MANAGER')")
+    @Operation(summary = "Valider une évaluation",
+               description = "Permet à un manager de valider ou ajuster une auto-évaluation")
+    public ResponseEntity<CompetenceEmploye> validateEvaluation(
+            Authentication authentication,
+            @PathVariable String evaluationId,
+            @RequestBody ValidationRequestDTO request) {
+        System.out.println("🎯 ManagerController.validateEvaluation - Validating evaluation: " + evaluationId);
+        CompetenceEmploye result = managerService.validateEvaluation(authentication.getName(), evaluationId, request);
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/evaluations/history/{employeId}")
+    @PreAuthorize("hasAuthority('ROLE_MANAGER')")
+    @Operation(summary = "Récupérer l'historique des évaluations",
+               description = "Permet à un manager de consulter l'historique des évaluations d'un employé")
+    public ResponseEntity<List<CompetenceEmploye>> getEvaluationHistory(
+            Authentication authentication,
+            @PathVariable String employeId) {
+        System.out.println("🎯 ManagerController.getEvaluationHistory - Request for employee: " + employeId);
+        List<CompetenceEmploye> history = managerService.getEvaluationHistory(authentication.getName(), employeId);
+        return ResponseEntity.ok(history);
+    }
 }
+

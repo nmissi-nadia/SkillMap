@@ -1,7 +1,10 @@
 package com.skill.backend.service;
 
 import com.skill.backend.dto.EmployeDTO;
+import com.skill.backend.dto.PendingEvaluationDTO;
 import com.skill.backend.dto.TeamStatsDTO;
+import com.skill.backend.dto.ValidationRequestDTO;
+import com.skill.backend.entity.CompetenceEmploye;
 import com.skill.backend.entity.Employe;
 import com.skill.backend.entity.Manager;
 import com.skill.backend.mapper.EmployeMapper;
@@ -90,4 +93,62 @@ public class ManagerService {
 
         return employeMapper.toDto(employe);
     }
+
+    /**
+     * Récupérer les évaluations en attente de validation
+     */
+    public List<PendingEvaluationDTO> getPendingEvaluations(String managerEmail) {
+        Manager manager = managerRepository.findByEmail(managerEmail)
+                .orElseThrow(() -> new RuntimeException("Manager non trouvé"));
+
+        List<Employe> employes = employeRepository.findByManagerId(manager.getId());
+        
+        // Récupérer toutes les évaluations des employés de l'équipe
+        // où niveauManager est null ou 0 (en attente de validation)
+        List<PendingEvaluationDTO> pendingEvaluations = new ArrayList<>();
+        
+        for (Employe employe : employes) {
+            // TODO: Implémenter la récupération des compétences en attente
+            // Pour l'instant, retourne une liste vide
+        }
+        
+        return pendingEvaluations;
+    }
+
+    /**
+     * Valider une évaluation de compétence
+     */
+    public CompetenceEmploye validateEvaluation(String managerEmail, String evaluationId, 
+                                                 ValidationRequestDTO request) {
+        Manager manager = managerRepository.findByEmail(managerEmail)
+                .orElseThrow(() -> new RuntimeException("Manager non trouvé"));
+
+        // TODO: Implémenter la validation
+        // 1. Récupérer la CompetenceEmploye
+        // 2. Vérifier que l'employé appartient à l'équipe du manager
+        // 3. Mettre à jour niveauManager et commentaire
+        // 4. Sauvegarder
+        
+        throw new RuntimeException("Méthode non implémentée");
+    }
+
+    /**
+     * Récupérer l'historique des évaluations d'un employé
+     */
+    public List<CompetenceEmploye> getEvaluationHistory(String managerEmail, String employeId) {
+        Manager manager = managerRepository.findByEmail(managerEmail)
+                .orElseThrow(() -> new RuntimeException("Manager non trouvé"));
+
+        Employe employe = employeRepository.findById(employeId)
+                .orElseThrow(() -> new RuntimeException("Employé non trouvé"));
+
+        // Vérifier que l'employé appartient à l'équipe du manager
+        if (!employe.getManager().getId().equals(manager.getId())) {
+            throw new RuntimeException("Cet employé n'appartient pas à votre équipe");
+        }
+
+        // TODO: Récupérer l'historique des évaluations
+        return new ArrayList<>();
+    }
 }
+

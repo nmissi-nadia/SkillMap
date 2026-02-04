@@ -4,6 +4,7 @@ import com.skill.backend.dto.EmployeDTO;
 import com.skill.backend.dto.UpdateEmployeRequest;
 import com.skill.backend.entity.Employe;
 import com.skill.backend.entity.Manager;
+import com.skill.backend.enums.RoleUtilisateur;
 import com.skill.backend.mapper.EmployeMapper;
 import com.skill.backend.repository.EmployeRepository;
 import com.skill.backend.repository.UtilisateurRepository;
@@ -40,14 +41,25 @@ public class EmployeService {
      */
     @Transactional(readOnly = true)
     public EmployeDTO getMyProfile(String email) {
+        // Essayer de récupérer directement en tant qu'Employe via EmployeRepository
+        // Sinon vérifier que c'est un Employe via le rôle dans la base générique
         com.skill.backend.entity.Utilisateur user = utilisateurRepository.findByEmail(email)
             .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé: " + email));
         
-        if (!(user instanceof Employe)) {
-            throw new RuntimeException("L'utilisateur n'est pas un employé");
+        // Vérifier le rôle au lieu du type d'instance (robuste avec JPA inheritance)
+        if (user.getRole() != RoleUtilisateur.EMPLOYE) {
+            throw new RuntimeException("L'utilisateur n'est pas un employé (rôle: " + user.getRole() + ")");
         }
         
-        return employeMapper.toDto((Employe) user);
+        // Si c'est déjà une instance Employe, l'utiliser directement
+        if (user instanceof Employe) {
+            return employeMapper.toDto((Employe) user);
+        }
+        
+        // Sinon, chercher dans EmployeRepository ou recréer la référence
+        Employe employe = employeRepository.findById(user.getId())
+            .orElseThrow(() -> new RuntimeException("Employé non trouvé avec l'ID: " + user.getId()));
+        return employeMapper.toDto(employe);
     }
 
     /**
@@ -174,11 +186,18 @@ public class EmployeService {
         com.skill.backend.entity.Utilisateur user = utilisateurRepository.findByEmail(email)
             .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé: " + email));
 
-        if (!(user instanceof Employe)) {
-            throw new RuntimeException("L'utilisateur n'est pas un employé");
+        if (user.getRole() != RoleUtilisateur.EMPLOYE) {
+            throw new RuntimeException("L'utilisateur n'est pas un employé (rôle: " + user.getRole() + ")");
         }
 
-        Employe employe = (Employe) user;
+        // Récupérer l'employé (via instance ou via repository)
+        Employe employe;
+        if (user instanceof Employe) {
+            employe = (Employe) user;
+        } else {
+            employe = employeRepository.findById(user.getId())
+                .orElseThrow(() -> new RuntimeException("Employé non trouvé avec l'ID: " + user.getId()));
+        }
         String employeId = employe.getId();
 
         StringBuilder changes = new StringBuilder("Auto-modification du profil: ");
@@ -225,11 +244,20 @@ public class EmployeService {
         com.skill.backend.entity.Utilisateur user = utilisateurRepository.findByEmail(email)
             .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé: " + email));
 
-        if (!(user instanceof Employe)) {
-            throw new RuntimeException("L'utilisateur n'est pas un employé");
+        if (user.getRole() != RoleUtilisateur.EMPLOYE) {
+            throw new RuntimeException("L'utilisateur n'est pas un employé (rôle: " + user.getRole() + ")");
         }
 
-        return competenceEmployeRepository.findByEmploye((Employe) user).stream()
+        // Récupérer l'employé (via instance ou via repository)
+        Employe employe;
+        if (user instanceof Employe) {
+            employe = (Employe) user;
+        } else {
+            employe = employeRepository.findById(user.getId())
+                .orElseThrow(() -> new RuntimeException("Employé non trouvé avec l'ID: " + user.getId()));
+        }
+
+        return competenceEmployeRepository.findByEmploye(employe).stream()
             .map(competenceEmployeMapper::toDto)
             .collect(Collectors.toList());
     }
