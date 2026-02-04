@@ -1,8 +1,8 @@
 <div class="dashboard-container">
     <div class="page-header">
         <div class="header-content">
-            <h1>Tableau de Bord Manager</h1>
-            <p>Vue d'ensemble de votre équipe et des activités</p>
+            <h1>🎯 Dashboard Manager</h1>
+            <p>Vue d'ensemble complète de votre équipe et des activités</p>
         </div>
     </div>
 
@@ -19,102 +19,167 @@
         <p>Chargement des statistiques...</p>
     </div>
     } @else if (stats()) {
+
+    <!-- KPI Cards Grid -->
     <div class="stats-grid">
         <!-- Carte: Équipe -->
-        <div class="stat-card">
-            <div class="stat-icon">👥</div>
+        <div class="stat-card team-card">
+            <div class="card-header">
+                <div class="stat-icon">👥</div>
+                <div class="stat-badge">Équipe</div>
+            </div>
             <div class="stat-content">
-                <div class="stat-label">Membres de l'équipe</div>
                 <div class="stat-value">{{ stats()!.nombreEmployes }}</div>
+                <div class="stat-label">Membres actifs</div>
+            </div>
+            <div class="card-footer">
+                <button class="quick-link" [routerLink]="['/manager/team']">
+                    Voir l'équipe →
+                </button>
             </div>
         </div>
 
         <!-- Carte: Niveau moyen -->
-        <div class="stat-card">
-            <div class="stat-icon">📊</div>
+        <div class="stat-card level-card">
+            <div class="card-header">
+                <div class="stat-icon">📊</div>
+                <div class="stat-badge">Performance</div>
+            </div>
             <div class="stat-content">
+                <div class="stat-value">{{ stats()!.niveauMoyenEquipe | number:'1.0-1' }}<span class="unit">%</span>
+                </div>
                 <div class="stat-label">Niveau moyen</div>
-                <div class="stat-value">{{ stats()!.niveauMoyenEquipe | number:'1.0-1' }}%</div>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" [style.width.%]="stats()!.niveauMoyenEquipe"></div>
             </div>
         </div>
 
         <!-- Carte: Évaluations en attente -->
-        <div class="stat-card clickable" [routerLink]="['/manager/evaluations']">
-            <div class="stat-icon">⭐</div>
-            <div class="stat-content">
-                <div class="stat-label">Évaluations en attente</div>
-                <div class="stat-value">{{ stats()!.evaluationsEnAttente }}</div>
+        <div class="stat-card eval-card clickable" [routerLink]="['/manager/evaluations']">
+            <div class="card-header">
+                <div class="stat-icon">⭐</div>
+                <div class="stat-badge pending">En attente</div>
             </div>
-            <div class="stat-action">→</div>
+            <div class="stat-content">
+                <div class="stat-value">{{ stats()!.evaluationsEnAttente }}</div>
+                <div class="stat-label">Évaluations</div>
+            </div>
+            <div class="card-footer">
+                <span class="action-hint">Cliquez pour évaluer →</span>
+            </div>
         </div>
 
         <!-- Carte: Tests en cours -->
-        <div class="stat-card">
-            <div class="stat-icon">📝</div>
+        <div class="stat-card tests-card">
+            <div class="card-header">
+                <div class="stat-icon">📝</div>
+                <div class="stat-badge">Tests</div>
+            </div>
             <div class="stat-content">
-                <div class="stat-label">Tests en cours</div>
                 <div class="stat-value">{{ stats()!.testsEnCours }}</div>
+                <div class="stat-label">Tests actifs</div>
             </div>
         </div>
 
         <!-- Carte: Projets actifs -->
-        <div class="stat-card">
-            <div class="stat-icon">🚀</div>
+        <div class="stat-card projects-card">
+            <div class="card-header">
+                <div class="stat-icon">🚀</div>
+                <div class="stat-badge">Projets</div>
+            </div>
             <div class="stat-content">
-                <div class="stat-label">Projets actifs</div>
                 <div class="stat-value">{{ stats()!.projetsActifs }}</div>
+                <div class="stat-label">Projets en cours</div>
             </div>
         </div>
     </div>
 
-    <!-- Compétences fortes et faibles -->
+    <!-- Compétences Section -->
     <div class="competences-section">
-        <div class="competences-card">
-            <h3>💪 Compétences fortes de l'équipe</h3>
-            @if (stats()!.competencesFortes.length > 0) {
-            <div class="competences-list">
-                @for (comp of stats()!.competencesFortes; track comp) {
-                <span class="badge badge-success">{{ comp }}</span>
-                }
-            </div>
-            } @else {
-            <p class="empty-message">Aucune compétence forte identifiée</p>
-            }
+        <div class="section-header">
+            <h2>📈 Analyse des Compétences</h2>
+            <p>Forces et axes d'amélioration de votre équipe</p>
         </div>
 
-        <div class="competences-card">
-            <h3>⚠️ Compétences à renforcer</h3>
-            @if (stats()!.competencesFaibles.length > 0) {
-            <div class="competences-list">
-                @for (comp of stats()!.competencesFaibles; track comp) {
-                <span class="badge badge-warning">{{ comp }}</span>
+        <div class="competences-grid">
+            <!-- Compétences fortes -->
+            <div class="competences-card strong-skills">
+                <div class="card-icon">💪</div>
+                <h3>Compétences fortes</h3>
+                @if (stats()!.competencesFortes.length > 0) {
+                <div class="competences-list">
+                    @for (comp of stats()!.competencesFortes; track comp) {
+                    <span class="skill-badge success">{{ comp }}</span>
+                    }
+                </div>
+                } @else {
+                <p class="empty-message">Aucune compétence forte identifiée pour le moment</p>
                 }
             </div>
-            } @else {
-            <p class="empty-message">Aucune faiblesse identifiée</p>
-            }
+
+            <!-- Compétences à renforcer -->
+            <div class="competences-card weak-skills">
+                <div class="card-icon">⚠️</div>
+                <h3>À renforcer</h3>
+                @if (stats()!.competencesFaibles.length > 0) {
+                <div class="competences-list">
+                    @for (comp of stats()!.competencesFaibles; track comp) {
+                    <span class="skill-badge warning">{{ comp }}</span>
+                    }
+                </div>
+                } @else {
+                <p class="empty-message">Aucune faiblesse identifiée - Excellent travail!</p>
+                }
+            </div>
         </div>
     </div>
 
     <!-- Actions rapides -->
-    <div class="quick-actions">
-        <h3>Actions rapides</h3>
+    <div class="quick-actions-section">
+        <div class="section-header">
+            <h2>⚡ Actions Rapides</h2>
+            <p>Accès direct aux fonctionnalités principales</p>
+        </div>
+
         <div class="actions-grid">
-            <button class="action-btn" [routerLink]="['/manager/team']">
-                <span class="action-icon">👥</span>
-                <span class="action-label">Voir mon équipe</span>
+            <button class="action-card" [routerLink]="['/manager/team']">
+                <div class="action-icon">👥</div>
+                <div class="action-content">
+                    <h4>Mon Équipe</h4>
+                    <p>Gérer les membres</p>
+                </div>
+                <div class="action-arrow">→</div>
             </button>
-            <button class="action-btn" [routerLink]="['/manager/evaluations']">
-                <span class="action-icon">⭐</span>
-                <span class="action-label">Évaluer compétences</span>
+
+            <button class="action-card highlight" [routerLink]="['/manager/evaluations']">
+                <div class="action-icon">⭐</div>
+                <div class="action-content">
+                    <h4>Évaluer</h4>
+                    <p>Valider les compétences</p>
+                </div>
+                @if (stats()!.evaluationsEnAttente > 0) {
+                <div class="action-badge">{{ stats()!.evaluationsEnAttente }}</div>
+                }
+                <div class="action-arrow">→</div>
             </button>
-            <button class="action-btn">
-                <span class="action-icon">📝</span>
-                <span class="action-label">Assigner un test</span>
+
+            <button class="action-card" [routerLink]="['/manager/tests']">
+                <div class="action-icon">📝</div>
+                <div class="action-content">
+                    <h4>Tests</h4>
+                    <p>Assigner et suivre</p>
+                </div>
+                <div class="action-arrow">→</div>
             </button>
-            <button class="action-btn">
-                <span class="action-icon">🚀</span>
-                <span class="action-label">Gérer les projets</span>
+
+            <button class="action-card" [routerLink]="['/manager/projects']">
+                <div class="action-icon">🚀</div>
+                <div class="action-content">
+                    <h4>Projets</h4>
+                    <p>Gérer les affectations</p>
+                </div>
+                <div class="action-arrow">→</div>
             </button>
         </div>
     </div>

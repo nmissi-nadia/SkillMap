@@ -25,7 +25,7 @@ public class ManagerController {
     private final ManagerService managerService;
 
     @GetMapping("/me/team")
-    @PreAuthorize("hasAuthority('ROLE_MANAGER')")
+    @PreAuthorize("hasRole('MANAGER')")
     @Operation(summary = "Récupérer la liste de son équipe",
                description = "Permet à un manager de récupérer la liste des employés sous sa responsabilité")
     public ResponseEntity<List<EmployeDTO>> getMyTeam(Authentication authentication) {
@@ -35,7 +35,7 @@ public class ManagerController {
     }
 
     @GetMapping("/me/team/stats")
-    @PreAuthorize("hasAuthority('ROLE_MANAGER')")
+    @PreAuthorize("hasRole('MANAGER')")
     @Operation(summary = "Récupérer les statistiques de l'équipe",
                description = "Permet à un manager de récupérer les statistiques globales de son équipe")
     public ResponseEntity<TeamStatsDTO> getTeamStats(Authentication authentication) {
@@ -45,7 +45,7 @@ public class ManagerController {
     }
 
     @GetMapping("/me/team/{employeId}")
-    @PreAuthorize("hasAuthority('ROLE_MANAGER')")
+    @PreAuthorize("hasRole('MANAGER')")
     @Operation(summary = "Récupérer les détails d'un membre de l'équipe",
                description = "Permet à un manager de récupérer les détails d'un employé de son équipe")
     public ResponseEntity<EmployeDTO> getTeamMemberDetails(
@@ -59,7 +59,7 @@ public class ManagerController {
     // ========== Évaluation des compétences ==========
 
     @GetMapping("/me/evaluations/pending")
-    @PreAuthorize("hasAuthority('ROLE_MANAGER')")
+    @PreAuthorize("hasRole('MANAGER')")
     @Operation(summary = "Récupérer les évaluations en attente",
                description = "Permet à un manager de récupérer les auto-évaluations en attente de validation")
     public ResponseEntity<List<PendingEvaluationDTO>> getPendingEvaluations(Authentication authentication) {
@@ -69,7 +69,7 @@ public class ManagerController {
     }
 
     @PutMapping("/evaluations/{evaluationId}/validate")
-    @PreAuthorize("hasAuthority('ROLE_MANAGER')")
+    @PreAuthorize("hasRole('MANAGER')")
     @Operation(summary = "Valider une évaluation",
                description = "Permet à un manager de valider ou ajuster une auto-évaluation")
     public ResponseEntity<CompetenceEmploye> validateEvaluation(
@@ -82,7 +82,7 @@ public class ManagerController {
     }
 
     @GetMapping("/evaluations/history/{employeId}")
-    @PreAuthorize("hasAuthority('ROLE_MANAGER')")
+    @PreAuthorize("hasRole('MANAGER')")
     @Operation(summary = "Récupérer l'historique des évaluations",
                description = "Permet à un manager de consulter l'historique des évaluations d'un employé")
     public ResponseEntity<List<CompetenceEmploye>> getEvaluationHistory(

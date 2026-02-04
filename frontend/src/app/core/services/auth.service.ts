@@ -142,6 +142,7 @@ export class AuthService {
                 console.log('✅ Redirection vers /employee/dashboard');
                 return '/employee/dashboard';
             case 'MANAGER':
+                return '/manager/dashboard';
             case 'RH':
             case 'CHEF_PROJET':
             case 'ADMIN':

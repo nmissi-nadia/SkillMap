@@ -1,13 +1,14 @@
-import { Component, inject, computed } from '@angular/core';
+import { Component, inject, computed, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { ManagerService } from '../../../core/services/manager.service';
 
 @Component({
-    selector: 'app-sidebar',
-    standalone: true,
-    imports: [CommonModule, RouterLink, RouterLinkActive],
-    template: `
+  selector: 'app-sidebar',
+  standalone: true,
+  imports: [CommonModule, RouterLink, RouterLinkActive],
+  template: `
     <aside class="sidebar" *ngIf="authService.isAuthenticated()">
       <div class="sidebar-header">
         <div class="logo">
@@ -68,9 +69,16 @@ import { AuthService } from '../../../core/services/auth.service';
             </a>
           </li>
           <li>
-            <a routerLink="/manager/evaluations" routerLinkActive="active">
+            <a routerLink="/manager/evaluations" routerLinkActive="active" class="has-badge">
               <span class="nav-icon">⭐</span>
               <span class="nav-text">Évaluations</span>
+              <span class="badge-notification" *ngIf="pendingEvaluationsCount() > 0">{{ pendingEvaluationsCount() }}</span>
+            </a>
+          </li>
+          <li>
+            <a routerLink="/manager/tests" routerLinkActive="active">
+              <span class="nav-icon">📝</span>
+              <span class="nav-text">Tests Techniques</span>
             </a>
           </li>
           <li>
@@ -97,7 +105,7 @@ import { AuthService } from '../../../core/services/auth.service';
       </div>
     </aside>
   `,
-    styles: [`
+  styles: [`
     :host {
       display: block;
     }
@@ -256,6 +264,31 @@ import { AuthService } from '../../../core/services/auth.service';
       background: rgba(239, 68, 68, 0.1);
     }
 
+    .has-badge {
+      position: relative;
+    }
+
+    .badge-notification {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      color: white;
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 0.15rem 0.4rem;
+      border-radius: 10px;
+      min-width: 18px;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+
     @media (max-width: 768px) {
       .sidebar {
         width: 80px;
@@ -269,19 +302,38 @@ import { AuthService } from '../../../core/services/auth.service';
     }
   `]
 })
-export class SidebarComponent {
-    public authService = inject(AuthService);
-    protected user = this.authService.currentUser;
+export class SidebarComponent implements OnInit {
+  public authService = inject(AuthService);
+  private managerService = inject(ManagerService);
+  protected user = this.authService.currentUser;
+  pendingEvaluationsCount = signal<number>(0);
 
-    isEmployee(): boolean {
-        return this.authService.hasRole('EMPLOYE');
+  ngOnInit() {
+    if (this.isManager()) {
+      this.loadPendingEvaluationsCount();
     }
+  }
 
-    isManager(): boolean {
-        return this.authService.hasRole('MANAGER');
-    }
+  loadPendingEvaluationsCount() {
+    this.managerService.getPendingEvaluations().subscribe({
+      next: (evaluations) => {
+        this.pendingEvaluationsCount.set(evaluations.length);
+      },
+      error: () => {
+        this.pendingEvaluationsCount.set(0);
+      }
+    });
+  }
 
-    logout() {
-        this.authService.logout();
-    }
+  isEmployee(): boolean {
+    return this.authService.hasRole('EMPLOYE');
+  }
+
+  isManager(): boolean {
+    return this.authService.hasRole('MANAGER');
+  }
+
+  logout() {
+    this.authService.logout();
+  }
 }

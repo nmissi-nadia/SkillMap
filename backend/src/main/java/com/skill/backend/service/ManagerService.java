@@ -7,9 +7,12 @@ import com.skill.backend.dto.ValidationRequestDTO;
 import com.skill.backend.entity.CompetenceEmploye;
 import com.skill.backend.entity.Employe;
 import com.skill.backend.entity.Manager;
+import com.skill.backend.entity.Utilisateur;
+import com.skill.backend.enums.RoleUtilisateur;
 import com.skill.backend.mapper.EmployeMapper;
 import com.skill.backend.repository.EmployeRepository;
 import com.skill.backend.repository.ManagerRepository;
+import com.skill.backend.repository.UtilisateurRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,13 +28,35 @@ public class ManagerService {
     private final ManagerRepository managerRepository;
     private final EmployeRepository employeRepository;
     private final EmployeMapper employeMapper;
+    private final UtilisateurRepository utilisateurRepository;
+
+    /**
+     * Récupérer un manager par email (utilise l'héritage JOINED)
+     */
+    private Manager getManagerByEmail(String email) {
+        Utilisateur utilisateur = utilisateurRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+        
+        if (utilisateur.getRole() != RoleUtilisateur.MANAGER) {
+            throw new RuntimeException("L'utilisateur n'est pas un manager");
+        }
+        
+        // Si déjà instance de Manager, l'utiliser directement
+        if (utilisateur instanceof Manager) {
+            return (Manager) utilisateur;
+        }
+        
+        // Sinon, récupérer via ManagerRepository
+        Manager manager = managerRepository.findById(utilisateur.getId())
+                .orElseThrow(() -> new RuntimeException("Manager non trouvé pour l'ID: " + utilisateur.getId()));
+        return manager;
+    }
 
     /**
      * Récupérer la liste des employés d'un manager
      */
     public List<EmployeDTO> getMyTeam(String managerEmail) {
-        Manager manager = managerRepository.findByEmail(managerEmail)
-                .orElseThrow(() -> new RuntimeException("Manager non trouvé"));
+        Manager manager = getManagerByEmail(managerEmail);
 
         List<Employe> employes = employeRepository.findByManagerId(manager.getId());
         
@@ -44,8 +69,7 @@ public class ManagerService {
      * Récupérer les statistiques de l'équipe
      */
     public TeamStatsDTO getTeamStats(String managerEmail) {
-        Manager manager = managerRepository.findByEmail(managerEmail)
-                .orElseThrow(() -> new RuntimeException("Manager non trouvé"));
+        Manager manager = getManagerByEmail(managerEmail);
 
         List<Employe> employes = employeRepository.findByManagerId(manager.getId());
 
@@ -80,8 +104,7 @@ public class ManagerService {
      * Récupérer les détails d'un employé de l'équipe
      */
     public EmployeDTO getTeamMemberDetails(String managerEmail, String employeId) {
-        Manager manager = managerRepository.findByEmail(managerEmail)
-                .orElseThrow(() -> new RuntimeException("Manager non trouvé"));
+        Manager manager = getManagerByEmail(managerEmail);
 
         Employe employe = employeRepository.findById(employeId)
                 .orElseThrow(() -> new RuntimeException("Employé non trouvé"));
@@ -98,8 +121,7 @@ public class ManagerService {
      * Récupérer les évaluations en attente de validation
      */
     public List<PendingEvaluationDTO> getPendingEvaluations(String managerEmail) {
-        Manager manager = managerRepository.findByEmail(managerEmail)
-                .orElseThrow(() -> new RuntimeException("Manager non trouvé"));
+        Manager manager = getManagerByEmail(managerEmail);
 
         List<Employe> employes = employeRepository.findByManagerId(manager.getId());
         
@@ -120,8 +142,7 @@ public class ManagerService {
      */
     public CompetenceEmploye validateEvaluation(String managerEmail, String evaluationId, 
                                                  ValidationRequestDTO request) {
-        Manager manager = managerRepository.findByEmail(managerEmail)
-                .orElseThrow(() -> new RuntimeException("Manager non trouvé"));
+        Manager manager = getManagerByEmail(managerEmail);
 
         // TODO: Implémenter la validation
         // 1. Récupérer la CompetenceEmploye
@@ -136,8 +157,7 @@ public class ManagerService {
      * Récupérer l'historique des évaluations d'un employé
      */
     public List<CompetenceEmploye> getEvaluationHistory(String managerEmail, String employeId) {
-        Manager manager = managerRepository.findByEmail(managerEmail)
-                .orElseThrow(() -> new RuntimeException("Manager non trouvé"));
+        Manager manager = getManagerByEmail(managerEmail);
 
         Employe employe = employeRepository.findById(employeId)
                 .orElseThrow(() -> new RuntimeException("Employé non trouvé"));

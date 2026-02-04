@@ -40,11 +40,13 @@ export class TeamListComponent implements OnInit {
         });
     }
 
-    getDisponibiliteLabel(disponible: boolean): string {
+    getDisponibiliteLabel(disponible: boolean | undefined): string {
+        if (disponible === undefined) return 'Non défini';
         return disponible ? 'Disponible' : 'Non disponible';
     }
 
-    getDisponibiliteClass(disponible: boolean): string {
+    getDisponibiliteClass(disponible: boolean | undefined): string {
+        if (disponible === undefined) return 'badge-secondary';
         return disponible ? 'badge-success' : 'badge-warning';
     }
 }
