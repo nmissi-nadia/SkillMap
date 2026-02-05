@@ -13,6 +13,13 @@
     </div>
     }
 
+    @if (successMessage()) {
+    <div class="alert alert-success">
+        <span>✓ {{ successMessage() }}</span>
+        <button (click)="successMessage.set(null)">X</button>
+    </div>
+    }
+
     @if (loading()) {
     <div class="loading-state">
         <div class="spinner"></div>
@@ -64,13 +71,30 @@
                     </td>
                     <td>
                         <div class="actions">
-                            <button class="btn-icon" title="Voir le profil">
+                            <button class="btn-icon btn-primary" (click)="viewProfile(member)" title="Voir le profil">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path
+                                        d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21" />
+                                    <circle cx="12" cy="7" r="4" />
+                                </svg>
                                 Profile
                             </button>
-                            <button class="btn-icon" title="Évaluer">
+                            <button class="btn-icon btn-success" (click)="openEvaluateModal(member)" title="Évaluer">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path
+                                        d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
+                                </svg>
                                 Eval
                             </button>
-                            <button class="btn-icon" title="Assigner un test">
+                            <button class="btn-icon btn-info" (click)="openTestModal(member)" title="Assigner un test">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path
+                                        d="M14 2H6C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V8L14 2Z" />
+                                    <path d="M14 2V8H20" />
+                                </svg>
                                 Test
                             </button>
                         </div>
@@ -83,3 +107,101 @@
     }
     }
 </div>
+
+<!-- Evaluate Modal -->
+@if (showEvaluateModal()) {
+<div class="modal-overlay" (click)="closeEvaluateModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+            <h2>Évaluer {{ selectedEmployee()?.prenom }} {{ selectedEmployee()?.nom }}</h2>
+            <button class="btn-close" (click)="closeEvaluateModal()">X</button>
+        </div>
+
+        <div class="modal-body">
+            <div class="form-group">
+                <label for="competence">Compétence *</label>
+                <select id="competence" [(ngModel)]="selectedCompetence" class="form-control" required>
+                    <option value="">Sélectionnez une compétence</option>
+                    @for (comp of availableCompetences(); track comp) {
+                    <option [value]="comp">{{ comp }}</option>
+                    }
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="level">Niveau (1-5) *</label>
+                <div class="level-selector">
+                    @for (level of [1, 2, 3, 4, 5]; track level) {
+                    <button type="button" class="level-btn" [class.active]="evaluationLevel() === level"
+                        (click)="evaluationLevel.set(level)">
+                        <svg width="24" height="24" viewBox="0 0 24 24"
+                            [attr.fill]="evaluationLevel() >= level ? 'currentColor' : 'none'" stroke="currentColor"
+                            stroke-width="2">
+                            <path
+                                d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
+                        </svg>
+                    </button>
+                    }
+                </div>
+                <small class="level-label">{{ evaluationLevel() }}/5</small>
+            </div>
+
+            <div class="form-group">
+                <label for="comment">Commentaire (optionnel)</label>
+                <textarea id="comment" [(ngModel)]="evaluationComment" class="form-control" rows="4"
+                    placeholder="Ajoutez un commentaire sur cette évaluation..."></textarea>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn btn-secondary" (click)="closeEvaluateModal()">Annuler</button>
+            <button class="btn btn-primary" (click)="submitEvaluation()" [disabled]="!selectedCompetence()">Valider
+                l'évaluation</button>
+        </div>
+    </div>
+</div>
+}
+
+<!-- Assign Test Modal -->
+@if (showTestModal()) {
+<div class="modal-overlay" (click)="closeTestModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+            <h2>Assigner un test à {{ selectedEmployee()?.prenom }} {{ selectedEmployee()?.nom }}</h2>
+            <button class="btn-close" (click)="closeTestModal()">X</button>
+        </div>
+
+        <div class="modal-body">
+            <div class="form-group">
+                <label for="test">Test technique *</label>
+                <select id="test" [(ngModel)]="selectedTest" class="form-control" required>
+                    <option value="">Sélectionnez un test</option>
+                    @for (test of availableTests(); track test) {
+                    <option [value]="test">{{ test }}</option>
+                    }
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="dueDate">Date limite *</label>
+                <input type="date" id="dueDate" [(ngModel)]="testDueDate" class="form-control" required>
+            </div>
+
+            <div class="info-box">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="M12 16V12" />
+                    <path d="M12 8H12.01" />
+                </svg>
+                <p>L'employé recevra une notification par email avec les instructions pour passer le test.</p>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn btn-secondary" (click)="closeTestModal()">Annuler</button>
+            <button class="btn btn-primary" (click)="submitTestAssignment()"
+                [disabled]="!selectedTest() || !testDueDate()">Assigner le test</button>
+        </div>
+    </div>
+</div>
+}

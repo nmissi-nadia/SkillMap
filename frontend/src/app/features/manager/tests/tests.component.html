@@ -1,0 +1,214 @@
+<div class="tests-container">
+    <div class="page-header">
+        <div class="header-content">
+            <h1>Tests de l'Équipe</h1>
+            <p>Suivez les tests techniques de votre équipe</p>
+        </div>
+        <a routerLink="/manager/dashboard" class="btn-back">← Retour au dashboard</a>
+    </div>
+
+    @if (errorMessage()) {
+    <div class="alert alert-error">
+        <span>! {{ errorMessage() }}</span>
+        <button (click)="errorMessage.set(null)">X</button>
+    </div>
+    }
+
+    @if (successMessage()) {
+    <div class="alert alert-success">
+        <span>✓ {{ successMessage() }}</span>
+        <button (click)="successMessage.set(null)">X</button>
+    </div>
+    }
+
+    <!-- Statistics -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon primary">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path
+                        d="M14 2H6C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V8L14 2Z" />
+                    <path d="M14 2V8H20" />
+                </svg>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value">{{ stats().total }}</div>
+                <div class="stat-label">Tests Total</div>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon warning">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="M12 6V12L16 14" />
+                </svg>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value">{{ stats().assigned }}</div>
+                <div class="stat-label">À faire</div>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon info">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="5 3 19 12 5 21 5 3" />
+                </svg>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value">{{ stats().inProgress }}</div>
+                <div class="stat-label">En cours</div>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon success">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path
+                        d="M22 11.08V12C21.9988 14.1564 21.3005 16.2547 20.0093 17.9818C18.7182 19.7088 16.9033 20.9725 14.8354 21.5839C12.7674 22.1953 10.5573 22.1219 8.53447 21.3746C6.51168 20.6273 4.78465 19.2461 3.61096 17.4371C2.43727 15.628 1.87979 13.4881 2.02168 11.3363C2.16356 9.18455 2.99721 7.13631 4.39828 5.49706C5.79935 3.85781 7.69279 2.71537 9.79619 2.24013C11.8996 1.76489 14.1003 1.98232 16.07 2.86" />
+                    <path d="M22 4L12 14.01L9 11.01" />
+                </svg>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value">{{ stats().averageScore }}%</div>
+                <div class="stat-label">Score Moyen</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters">
+        <button class="filter-btn" [class.active]="selectedFilter() === 'all'" (click)="selectedFilter.set('all')">
+            Tous ({{ stats().total }})
+        </button>
+        <button class="filter-btn" [class.active]="selectedFilter() === 'assigned'"
+            (click)="selectedFilter.set('assigned')">
+            À faire ({{ stats().assigned }})
+        </button>
+        <button class="filter-btn" [class.active]="selectedFilter() === 'in_progress'"
+            (click)="selectedFilter.set('in_progress')">
+            En cours ({{ stats().inProgress }})
+        </button>
+        <button class="filter-btn" [class.active]="selectedFilter() === 'completed'"
+            (click)="selectedFilter.set('completed')">
+            Terminés ({{ stats().completed }})
+        </button>
+    </div>
+
+    @if (loading()) {
+    <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Chargement des tests...</p>
+    </div>
+    } @else {
+    @if (filteredTests().length === 0) {
+    <div class="empty-state">
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path
+                d="M14 2H6C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V8L14 2Z" />
+            <path d="M14 2V8H20" />
+        </svg>
+        <h3>Aucun test trouvé</h3>
+        <p>Aucun test dans cette catégorie</p>
+    </div>
+    } @else {
+    <div class="tests-table-container">
+        <table class="tests-table">
+            <thead>
+                <tr>
+                    <th>Employé</th>
+                    <th>Test</th>
+                    <th>Statut</th>
+                    <th>Date limite</th>
+                    <th>Score</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (assignment of filteredTests(); track assignment.id) {
+                <tr [class.overdue]="isOverdue(assignment.dateLimite, assignment.statut)">
+                    <td>
+                        <div class="employee-info">
+                            <div class="employee-avatar">
+                                {{ assignment.employePrenom.charAt(0) }}{{ assignment.employeNom.charAt(0) }}
+                            </div>
+                            <div class="employee-details">
+                                <div class="employee-name">{{ assignment.employePrenom }} {{ assignment.employeNom }}
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="test-info">
+                            <div class="test-title">{{ assignment.test.titre }}</div>
+                            <div class="test-meta">
+                                <span class="meta-item">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <circle cx="12" cy="12" r="10" />
+                                        <path d="M12 6V12L16 14" />
+                                    </svg>
+                                    {{ assignment.test.duree }} min
+                                </span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <span [class]="'badge ' + getStatutClass(assignment.statut)">
+                            {{ getStatutLabel(assignment.statut) }}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="deadline-info">
+                            @if (isOverdue(assignment.dateLimite, assignment.statut)) {
+                            <span class="overdue-text">Expiré</span>
+                            } @else if (getDaysRemaining(assignment.dateLimite) === 0) {
+                            <span class="urgent-text">Aujourd'hui</span>
+                            } @else if (getDaysRemaining(assignment.dateLimite) === 1) {
+                            <span class="urgent-text">Demain</span>
+                            } @else {
+                            <span>Dans {{ getDaysRemaining(assignment.dateLimite) }} jours</span>
+                            }
+                        </div>
+                    </td>
+                    <td>
+                        @if (assignment.score !== undefined) {
+                        <div class="score-badge" [class.high-score]="assignment.score >= 80"
+                            [class.medium-score]="assignment.score >= 60 && assignment.score < 80">
+                            {{ assignment.score }}%
+                        </div>
+                        } @else {
+                        <span class="text-muted">-</span>
+                        }
+                    </td>
+                    <td>
+                        <div class="actions">
+                            <button class="btn-icon btn-primary" (click)="viewTestDetails(assignment)"
+                                title="Voir les détails">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path d="M1 12S5 4 12 4s11 8 11 8-4 8-11 8S1 12 1 12z" />
+                                    <circle cx="12" cy="12" r="3" />
+                                </svg>
+                            </button>
+                            @if (assignment.statut === 'ASSIGNE' || assignment.statut === 'EN_COURS') {
+                            <button class="btn-icon btn-warning" (click)="sendReminder(assignment)"
+                                title="Envoyer un rappel">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                                    <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                                </svg>
+                            </button>
+                            }
+                        </div>
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    }
+    }
+</div>

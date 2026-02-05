@@ -3,7 +3,6 @@
     <div class="page-header">
         <div class="header-content">
             <h1 class="title">
-                <span class="icon">🎓</span>
                 Gestion des Formations
             </h1>
             <p class="subtitle">Suivi et administration des programmes de formation</p>
@@ -25,7 +24,7 @@
     <!-- Error State -->
     @if (error()) {
     <div class="error-banner">
-        <span class="error-icon">⚠️</span>
+        <span class="error-icon">!</span>
         <p>{{ error() }}</p>
     </div>
     }
@@ -56,25 +55,25 @@
             <div class="formation-body">
                 <div class="formation-info">
                     <div class="info-item">
-                        <span class="info-icon">🏢</span>
+                        <span class="info-icon">Org:</span>
                         <span class="info-text">{{ formation.organisme }}</span>
                     </div>
                     <div class="info-item">
-                        <span class="info-icon">📚</span>
+                        <span class="info-icon">Type:</span>
                         <span class="info-text">{{ formation.type }}</span>
                     </div>
                     <div class="info-item">
-                        <span class="info-icon">📅</span>
+                        <span class="info-icon">Début:</span>
                         <span class="info-text">{{ formatDate(formation.dateDebut) }}</span>
                     </div>
                     @if (formation.dateFin) {
                     <div class="info-item">
-                        <span class="info-icon">🏁</span>
+                        <span class="info-icon">Fin:</span>
                         <span class="info-text">{{ formatDate(formation.dateFin) }}</span>
                     </div>
                     }
                     <div class="info-item">
-                        <span class="info-icon">👥</span>
+                        <span class="info-icon">Emp:</span>
                         <span class="info-text">{{ formation.employeIds.length }} employé(s)</span>
                     </div>
                 </div>
@@ -82,15 +81,15 @@
 
             <div class="formation-actions">
                 <button class="btn-view" (click)="viewBudgetDetails(formation)">
-                    💰 Voir Budget
+                    Budget
                 </button>
-                <button class="btn-edit">✏️ Modifier</button>
-                <button class="btn-assign">➕ Assigner</button>
+                <button class="btn-edit">Modifier</button>
+                <button class="btn-assign">Assigner</button>
             </div>
         </div>
         } @empty {
         <div class="empty-state">
-            <span class="empty-icon">📭</span>
+            <span class="empty-icon">-</span>
             <h3>Aucune formation trouvée</h3>
             <p>Commencez par créer votre première formation</p>
             <button class="create-btn">+ Créer une formation</button>
@@ -125,8 +124,8 @@
     <div class="modal-overlay" (click)="closeBudgetModal()">
         <div class="modal-content" (click)="$event.stopPropagation()">
             <div class="modal-header">
-                <h2>💰 Détails du Budget</h2>
-                <button class="close-btn" (click)="closeBudgetModal()">✕</button>
+                <h2>Détails du Budget</h2>
+                <button class="close-btn" (click)="closeBudgetModal()">X</button>
             </div>
 
             @if (isLoadingBudget()) {
@@ -195,7 +194,7 @@
                             </div>
                             @if (employe.certification) {
                             <div class="certification-badge">
-                                <span class="cert-icon">🏆</span>
+                                <span class="cert-icon">Cert:</span>
                                 <span>{{ employe.certification }}</span>
                             </div>
                             }
