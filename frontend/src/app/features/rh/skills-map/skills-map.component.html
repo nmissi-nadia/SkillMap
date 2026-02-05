@@ -1,0 +1,178 @@
+<div class="skills-map-page">
+    <!-- Header -->
+    <div class="page-header">
+        <div class="header-content">
+            <h1 class="title">
+                <span class="icon">🗺️</span>
+                Cartographie des Compétences
+            </h1>
+            <p class="subtitle">Analyse détaillée des compétences de l'organisation</p>
+        </div>
+        <a routerLink="/rh/dashboard" class="back-btn">← Retour au tableau de bord</a>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters-section">
+        <h2>🔍 Filtres</h2>
+        <div class="filters-grid">
+            <div class="filter-group">
+                <label for="department">Département</label>
+                <select id="department" [(ngModel)]="selectedDepartment" (change)="applyFilters()">
+                    <option value="">Tous les départements</option>
+                    @for (dept of departments(); track dept) {
+                    <option [value]="dept">{{ dept }}</option>
+                    }
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="poste">Poste</label>
+                <input type="text" id="poste" [(ngModel)]="selectedPoste" placeholder="Ex: Développeur"
+                    (keyup.enter)="applyFilters()" />
+            </div>
+
+            <div class="filter-group">
+                <label for="niveau">Niveau minimum</label>
+                <select id="niveau" [(ngModel)]="selectedNiveau" (change)="applyFilters()">
+                    <option [value]="undefined">Tous les niveaux</option>
+                    <option [value]="1">1 - Débutant</option>
+                    <option [value]="2">2 - Intermédiaire</option>
+                    <option [value]="3">3 - Confirmé</option>
+                    <option [value]="4">4 - Expert</option>
+                    <option [value]="5">5 - Maître</option>
+                </select>
+            </div>
+
+            <div class="filter-actions">
+                <button class="btn-apply" (click)="applyFilters()">Appliquer</button>
+                <button class="btn-reset" (click)="resetFilters()">Réinitialiser</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading State -->
+    @if (isLoading()) {
+    <div class="loading-container">
+        <div class="spinner"></div>
+        <p>Chargement de la cartographie...</p>
+    </div>
+    }
+
+    <!-- Error State -->
+    @if (error()) {
+    <div class="error-banner">
+        <span class="error-icon">⚠️</span>
+        <p>{{ error() }}</p>
+    </div>
+    }
+
+    <!-- Main Content -->
+    @if (!isLoading() && !error() && skillsMap()) {
+    <!-- Global Stats -->
+    <div class="stats-overview">
+        <div class="stat-card">
+            <div class="stat-icon">⭐</div>
+            <div class="stat-content">
+                <h3>{{ skillsMap()!.totalCompetences }}</h3>
+                <p>Compétences totales</p>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">👥</div>
+            <div class="stat-content">
+                <h3>{{ skillsMap()!.totalEmployes }}</h3>
+                <p>Employés</p>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">📊</div>
+            <div class="stat-content">
+                <h3>{{ skillsMap()!.niveauMoyenGlobal.toFixed(1) }} / 5</h3>
+                <p>Niveau moyen global</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Categories Distribution -->
+    <div class="card categories-section">
+        <div class="card-header">
+            <h2>📂 Répartition par Catégorie</h2>
+        </div>
+
+        <div class="categories-list">
+            @for (categorie of getCategorieKeys(); track categorie) {
+            <div class="category-item">
+                <div class="category-header">
+                    <span class="category-name">{{ categorie }}</span>
+                    <span class="category-count">{{ getCategorieValue(categorie) }} compétences</span>
+                </div>
+                <div class="category-bar">
+                    <div class="category-fill" [style.width.%]="getCategoriePercentage(categorie)"></div>
+                </div>
+                <span class="category-percentage">{{ getCategoriePercentage(categorie).toFixed(1) }}%</span>
+            </div>
+            }
+        </div>
+    </div>
+
+    <!-- Two Column Layout -->
+    <div class="two-column-grid">
+        <!-- Rare Skills -->
+        <div class="card rare-skills-section">
+            <div class="card-header">
+                <h2>💎 Compétences Rares</h2>
+                <span class="badge">{{ rareSkills().length }}</span>
+            </div>
+
+            <div class="skills-list">
+                @for (skill of rareSkills(); track skill.competenceId) {
+                <div class="skill-item">
+                    <div class="skill-header">
+                        <span class="skill-name">{{ skill.competenceNom }}</span>
+                        <span class="rarete-badge" [style.background-color]="getRareteColor(skill.rarete)">
+                            {{ skill.rarete }}
+                        </span>
+                    </div>
+                    <div class="skill-meta">
+                        <span class="skill-category">{{ skill.categorie }}</span>
+                        <span class="employee-count">{{ skill.nombreEmployes }} employé(s)</span>
+                    </div>
+                </div>
+                } @empty {
+                <p class="empty-state">Aucune compétence rare détectée</p>
+                }
+            </div>
+        </div>
+
+        <!-- Critical Skills -->
+        <div class="card critical-skills-section">
+            <div class="card-header">
+                <h2>⚠️ Compétences Critiques</h2>
+                <span class="badge alert">{{ criticalSkills().length }}</span>
+            </div>
+
+            <div class="skills-list">
+                @for (skill of criticalSkills(); track skill.competenceId) {
+                <div class="skill-item">
+                    <div class="skill-header">
+                        <span class="skill-name">{{ skill.competenceNom }}</span>
+                        <span class="criticite-badge" [style.background-color]="getCriticiteColor(skill.criticite)">
+                            {{ skill.criticite }}
+                        </span>
+                    </div>
+                    <div class="skill-meta">
+                        <span class="skill-category">{{ skill.categorie }}</span>
+                        <span class="employee-count">{{ skill.nombreEmployes }} employé(s)</span>
+                        <span class="level-avg">Niveau: {{ skill.niveauMoyen.toFixed(1) }}</span>
+                    </div>
+                </div>
+                } @empty {
+                <p class="empty-state">Aucune compétence critique</p>
+                }
+            </div>
+        </div>
+    </div>
+    }
+</div>

@@ -30,6 +30,8 @@ public class RHService {
     private final ManagerRepository managerRepository;
     private final CompetenceRepository competenceRepository;
     private final CompetenceEmployeRepository competenceEmployeRepository;
+    private final FormationRepository formationRepository;
+    private final FormationEmployeRepository formationEmployeRepository;
     private final RHMapper rhMapper;
     private final EmployeMapper employeMapper;
     private final ManagerMapper managerMapper;
@@ -396,4 +398,262 @@ public class RHService {
         if (avgLevel < 3.0) return "MOYENNE";
         return "BASSE";
     }
+
+    // ========== PHASE 3: GESTION DES FORMATIONS ==========
+
+    /**
+     * Créer une nouvelle formation
+     */
+    @Transactional
+    public FormationDTO createFormation(String rhEmail, CreateFormationDTO dto) {
+        getRHByEmail(rhEmail); // Vérifier les droits
+        
+        Formation formation = new Formation();
+        formation.setId(UUID.randomUUID().toString());
+        formation.setTitre(dto.getTitre());
+        formation.setOrganisme(dto.getOrganisme());
+        formation.setType(dto.getType());
+        formation.setStatut(dto.getStatut() != null ? dto.getStatut() : "Recommandée");
+        formation.setDateDebut(dto.getDateDebut());
+        formation.setDateFin(dto.getDateFin());
+        formation.setCout(dto.getCout());
+        formation.setCertification(dto.getCertification());
+        
+        formation = formationRepository.save(formation);
+        
+        return toFormationDTO(formation);
+    }
+
+    /**
+     * Mettre à jour une formation
+     */
+    @Transactional
+    public FormationDTO updateFormation(String rhEmail, String formationId, CreateFormationDTO dto) {
+        getRHByEmail(rhEmail); // Vérifier les droits
+        
+        Formation formation = formationRepository.findById(formationId)
+                .orElseThrow(() -> new RuntimeException("Formation non trouvée"));
+        
+        if (dto.getTitre() != null) formation.setTitre(dto.getTitre());
+        if (dto.getOrganisme() != null) formation.setOrganisme(dto.getOrganisme());
+        if (dto.getType() != null) formation.setType(dto.getType());
+        if (dto.getStatut() != null) formation.setStatut(dto.getStatut());
+        if (dto.getDateDebut() != null) formation.setDateDebut(dto.getDateDebut());
+        if (dto.getDateFin() != null) formation.setDateFin(dto.getDateFin());
+        if (dto.getCout() != null) formation.setCout(dto.getCout());
+        if (dto.getCertification() != null) formation.setCertification(dto.getCertification());
+        
+        formation = formationRepository.save(formation);
+        
+        return toFormationDTO(formation);
+    }
+
+    /**
+     * Assigner une formation à plusieurs employés
+     */
+    @Transactional
+    public List<String> assignFormation(String rhEmail, AssignFormationDTO dto) {
+        getRHByEmail(rhEmail); // Vérifier les droits
+        
+        Formation formation = formationRepository.findById(dto.getFormationId())
+                .orElseThrow(() -> new RuntimeException("Formation non trouvée"));
+        
+        List<String> assignedIds = new ArrayList<>();
+        
+        for (String employeId : dto.getEmployeIds()) {
+            Employe employe = employeRepository.findById(employeId)
+                    .orElseThrow(() -> new RuntimeException("Employé non trouvé: " + employeId));
+            
+            FormationEmploye fe = new FormationEmploye();
+            fe.setId(UUID.randomUUID().toString());
+            fe.setEmploye(employe);
+            fe.setFormation(formation);
+            fe.setStatut("ASSIGNEE");
+            fe.setDateAssignation(LocalDateTime.now());
+            fe.setProgression(0);
+            fe.setValideeParRH(false);
+            
+            fe = formationEmployeRepository.save(fe);
+            assignedIds.add(fe.getId());
+        }
+        
+        return assignedIds;
+    }
+
+    /**
+     * Récupérer le suivi budget d'une formation
+     */
+    public FormationBudgetDTO getFormationBudget(String rhEmail, String formationId) {
+        getRHByEmail(rhEmail); // Vérifier les droits
+        
+        Formation formation = formationRepository.findById(formationId)
+                .orElseThrow(() -> new RuntimeException("Formation non trouvée"));
+        
+        List<FormationEmploye> formationEmployes = formationEmployeRepository.findByFormationId(formationId);
+        
+        FormationBudgetDTO budget = new FormationBudgetDTO();
+        budget.setFormationId(formation.getId());
+        budget.setTitre(formation.getTitre());
+        budget.setCoutTotal(formation.getCout());
+        budget.setDateDebut(formation.getDateDebut());
+        budget.setDateFin(formation.getDateFin());
+        
+        int totalAssignes = formationEmployes.size();
+        long termines = formationEmployes.stream().filter(fe -> "TERMINEE".equals(fe.getStatut())).count();
+        long enCours = formationEmployes.stream().filter(fe -> "EN_COURS".equals(fe.getStatut())).count();
+        
+        budget.setNombreEmployesAssignes(totalAssignes);
+        budget.setNombreEmployesTermines((int) termines);
+        budget.setNombreEmployesEnCours((int) enCours);
+        
+        if (totalAssignes > 0 && formation.getCout() != null) {
+            budget.setCoutParEmploye(formation.getCout() / totalAssignes);
+            budget.setTauxCompletion((termines * 100.0) / totalAssignes);
+        } else {
+            budget.setCoutParEmploye(0.0);
+            budget.setTauxCompletion(0.0);
+        }
+        
+        // ROI simplifié : basé sur le taux de complétion
+        budget.setRoi(calculateFormationROI(formation, formationEmployes));
+        
+        // Statuts des employés
+        List<EmployeFormationStatusDTO> statuts = formationEmployes.stream()
+                .map(fe -> {
+                    EmployeFormationStatusDTO status = new EmployeFormationStatusDTO();
+                    status.setEmployeId(fe.getEmploye().getId());
+                    status.setEmployeNom(fe.getEmploye().getNom());
+                    status.setEmployePrenom(fe.getEmploye().getPrenom());
+                    status.setStatut(fe.getStatut());
+                    status.setProgression(fe.getProgression());
+                    status.setCertification(fe.getCertification());
+                    status.setValideeParRH(fe.getValideeParRH());
+                    return status;
+                })
+                .collect(Collectors.toList());
+        
+        budget.setEmployesStatuts(statuts);
+        
+        return budget;
+    }
+
+    /**
+     * Calculer le ROI d'une formation
+     */
+    public Double calculateFormationROI(String rhEmail, String formationId) {
+        getRHByEmail(rhEmail); // Vérifier les droits
+        
+        Formation formation = formationRepository.findById(formationId)
+                .orElseThrow(() -> new RuntimeException("Formation non trouvée"));
+        
+        List<FormationEmploye> formationEmployes = formationEmployeRepository.findByFormationId(formationId);
+        
+        return calculateFormationROI(formation, formationEmployes);
+    }
+
+    /**
+     * Valider ou rejeter une certification
+     */
+    @Transactional
+    public void validateCertification(String rhEmail, CertificationValidationDTO dto) {
+        RH rh = getRHByEmail(rhEmail); // Vérifier les droits
+        
+        List<FormationEmploye> formationEmployes = formationEmployeRepository.findByFormationId(dto.getFormationId());
+        
+        FormationEmploye fe = formationEmployes.stream()
+                .filter(f -> f.getEmploye().getId().equals(dto.getEmployeId()))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Formation non trouvée pour cet employé"));
+        
+        if (dto.getValide()) {
+            fe.setValideeParRH(true);
+            fe.setCertification(dto.getCertification());
+            fe.setUrlCertificat(dto.getUrlCertificat());
+            fe.setStatut("TERMINEE");
+            fe.setProgression(100);
+            
+            // Mettre à jour la formation principale
+            Formation formation = fe.getFormation();
+            formation.setDateValidation(LocalDateTime.now());
+            formation.setValideePar(rh.getId());
+            formationRepository.save(formation);
+        } else {
+            fe.setValideeParRH(false);
+            // Optionnel: ajouter un commentaire de rejet
+        }
+        
+        formationEmployeRepository.save(fe);
+    }
+
+    /**
+     * Récupérer toutes les formations
+     */
+    public Page<FormationDTO> getAllFormations(String rhEmail, Pageable pageable) {
+        getRHByEmail(rhEmail); // Vérifier les droits
+        
+        Page<Formation> formations = formationRepository.findAll(pageable);
+        
+        return formations.map(this::toFormationDTO);
+    }
+
+    // ========== Méthodes Helper Phase 3 ==========
+
+    private FormationDTO toFormationDTO(Formation formation) {
+        FormationDTO dto = new FormationDTO();
+        dto.setId(formation.getId());
+        dto.setTitre(formation.getTitre());
+        dto.setOrganisme(formation.getOrganisme());
+        dto.setType(formation.getType());
+        dto.setStatut(formation.getStatut());
+        dto.setDateDebut(formation.getDateDebut());
+        dto.setDateFin(formation.getDateFin());
+        
+        Set<String> employeIds = formation.getEmployes().stream()
+                .map(Employe::getId)
+                .collect(Collectors.toSet());
+        dto.setEmployeIds(employeIds);
+        
+        return dto;
+    }
+
+    private Double calculateFormationROI(Formation formation, List<FormationEmploye> formationEmployes) {
+        if (formation.getCout() == null || formation.getCout() == 0) {
+            return 0.0;
+        }
+        
+        // ROI simplifié basé sur :
+        // - Taux de complétion
+        // - Nombre de certifications validées
+        // - Progression moyenne
+        
+        long termines = formationEmployes.stream()
+                .filter(fe -> "TERMINEE".equals(fe.getStatut()))
+                .count();
+        
+        long certifies = formationEmployes.stream()
+                .filter(fe -> fe.getValideeParRH() != null && fe.getValideeParRH())
+                .count();
+        
+        double avgProgression = formationEmployes.stream()
+                .mapToInt(fe -> fe.getProgression() != null ? fe.getProgression() : 0)
+                .average()
+                .orElse(0.0);
+        
+        int totalEmployes = formationEmployes.size();
+        
+        if (totalEmployes == 0) {
+            return 0.0;
+        }
+        
+        // Formule ROI : ((Bénéfices - Coûts) / Coûts) * 100
+        // Bénéfices estimés = (taux complétion * 0.4 + taux certification * 0.4 + progression * 0.2) * coût
+        double tauxCompletion = (double) termines / totalEmployes;
+        double tauxCertification = (double) certifies / totalEmployes;
+        double tauxProgression = avgProgression / 100.0;
+        
+        double benefices = (tauxCompletion * 0.4 + tauxCertification * 0.4 + tauxProgression * 0.2) * formation.getCout();
+        
+        return ((benefices - formation.getCout()) / formation.getCout()) * 100;
+    }
 }
+

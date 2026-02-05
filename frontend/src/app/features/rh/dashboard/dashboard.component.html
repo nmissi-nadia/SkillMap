@@ -1,0 +1,186 @@
+<div class="dashboard">
+    <!-- Header -->
+    <div class="dashboard-header">
+        <div class="header-content">
+            <h1 class="title">
+                <span class="icon">👥</span>
+                Tableau de Bord RH
+            </h1>
+            <p class="subtitle">Vue d'ensemble des ressources humaines et compétences</p>
+        </div>
+    </div>
+
+    <!-- Loading State -->
+    @if (isLoading()) {
+    <div class="loading-container">
+        <div class="spinner"></div>
+        <p>Chargement des données...</p>
+    </div>
+    }
+
+    <!-- Error State -->
+    @if (error()) {
+    <div class="error-banner">
+        <span class="error-icon">⚠️</span>
+        <p>{{ error() }}</p>
+    </div>
+    }
+
+    <!-- Dashboard Content -->
+    @if (!isLoading() && !error()) {
+    <!-- Stats Cards -->
+    <div class="stats-grid">
+        <div class="stat-card users">
+            <div class="stat-icon">👤</div>
+            <div class="stat-content">
+                <h3>{{ stats().totalUtilisateurs }}</h3>
+                <p>Utilisateurs</p>
+            </div>
+            <a routerLink="/rh/users" class="stat-link">Gérer →</a>
+        </div>
+
+        <div class="stat-card employees">
+            <div class="stat-icon">💼</div>
+            <div class="stat-content">
+                <h3>{{ stats().totalEmployes }}</h3>
+                <p>Employés</p>
+            </div>
+            <a routerLink="/rh/skills-map" class="stat-link">Voir →</a>
+        </div>
+
+        <div class="stat-card formations">
+            <div class="stat-icon">🎓</div>
+            <div class="stat-content">
+                <h3>{{ stats().totalFormations }}</h3>
+                <p>Formations</p>
+            </div>
+            <a routerLink="/rh/formations" class="stat-link">Gérer →</a>
+        </div>
+
+        <div class="stat-card skills">
+            <div class="stat-icon">⭐</div>
+            <div class="stat-content">
+                <h3>{{ skillsMap()?.totalCompetences || 0 }}</h3>
+                <p>Compétences</p>
+            </div>
+            <a routerLink="/rh/skills-map" class="stat-link">Explorer →</a>
+        </div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="content-grid">
+        <!-- Skills Map Overview -->
+        <div class="card skills-overview">
+            <div class="card-header">
+                <h2>🗺️ Cartographie des Compétences</h2>
+                <a routerLink="/rh/skills-map" class="view-all">Voir tout →</a>
+            </div>
+
+            @if (skillsMap()) {
+            <div class="skills-stats">
+                <div class="skill-stat">
+                    <span class="label">Niveau Moyen Global</span>
+                    <div class="progress-bar">
+                        <div class="progress-fill" [style.width.%]="(skillsMap()!.niveauMoyenGlobal / 5) * 100"></div>
+                    </div>
+                    <span class="value">{{ skillsMap()!.niveauMoyenGlobal.toFixed(1) }} / 5</span>
+                </div>
+
+                <div class="categories-grid">
+                    @for (categorie of getCategorieKeys(); track categorie) {
+                    <div class="category-item">
+                        <span class="category-name">{{ categorie }}</span>
+                        <span class="category-count">{{ skillsMap()!.repartitionParCategorie[categorie] }}</span>
+                    </div>
+                    }
+                </div>
+            </div>
+            }
+        </div>
+
+        <!-- Rare Skills -->
+        <div class="card rare-skills">
+            <div class="card-header">
+                <h2>💎 Compétences Rares</h2>
+                <span class="badge">Top 5</span>
+            </div>
+
+            <div class="skills-list">
+                @for (skill of rareSkills(); track skill.competenceId) {
+                <div class="skill-item">
+                    <div class="skill-info">
+                        <span class="skill-name">{{ skill.competenceNom }}</span>
+                        <span class="skill-category">{{ skill.categorie }}</span>
+                    </div>
+                    <div class="skill-meta">
+                        <span class="employee-count">{{ skill.nombreEmployes }} employé(s)</span>
+                        <span class="rarete-badge" [style.background-color]="getRareteColor(skill.rarete)">
+                            {{ skill.rarete }}
+                        </span>
+                    </div>
+                </div>
+                } @empty {
+                <p class="empty-state">Aucune compétence rare détectée</p>
+                }
+            </div>
+        </div>
+
+        <!-- Critical Skills -->
+        <div class="card critical-skills">
+            <div class="card-header">
+                <h2>⚠️ Compétences Critiques</h2>
+                <span class="badge alert">Attention requise</span>
+            </div>
+
+            <div class="skills-list">
+                @for (skill of criticalSkills(); track skill.competenceId) {
+                <div class="skill-item">
+                    <div class="skill-info">
+                        <span class="skill-name">{{ skill.competenceNom }}</span>
+                        <span class="skill-category">{{ skill.categorie }}</span>
+                    </div>
+                    <div class="skill-meta">
+                        <span class="employee-count">{{ skill.nombreEmployes }} employé(s)</span>
+                        <span class="level-avg">Niveau: {{ skill.niveauMoyen.toFixed(1) }}</span>
+                        <span class="criticite-badge" [style.background-color]="getCriticiteColor(skill.criticite)">
+                            {{ skill.criticite }}
+                        </span>
+                    </div>
+                </div>
+                } @empty {
+                <p class="empty-state">Aucune compétence critique</p>
+                }
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card quick-actions">
+            <div class="card-header">
+                <h2>⚡ Actions Rapides</h2>
+            </div>
+
+            <div class="actions-grid">
+                <a routerLink="/rh/users/create" class="action-btn primary">
+                    <span class="action-icon">➕</span>
+                    <span class="action-text">Créer Utilisateur</span>
+                </a>
+
+                <a routerLink="/rh/formations/create" class="action-btn secondary">
+                    <span class="action-icon">🎓</span>
+                    <span class="action-text">Nouvelle Formation</span>
+                </a>
+
+                <a routerLink="/rh/skills-map" class="action-btn tertiary">
+                    <span class="action-icon">🗺️</span>
+                    <span class="action-text">Analyser Compétences</span>
+                </a>
+
+                <a routerLink="/rh/users" class="action-btn quaternary">
+                    <span class="action-icon">👥</span>
+                    <span class="action-text">Gérer Utilisateurs</span>
+                </a>
+            </div>
+        </div>
+    </div>
+    }
+</div>

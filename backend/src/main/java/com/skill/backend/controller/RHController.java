@@ -148,4 +148,91 @@ public class RHController {
         List<CriticalSkillDTO> criticalSkills = rhService.getCriticalSkills(authentication.getName());
         return ResponseEntity.ok(criticalSkills);
     }
+
+    // ========== PHASE 3: GESTION DES FORMATIONS ==========
+
+    @GetMapping("/formations")
+    @Operation(summary = "Récupérer toutes les formations",
+               description = "Liste paginée de toutes les formations")
+    public ResponseEntity<Page<FormationDTO>> getAllFormations(
+            Pageable pageable,
+            Authentication authentication) {
+        
+        System.out.println("🎯 RHController.getAllFormations - Request received");
+        Page<FormationDTO> formations = rhService.getAllFormations(authentication.getName(), pageable);
+        return ResponseEntity.ok(formations);
+    }
+
+    @PostMapping("/formations")
+    @Operation(summary = "Créer une nouvelle formation",
+               description = "Permet au RH de créer une nouvelle formation au catalogue")
+    public ResponseEntity<FormationDTO> createFormation(
+            @Valid @RequestBody CreateFormationDTO dto,
+            Authentication authentication) {
+        
+        System.out.println("🎯 RHController.createFormation - Creating: " + dto.getTitre());
+        FormationDTO created = rhService.createFormation(authentication.getName(), dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
+    }
+
+    @PutMapping("/formations/{formationId}")
+    @Operation(summary = "Mettre à jour une formation",
+               description = "Permet au RH de modifier les informations d'une formation")
+    public ResponseEntity<FormationDTO> updateFormation(
+            @PathVariable String formationId,
+            @RequestBody CreateFormationDTO dto,
+            Authentication authentication) {
+        
+        System.out.println("🎯 RHController.updateFormation - Updating: " + formationId);
+        FormationDTO updated = rhService.updateFormation(authentication.getName(), formationId, dto);
+        return ResponseEntity.ok(updated);
+    }
+
+    @PostMapping("/formations/assign")
+    @Operation(summary = "Assigner une formation à des employés",
+               description = "Permet au RH d'assigner une formation à plusieurs employés")
+    public ResponseEntity<List<String>> assignFormation(
+            @Valid @RequestBody AssignFormationDTO dto,
+            Authentication authentication) {
+        
+        System.out.println("🎯 RHController.assignFormation - Assigning formation " + dto.getFormationId() + " to " + dto.getEmployeIds().size() + " employees");
+        List<String> assignedIds = rhService.assignFormation(authentication.getName(), dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(assignedIds);
+    }
+
+    @GetMapping("/formations/{formationId}/budget")
+    @Operation(summary = "Récupérer le suivi budget d'une formation",
+               description = "Détails du budget, coût par employé, taux de complétion et ROI")
+    public ResponseEntity<FormationBudgetDTO> getFormationBudget(
+            @PathVariable String formationId,
+            Authentication authentication) {
+        
+        System.out.println("🎯 RHController.getFormationBudget - Formation: " + formationId);
+        FormationBudgetDTO budget = rhService.getFormationBudget(authentication.getName(), formationId);
+        return ResponseEntity.ok(budget);
+    }
+
+    @GetMapping("/formations/{formationId}/roi")
+    @Operation(summary = "Calculer le ROI d'une formation",
+               description = "Return on Investment basé sur le taux de complétion et les certifications")
+    public ResponseEntity<Double> getFormationROI(
+            @PathVariable String formationId,
+            Authentication authentication) {
+        
+        System.out.println("🎯 RHController.getFormationROI - Formation: " + formationId);
+        Double roi = rhService.calculateFormationROI(authentication.getName(), formationId);
+        return ResponseEntity.ok(roi);
+    }
+
+    @PostMapping("/certifications/validate")
+    @Operation(summary = "Valider ou rejeter une certification",
+               description = "Permet au RH de valider ou rejeter la certification d'un employé")
+    public ResponseEntity<Void> validateCertification(
+            @Valid @RequestBody CertificationValidationDTO dto,
+            Authentication authentication) {
+        
+        System.out.println("🎯 RHController.validateCertification - Employee: " + dto.getEmployeId() + ", Formation: " + dto.getFormationId());
+        rhService.validateCertification(authentication.getName(), dto);
+        return ResponseEntity.noContent().build();
+    }
 }
