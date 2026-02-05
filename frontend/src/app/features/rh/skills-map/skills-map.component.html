@@ -3,7 +3,6 @@
     <div class="page-header">
         <div class="header-content">
             <h1 class="title">
-                <span class="icon">🗺️</span>
                 Cartographie des Compétences
             </h1>
             <p class="subtitle">Analyse détaillée des compétences de l'organisation</p>
@@ -13,7 +12,7 @@
 
     <!-- Filters -->
     <div class="filters-section">
-        <h2>🔍 Filtres</h2>
+        <h2>Filtres</h2>
         <div class="filters-grid">
             <div class="filter-group">
                 <label for="department">Département</label>
@@ -61,7 +60,7 @@
     <!-- Error State -->
     @if (error()) {
     <div class="error-banner">
-        <span class="error-icon">⚠️</span>
+        <span class="error-icon">!</span>
         <p>{{ error() }}</p>
     </div>
     }
@@ -71,7 +70,7 @@
     <!-- Global Stats -->
     <div class="stats-overview">
         <div class="stat-card">
-            <div class="stat-icon">⭐</div>
+            <div class="stat-icon">S</div>
             <div class="stat-content">
                 <h3>{{ skillsMap()!.totalCompetences }}</h3>
                 <p>Compétences totales</p>
@@ -79,7 +78,7 @@
         </div>
 
         <div class="stat-card">
-            <div class="stat-icon">👥</div>
+            <div class="stat-icon">E</div>
             <div class="stat-content">
                 <h3>{{ skillsMap()!.totalEmployes }}</h3>
                 <p>Employés</p>
@@ -87,7 +86,7 @@
         </div>
 
         <div class="stat-card">
-            <div class="stat-icon">📊</div>
+            <div class="stat-icon">P</div>
             <div class="stat-content">
                 <h3>{{ skillsMap()!.niveauMoyenGlobal.toFixed(1) }} / 5</h3>
                 <p>Niveau moyen global</p>
@@ -98,7 +97,7 @@
     <!-- Categories Distribution -->
     <div class="card categories-section">
         <div class="card-header">
-            <h2>📂 Répartition par Catégorie</h2>
+            <h2>Répartition par Catégorie</h2>
         </div>
 
         <div class="categories-list">
@@ -122,7 +121,7 @@
         <!-- Rare Skills -->
         <div class="card rare-skills-section">
             <div class="card-header">
-                <h2>💎 Compétences Rares</h2>
+                <h2>Compétences Rares</h2>
                 <span class="badge">{{ rareSkills().length }}</span>
             </div>
 
@@ -149,7 +148,7 @@
         <!-- Critical Skills -->
         <div class="card critical-skills-section">
             <div class="card-header">
-                <h2>⚠️ Compétences Critiques</h2>
+                <h2>Compétences Critiques</h2>
                 <span class="badge alert">{{ criticalSkills().length }}</span>
             </div>
 

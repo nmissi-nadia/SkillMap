@@ -3,7 +3,6 @@
     <div class="page-header">
         <div class="header-content">
             <h1 class="title">
-                <span class="icon">👥</span>
                 Gestion des Utilisateurs
             </h1>
             <p class="subtitle">Administration des comptes et des rôles</p>
@@ -83,11 +82,11 @@
                     <td>
                         <div class="action-buttons">
                             <button class="btn-edit" (click)="openEditModal(user)" title="Modifier">
-                                ✏️
+                                Edit
                             </button>
                             <button class="btn-toggle" (click)="toggleUserStatus(user)"
                                 [title]="user.enabled ? 'Désactiver' : 'Activer'">
-                                {{ user.enabled ? '🔒' : '🔓' }}
+                                {{ user.enabled ? 'Lock' : 'Unlock' }}
                             </button>
                         </div>
                     </td>
@@ -123,7 +122,7 @@
         <div class="modal-content" (click)="$event.stopPropagation()">
             <div class="modal-header">
                 <h2>Créer un Utilisateur</h2>
-                <button class="close-btn" (click)="closeCreateModal()">✕</button>
+                <button class="close-btn" (click)="closeCreateModal()">X</button>
             </div>
             <div class="modal-body">
                 <form (ngSubmit)="createUser()">
@@ -177,7 +176,7 @@
         <div class="modal-content" (click)="$event.stopPropagation()">
             <div class="modal-header">
                 <h2>Modifier l'Utilisateur</h2>
-                <button class="close-btn" (click)="closeEditModal()">✕</button>
+                <button class="close-btn" (click)="closeEditModal()">X</button>
             </div>
             <div class="modal-body">
                 <form (ngSubmit)="updateUser()">

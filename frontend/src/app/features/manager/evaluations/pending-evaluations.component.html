@@ -8,15 +8,15 @@
 
     @if (errorMessage()) {
     <div class="alert alert-error">
-        <span>⚠️ {{ errorMessage() }}</span>
-        <button (click)="errorMessage.set(null)">✕</button>
+        <span>! {{ errorMessage() }}</span>
+        <button (click)="errorMessage.set(null)">X</button>
     </div>
     }
 
     @if (successMessage()) {
     <div class="alert alert-success">
-        <span>✅ {{ successMessage() }}</span>
-        <button (click)="successMessage.set(null)">✕</button>
+        <span>OK {{ successMessage() }}</span>
+        <button (click)="successMessage.set(null)">X</button>
     </div>
     }
 
@@ -28,7 +28,7 @@
     } @else {
     @if (evaluations().length === 0) {
     <div class="empty-state">
-        <p>✅ Aucune évaluation en attente</p>
+        <p>Aucune évaluation en attente</p>
         <small>Toutes les auto-évaluations ont été traitées</small>
     </div>
     } @else {
@@ -87,7 +87,7 @@
     <div class="modal-content" (click)="$event.stopPropagation()">
         <div class="modal-header">
             <h2>Valider l'évaluation</h2>
-            <button class="btn-close" (click)="closeModal()">✕</button>
+            <button class="btn-close" (click)="closeModal()">X</button>
         </div>
 
         <div class="modal-body">

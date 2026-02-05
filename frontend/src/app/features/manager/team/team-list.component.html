@@ -8,8 +8,8 @@
 
     @if (errorMessage()) {
     <div class="alert alert-error">
-        <span>⚠️ {{ errorMessage() }}</span>
-        <button (click)="errorMessage.set(null)">✕</button>
+        <span>! {{ errorMessage() }}</span>
+        <button (click)="errorMessage.set(null)">X</button>
     </div>
     }
 
@@ -21,7 +21,7 @@
     } @else {
     @if (team().length === 0) {
     <div class="empty-state">
-        <p>👥 Aucun employé dans votre équipe</p>
+        <p>Aucun employé dans votre équipe</p>
     </div>
     } @else {
     <div class="team-table-container">
@@ -65,13 +65,13 @@
                     <td>
                         <div class="actions">
                             <button class="btn-icon" title="Voir le profil">
-                                👤
+                                Profile
                             </button>
                             <button class="btn-icon" title="Évaluer">
-                                ⭐
+                                Eval
                             </button>
                             <button class="btn-icon" title="Assigner un test">
-                                📝
+                                Test
                             </button>
                         </div>
                     </td>

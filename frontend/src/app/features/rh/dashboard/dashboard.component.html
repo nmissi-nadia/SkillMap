@@ -3,7 +3,6 @@
     <div class="dashboard-header">
         <div class="header-content">
             <h1 class="title">
-                <span class="icon">👥</span>
                 Tableau de Bord RH
             </h1>
             <p class="subtitle">Vue d'ensemble des ressources humaines et compétences</p>
@@ -21,7 +20,7 @@
     <!-- Error State -->
     @if (error()) {
     <div class="error-banner">
-        <span class="error-icon">⚠️</span>
+        <span class="error-icon">!</span>
         <p>{{ error() }}</p>
     </div>
     }
@@ -31,7 +30,7 @@
     <!-- Stats Cards -->
     <div class="stats-grid">
         <div class="stat-card users">
-            <div class="stat-icon">👤</div>
+            <div class="stat-icon">U</div>
             <div class="stat-content">
                 <h3>{{ stats().totalUtilisateurs }}</h3>
                 <p>Utilisateurs</p>
@@ -40,7 +39,7 @@
         </div>
 
         <div class="stat-card employees">
-            <div class="stat-icon">💼</div>
+            <div class="stat-icon">E</div>
             <div class="stat-content">
                 <h3>{{ stats().totalEmployes }}</h3>
                 <p>Employés</p>
@@ -49,7 +48,7 @@
         </div>
 
         <div class="stat-card formations">
-            <div class="stat-icon">🎓</div>
+            <div class="stat-icon">F</div>
             <div class="stat-content">
                 <h3>{{ stats().totalFormations }}</h3>
                 <p>Formations</p>
@@ -58,7 +57,7 @@
         </div>
 
         <div class="stat-card skills">
-            <div class="stat-icon">⭐</div>
+            <div class="stat-icon">S</div>
             <div class="stat-content">
                 <h3>{{ skillsMap()?.totalCompetences || 0 }}</h3>
                 <p>Compétences</p>
@@ -72,7 +71,7 @@
         <!-- Skills Map Overview -->
         <div class="card skills-overview">
             <div class="card-header">
-                <h2>🗺️ Cartographie des Compétences</h2>
+                <h2>Cartographie des Compétences</h2>
                 <a routerLink="/rh/skills-map" class="view-all">Voir tout →</a>
             </div>
 
@@ -101,7 +100,7 @@
         <!-- Rare Skills -->
         <div class="card rare-skills">
             <div class="card-header">
-                <h2>💎 Compétences Rares</h2>
+                <h2>Compétences Rares</h2>
                 <span class="badge">Top 5</span>
             </div>
 
@@ -128,7 +127,7 @@
         <!-- Critical Skills -->
         <div class="card critical-skills">
             <div class="card-header">
-                <h2>⚠️ Compétences Critiques</h2>
+                <h2>Compétences Critiques</h2>
                 <span class="badge alert">Attention requise</span>
             </div>
 
@@ -156,27 +155,27 @@
         <!-- Quick Actions -->
         <div class="card quick-actions">
             <div class="card-header">
-                <h2>⚡ Actions Rapides</h2>
+                <h2>Actions Rapides</h2>
             </div>
 
             <div class="actions-grid">
                 <a routerLink="/rh/users/create" class="action-btn primary">
-                    <span class="action-icon">➕</span>
+                    <span class="action-icon">+</span>
                     <span class="action-text">Créer Utilisateur</span>
                 </a>
 
                 <a routerLink="/rh/formations/create" class="action-btn secondary">
-                    <span class="action-icon">🎓</span>
+                    <span class="action-icon">F</span>
                     <span class="action-text">Nouvelle Formation</span>
                 </a>
 
                 <a routerLink="/rh/skills-map" class="action-btn tertiary">
-                    <span class="action-icon">🗺️</span>
+                    <span class="action-icon">M</span>
                     <span class="action-text">Analyser Compétences</span>
                 </a>
 
                 <a routerLink="/rh/users" class="action-btn quaternary">
-                    <span class="action-icon">👥</span>
+                    <span class="action-icon">U</span>
                     <span class="action-text">Gérer Utilisateurs</span>
                 </a>
             </div>
