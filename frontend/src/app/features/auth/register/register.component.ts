@@ -116,4 +116,19 @@ export class RegisterComponent {
     get passwordsMatch(): boolean {
         return !this.registerForm.errors?.['passwordMismatch'];
     }
+
+    get passwordStrength(): number {
+        const val: string = this.password?.value ?? '';
+        let score = 0;
+        if (val.length >= 6) score++;
+        if (val.length >= 10) score++;
+        if (/[A-Z]/.test(val) && /[0-9]/.test(val)) score++;
+        if (/[^A-Za-z0-9]/.test(val)) score++;
+        return score;
+    }
+
+    get strengthLabel(): string {
+        const labels = ['', 'Faible', 'Moyen', 'Bon', 'Fort'];
+        return labels[this.passwordStrength] ?? '';
+    }
 }
