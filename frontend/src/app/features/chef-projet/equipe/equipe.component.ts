@@ -115,6 +115,25 @@ export class EquipeComponent implements OnInit {
         return 'Légère charge';
     }
 
+    getAvatarColor(nom: string): string {
+        const colors = [
+            'linear-gradient(135deg, #6366f1, #8b5cf6)',
+            'linear-gradient(135deg, #10b981, #059669)',
+            'linear-gradient(135deg, #f59e0b, #d97706)',
+            'linear-gradient(135deg, #3b82f6, #2563eb)',
+            'linear-gradient(135deg, #ec4899, #db2777)'
+        ];
+        const idx = (nom?.charCodeAt(0) ?? 0) % colors.length;
+        return colors[idx];
+    }
+
+    getScoreClass(score: number): string {
+        if (score >= 80) return 'excellent';
+        if (score >= 60) return 'good';
+        if (score >= 40) return 'medium';
+        return 'low';
+    }
+
     getInitials(prenom: string, nom: string): string {
         return `${prenom?.[0] ?? ''}${nom?.[0] ?? ''}`.toUpperCase();
     }

@@ -23,6 +23,10 @@ export class ChefProjetDashboardComponent implements OnInit {
         return p.statut !== 'TERMINE' && new Date(p.dateFin) < now;
     }));
 
+    totalMembres = computed(() =>
+        this.projets().reduce((sum, p) => sum + (p.nombreMembres ?? 0), 0)
+    );
+
     constructor(private chefProjetService: ChefProjetService) { }
 
     ngOnInit() {

@@ -1,0 +1,221 @@
+:host {
+    display: block;
+    height: 100%;
+}
+
+$sidebar-w: 240px;
+$sidebar-collapsed: 68px;
+$sidebar-bg: #1e1b4b;
+$sidebar-accent: #6366f1;
+$transition: 0.25s ease;
+
+/* ======================== SHELL ======================== */
+.shell {
+    display: grid;
+    grid-template-columns: $sidebar-w 1fr;
+    height: 100vh;
+    overflow: hidden;
+    transition: grid-template-columns $transition;
+
+    &.collapsed {
+        grid-template-columns: $sidebar-collapsed 1fr;
+    }
+}
+
+/* ======================== SIDEBAR ======================== */
+.sidebar {
+    background: $sidebar-bg;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* ======================== HEADER ======================== */
+.sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.1rem 0.875rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    color: #a5b4fc;
+    overflow: hidden;
+
+    .logo-text {
+        font-size: 1.1rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #a5b4fc, #e0e7ff);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        white-space: nowrap;
+    }
+}
+
+.collapse-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: none;
+    background: rgba(255, 255, 255, 0.06);
+    color: #94a3b8;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+    flex-shrink: 0;
+
+    &:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: #e2e8f0;
+    }
+}
+
+/* ======================== ROLE BADGE ======================== */
+.role-badge {
+    margin: 0.75rem 0.875rem;
+    padding: 0.4rem 0.75rem;
+    background: rgba($sidebar-accent, 0.2);
+    border: 1px solid rgba($sidebar-accent, 0.3);
+    border-radius: 8px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #a5b4fc;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    text-align: center;
+}
+
+/* ======================== NAV ======================== */
+.nav {
+    flex: 1;
+    padding: 0.5rem 0.625rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    overflow-y: auto;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.7rem 0.875rem;
+    border-radius: 10px;
+    text-decoration: none;
+    color: #94a3b8;
+    transition: all 0.15s;
+    white-space: nowrap;
+    overflow: hidden;
+    position: relative;
+
+    &:hover {
+        background: rgba(255, 255, 255, 0.06);
+        color: #e2e8f0;
+    }
+
+    &.active {
+        background: $sidebar-accent;
+        color: #fff;
+        box-shadow: 0 4px 12px rgba($sidebar-accent, 0.35);
+
+        .nav-icon {
+            color: #fff;
+        }
+    }
+
+    .nav-icon {
+        flex-shrink: 0;
+    }
+
+    .nav-label {
+        font-size: 0.875rem;
+        font-weight: 600;
+    }
+}
+
+/* ======================== FOOTER ======================== */
+.sidebar-footer {
+    padding: 0.875rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.user-info {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    min-width: 0;
+}
+
+.user-avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, $sidebar-accent, #8b5cf6);
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.user-details {
+    flex: 1;
+    min-width: 0;
+
+    .user-name {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #e2e8f0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .user-email {
+        font-size: 0.68rem;
+        color: #64748b;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}
+
+.logout-btn {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    border: none;
+    background: rgba(255, 255, 255, 0.05);
+    color: #64748b;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.15s;
+
+    &:hover {
+        background: rgba(239, 68, 68, 0.15);
+        color: #f87171;
+    }
+}
+
+/* ======================== MAIN ======================== */
+.main-content {
+    overflow-y: auto;
+    background: #f8fafc;
+}

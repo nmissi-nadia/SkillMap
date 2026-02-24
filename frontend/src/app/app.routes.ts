@@ -44,6 +44,31 @@ export const routes: Routes = [
         redirectTo: 'manager/dashboard',
         pathMatch: 'full'
     },
+    {
+        path: 'rh/dashboard',
+        loadComponent: () => import('./features/rh/dashboard/dashboard.component').then(m => m.RhDashboardComponent),
+        canActivate: [authGuard]
+    },
+    {
+        path: 'rh/users',
+        loadComponent: () => import('./features/rh/user-management/user-management.component').then(m => m.UserManagementComponent),
+        canActivate: [authGuard]
+    },
+    {
+        path: 'rh/skills-map',
+        loadComponent: () => import('./features/rh/skills-map/skills-map.component').then(m => m.SkillsMapComponent),
+        canActivate: [authGuard]
+    },
+    {
+        path: 'rh/formations',
+        loadComponent: () => import('./features/rh/formations/formations.component').then(m => m.FormationsComponent),
+        canActivate: [authGuard]
+    },
+    {
+        path: 'rh',
+        redirectTo: 'rh/dashboard',
+        pathMatch: 'full'
+    },
     // Employee routes
     {
         path: 'employee/dashboard',
@@ -59,6 +84,37 @@ export const routes: Routes = [
         path: 'employee/competencies',
         loadComponent: () => import('./features/employee/competencies/competencies.component').then(m => m.CompetenciesComponent),
         canActivate: [authGuard]
+    },
+    // Chef de Projet routes
+    {
+        path: 'chef-projet/dashboard',
+        loadComponent: () => import('./features/chef-projet/dashboard/dashboard.component').then(m => m.ChefProjetDashboardComponent),
+        canActivate: [authGuard]
+    },
+    {
+        path: 'chef-projet/projets',
+        loadComponent: () => import('./features/chef-projet/projets/projets.component').then(m => m.ProjetsComponent),
+        canActivate: [authGuard]
+    },
+    {
+        path: 'chef-projet/matching',
+        loadComponent: () => import('./features/chef-projet/matching/matching.component').then(m => m.MatchingComponent),
+        canActivate: [authGuard]
+    },
+    {
+        path: 'chef-projet/equipe',
+        loadComponent: () => import('./features/chef-projet/equipe/equipe.component').then(m => m.EquipeComponent),
+        canActivate: [authGuard]
+    },
+    {
+        path: 'chef-projet/messagerie',
+        loadComponent: () => import('./features/chef-projet/messagerie/messagerie.component').then(m => m.MessagerieComponent),
+        canActivate: [authGuard]
+    },
+    {
+        path: 'chef-projet',
+        redirectTo: 'chef-projet/dashboard',
+        pathMatch: 'full'
     },
     {
         path: '**',

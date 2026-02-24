@@ -1,6 +1,6 @@
 import { Component, OnInit, signal, computed, ElementRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink, ActivatedRoute } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ChefProjetService } from '../../../core/services/chef-projet.service';
 import { Projet, MessageProjet } from '../../../core/models/chef-projet.model';
@@ -8,7 +8,7 @@ import { Projet, MessageProjet } from '../../../core/models/chef-projet.model';
 @Component({
     selector: 'app-messagerie',
     standalone: true,
-    imports: [CommonModule, RouterLink, FormsModule],
+    imports: [CommonModule, FormsModule],
     templateUrl: './messagerie.component.html',
     styleUrls: ['./messagerie.component.scss']
 })

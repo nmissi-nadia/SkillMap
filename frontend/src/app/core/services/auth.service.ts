@@ -148,9 +148,8 @@ export class AuthService {
                 console.log('✅ Redirection vers /rh/dashboard');
                 return '/rh/dashboard';
             case 'CHEF_PROJET':
-            case 'ADMIN':
-                console.log('✅ Redirection vers /dashboard');
-                return '/dashboard';
+                console.log('✅ Redirection vers /chef-projet/dashboard');
+                return '/chef-projet/dashboard';
             default:
                 console.log('⚠️ Rôle non reconnu, redirection par défaut vers /dashboard');
                 return '/dashboard';
