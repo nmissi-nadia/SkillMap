@@ -1,0 +1,129 @@
+<div class="page-container">
+
+    <!-- Header -->
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">Messagerie projet</h1>
+            <p class="page-subtitle">Communiquez avec vos équipes par canal projet</p>
+        </div>
+    </div>
+
+    <!-- Layout principal -->
+    <div class="messaging-layout">
+
+        <!-- SIDEBAR : liste des projets (canaux) -->
+        <div class="channels-sidebar">
+            <div class="sidebar-header">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                </svg>
+                Canaux projet
+            </div>
+            @if (loadingProjets()) {
+            @for (i of [1,2,3]; track i) {
+            <div class="channel-skeleton"></div>
+            }
+            } @else {
+            @for (p of projets(); track p.id) {
+            <button class="channel-item" [class.active]="selectedProjetId() === p.id" (click)="onProjetChange(p.id)">
+                <div class="channel-icon">#</div>
+                <div class="channel-info">
+                    <div class="channel-name">{{ p.nom }}</div>
+                    <div class="channel-statut">{{ p.statut }}</div>
+                </div>
+            </button>
+            }
+            @if (projets().length === 0) {
+            <div class="no-channels">Aucun projet disponible</div>
+            }
+            }
+        </div>
+
+        <!-- ZONE DE CHAT -->
+        <div class="chat-zone">
+            @if (!selectedProjetId()) {
+            <div class="chat-placeholder">
+                <svg width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                </svg>
+                <h3>Sélectionnez un projet</h3>
+                <p>Choisissez un canal projet dans la liste à gauche pour commencer à communiquer</p>
+            </div>
+            } @else {
+            <!-- Chat header -->
+            <div class="chat-header">
+                <div class="chat-header-info">
+                    <span class="chat-channel-name"># {{ selectedProjet()?.nom ?? '...' }}</span>
+                    <span class="chat-channel-meta">
+                        {{ messages().length }} message(s) · {{ selectedProjet()?.statut }}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Messages -->
+            <div class="messages-area">
+                @if (loadingMessages()) {
+                <div class="loading-msgs">
+                    <div class="spinner"></div>
+                    <span>Chargement des messages...</span>
+                </div>
+                } @else if (messages().length === 0) {
+                <div class="no-messages">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                    </svg>
+                    <p>Aucun message pour ce projet.<br>Soyez le premier à écrire !</p>
+                </div>
+                } @else {
+                @for (groupe of messagesGroupes(); track groupe.date) {
+                <!-- Label de date -->
+                <div class="date-separator">
+                    <span>{{ formatDateLabel(groupe.date) }}</span>
+                </div>
+
+                <!-- Messages du groupe -->
+                @for (msg of groupe.messages; track msg.id) {
+                <div class="message-row" [class.mine]="isMine(msg)">
+                    @if (!isMine(msg)) {
+                    <div class="msg-avatar">{{ getInitials(msg) }}</div>
+                    }
+                    <div class="message-bubble" [class.mine]="isMine(msg)">
+                        @if (!isMine(msg)) {
+                        <div class="msg-sender">
+                            {{ msg.expediteur.prenom }} {{ msg.expediteur.nom }}
+                        </div>
+                        }
+                        <div class="msg-content">{{ msg.contenu }}</div>
+                        <div class="msg-time">{{ formatDate(msg.dateEnvoi) }}</div>
+                    </div>
+                </div>
+                }
+                }
+                }
+                <div #messagesEnd></div>
+            </div>
+
+            <!-- Input zone -->
+            <div class="input-zone">
+                <div class="input-wrapper">
+                    <textarea [value]="nouveauMessage()" (input)="nouveauMessage.set($any($event.target).value)"
+                        (keydown)="onKeydown($event)" placeholder="Écrire un message... (Entrée pour envoyer)" rows="1">
+            </textarea>
+                    <button class="send-btn" [disabled]="!nouveauMessage().trim() || sending()" (click)="envoyer()">
+                        @if (sending()) {
+                        <div class="spinner-sm"></div>
+                        } @else {
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <line x1="22" y1="2" x2="11" y2="13" />
+                            <polygon points="22 2 15 22 11 13 2 9 22 2" />
+                        </svg>
+                        }
+                    </button>
+                </div>
+                <div class="input-hint">Entrée pour envoyer · Maj+Entrée pour nouvelle ligne</div>
+            </div>
+            }
+        </div>
+    </div>
+</div>
