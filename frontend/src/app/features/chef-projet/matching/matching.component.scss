@@ -1,0 +1,722 @@
+:host {
+    display: block;
+}
+
+.page-container {
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* ======================== HEADER ======================== */
+.page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .page-title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #0f172a;
+        margin: 0;
+    }
+
+    .page-subtitle {
+        font-size: 0.9rem;
+        color: #64748b;
+        margin: 0.25rem 0 0;
+    }
+}
+
+/* ======================== TOAST ======================== */
+.toast {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 1.25rem;
+    border-radius: 12px;
+    font-weight: 500;
+    animation: fadeIn 0.2s ease;
+
+    &.success {
+        background: #dcfce7;
+        border: 1px solid #86efac;
+        color: #166534;
+    }
+}
+
+/* ======================== CONFIG PANEL ======================== */
+.config-panel {
+    background: #fff;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06);
+    border: 1px solid #f1f5f9;
+}
+
+.config-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.config-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    flex: 1;
+    min-width: 200px;
+
+    &.narrow {
+        max-width: 140px;
+        flex: none;
+    }
+
+    label {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #374151;
+    }
+
+    select,
+    input {
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 0.65rem 0.875rem;
+        font-size: 0.875rem;
+        color: #0f172a;
+        outline: none;
+        transition: border-color 0.2s;
+        background: #fff;
+        font-family: inherit;
+
+        &:focus {
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+    }
+}
+
+.skeleton-select {
+    height: 42px;
+    background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+    background-size: 200% 100%;
+    border-radius: 10px;
+    animation: shimmer 1.5s infinite;
+}
+
+/* ======================== RESULTS HEADER ======================== */
+.results-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+
+    .results-count-badge {
+        background: #ede9fe;
+        color: #6366f1;
+        font-size: 0.8rem;
+        font-weight: 700;
+        padding: 0.3rem 0.75rem;
+        border-radius: 999px;
+    }
+
+    .projet-tag {
+        background: #f1f5f9;
+        color: #475569;
+        font-size: 0.8rem;
+        font-weight: 500;
+        padding: 0.3rem 0.75rem;
+        border-radius: 999px;
+    }
+}
+
+/* ======================== CANDIDATES LAYOUT ======================== */
+.candidates-layout {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 1.5rem;
+    align-items: start;
+}
+
+/* ======================== CANDIDATE CARD ======================== */
+.candidates-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.candidate-card {
+    background: #fff;
+    border: 2px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 1.25rem;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &:hover {
+        border-color: #a5b4fc;
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1);
+    }
+
+    &.selected {
+        border-color: #6366f1;
+        background: #fafbff;
+        box-shadow: 0 4px 16px rgba(99, 102, 241, 0.15);
+    }
+
+    &.unavailable {
+        opacity: 0.7;
+    }
+}
+
+.candidate-top {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: #fff;
+    font-size: 0.9rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.candidate-info {
+    flex: 1;
+
+    .candidate-name {
+        font-weight: 700;
+        color: #0f172a;
+        font-size: 0.95rem;
+    }
+
+    .candidate-poste {
+        font-size: 0.8rem;
+        color: #475569;
+    }
+
+    .candidate-dept {
+        font-size: 0.75rem;
+        color: #94a3b8;
+    }
+}
+
+.score-circle {
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border: 3px solid;
+
+    &.excellent {
+        border-color: #10b981;
+        background: #d1fae5;
+
+        .score-value {
+            color: #065f46;
+        }
+    }
+
+    &.good {
+        border-color: #3b82f6;
+        background: #dbeafe;
+
+        .score-value {
+            color: #1e3a5f;
+        }
+    }
+
+    &.medium {
+        border-color: #f59e0b;
+        background: #fef3c7;
+
+        .score-value {
+            color: #78350f;
+        }
+    }
+
+    &.low {
+        border-color: #ef4444;
+        background: #fee2e2;
+
+        .score-value {
+            color: #7f1d1d;
+        }
+    }
+
+    .score-value {
+        font-size: 1.1rem;
+        font-weight: 800;
+        line-height: 1;
+    }
+
+    .score-pct {
+        font-size: 0.65rem;
+        font-weight: 600;
+        opacity: 0.7;
+    }
+}
+
+/* ======================== MINI SCORES ======================== */
+.mini-scores {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    margin-bottom: 0.75rem;
+}
+
+.mini-score {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+
+    .mini-label {
+        width: 80px;
+        color: #64748b;
+        flex-shrink: 0;
+    }
+
+    .mini-bar {
+        flex: 1;
+        height: 5px;
+        background: #e2e8f0;
+        border-radius: 999px;
+        overflow: hidden;
+
+        .mini-fill {
+            height: 100%;
+            border-radius: 999px;
+
+            &.excellent {
+                background: #10b981;
+            }
+
+            &.good {
+                background: #3b82f6;
+            }
+
+            &.medium {
+                background: #f59e0b;
+            }
+
+            &.low {
+                background: #ef4444;
+            }
+        }
+    }
+
+    .mini-val {
+        width: 32px;
+        text-align: right;
+        font-weight: 600;
+        color: #374151;
+    }
+}
+
+/* ======================== TAGS ======================== */
+.candidate-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+}
+
+.tag {
+    font-size: 0.68rem;
+    font-weight: 600;
+    padding: 0.2rem 0.55rem;
+    border-radius: 999px;
+
+    &.avail {
+        background: #d1fae5;
+        color: #065f46;
+    }
+
+    &.unavail {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    &.match {
+        background: #ede9fe;
+        color: #5b21b6;
+    }
+
+    &.label-excellent {
+        background: #d1fae5;
+        color: #065f46;
+    }
+
+    &.label-good {
+        background: #dbeafe;
+        color: #1e40af;
+    }
+
+    &.label-medium {
+        background: #fef3c7;
+        color: #78350f;
+    }
+
+    &.label-low {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+}
+
+/* ======================== DETAIL PANEL ======================== */
+.candidate-detail {
+    background: #fff;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e2e8f0;
+    position: sticky;
+    top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.detail-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    .detail-avatar {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        color: #fff;
+        font-size: 1rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    h2 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #0f172a;
+        margin: 0;
+    }
+
+    p {
+        font-size: 0.8rem;
+        color: #64748b;
+        margin: 0.15rem 0 0;
+    }
+}
+
+/* ======================== GLOBAL SCORE BAR ======================== */
+.global-score-bar {
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 1rem;
+
+    .gsb-label {
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: #64748b;
+        margin-bottom: 0.5rem;
+    }
+
+    .gsb-bar {
+        height: 10px;
+        background: #e2e8f0;
+        border-radius: 999px;
+        overflow: hidden;
+        margin-bottom: 0.4rem;
+
+        .gsb-fill {
+            height: 100%;
+            border-radius: 999px;
+
+            &.excellent {
+                background: linear-gradient(90deg, #10b981, #34d399);
+            }
+
+            &.good {
+                background: linear-gradient(90deg, #3b82f6, #60a5fa);
+            }
+
+            &.medium {
+                background: linear-gradient(90deg, #f59e0b, #fbbf24);
+            }
+
+            &.low {
+                background: linear-gradient(90deg, #ef4444, #f87171);
+            }
+        }
+    }
+
+    .gsb-value {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #0f172a;
+    }
+}
+
+/* ======================== SKILLS SECTION ======================== */
+.skills-section h3,
+.missing-skills h3 {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0 0 0.75rem;
+}
+
+.skills-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.skill-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.65rem 0.875rem;
+    border-radius: 10px;
+    font-size: 0.82rem;
+
+    &.ok {
+        background: #f0fdf4;
+        border: 1px solid #bbf7d0;
+    }
+
+    &.nok {
+        background: #fef9c3;
+        border: 1px solid #fde68a;
+    }
+
+    .skill-name {
+        font-weight: 600;
+        color: #0f172a;
+    }
+
+    .skill-levels {
+        display: flex;
+        gap: 0.4rem;
+    }
+}
+
+.skill-level-badge {
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 0.15rem 0.5rem;
+    border-radius: 6px;
+
+    &.employe {
+        background: #dbeafe;
+        color: #1d4ed8;
+    }
+
+    &.requis {
+        background: #e0e7ff;
+        color: #3730a3;
+    }
+}
+
+/* ======================== MISSING SKILLS ======================== */
+.missing-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.missing-chip {
+    background: #fee2e2;
+    color: #dc2626;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.25rem 0.65rem;
+    border-radius: 999px;
+}
+
+/* ======================== AFFECTER BUTTON ======================== */
+.btn-affecter {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    padding: 0.875rem;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.2s;
+    box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+    width: 100%;
+
+    &:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+    }
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+}
+
+/* ======================== SELECT HINT ======================== */
+.select-hint {
+    background: #f8fafc;
+    border: 2px dashed #e2e8f0;
+    border-radius: 16px;
+    padding: 3rem 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    color: #94a3b8;
+    text-align: center;
+
+    p {
+        font-size: 0.875rem;
+        margin: 0;
+    }
+}
+
+/* ======================== BUTTONS ======================== */
+.btn-matching {
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    padding: 0.75rem 1.5rem;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s;
+    box-shadow: 0 4px 14px rgba(99, 102, 241, 0.3);
+    white-space: nowrap;
+    height: fit-content;
+
+    &:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+    }
+
+    &:disabled {
+        opacity: 0.65;
+        cursor: not-allowed;
+    }
+}
+
+.btn-secondary {
+    background: #f8fafc;
+    color: #64748b;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 0.65rem 1.25rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s;
+
+    &:hover {
+        background: #f1f5f9;
+        color: #374151;
+    }
+}
+
+/* ======================== STATES ======================== */
+.initial-state,
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 4rem;
+    color: #94a3b8;
+    text-align: center;
+    background: #fff;
+    border-radius: 16px;
+    border: 1px solid #f1f5f9;
+
+    h3 {
+        font-size: 1.15rem;
+        color: #475569;
+        margin: 0;
+    }
+
+    p {
+        font-size: 0.875rem;
+        margin: 0;
+        max-width: 360px;
+    }
+}
+
+.spinner-sm {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes shimmer {
+    to {
+        background-position: -200% 0;
+    }
+}
+
+@media (max-width: 1024px) {
+    .candidates-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .candidate-detail {
+        position: static;
+    }
+}
