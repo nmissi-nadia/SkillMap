@@ -2,7 +2,6 @@ package com.skill.backend.dto;
 
 import lombok.Data;
 import java.time.LocalDate;
-import java.util.Set;
 
 @Data
 public class ProjetDTO {
@@ -12,7 +11,13 @@ public class ProjetDTO {
     private LocalDate dateDebut;
     private LocalDate dateFin;
     private String statut;
-    private Set<String> employeIds;
     private String chefProjetId;
-    private Set<String> messageIds;
+    private String chefProjetNom;
+    // Champs workflow
+    private String client;
+    private Double budget;
+    private String priorite;
+    private Integer chargeEstimee;
+    private Integer progression;
+    private Integer nombreMembres;
 }
