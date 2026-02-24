@@ -1,0 +1,202 @@
+<div class="dashboard-container">
+
+    <!-- Header -->
+    <div class="dashboard-header">
+        <div class="header-content">
+            <div>
+                <h1 class="page-title">Tableau de bord</h1>
+                <p class="page-subtitle">Vue d'ensemble de vos projets en cours</p>
+            </div>
+            <a routerLink="/chef-projet/projets" class="btn-primary">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="5" x2="12" y2="19" />
+                    <line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+                Nouveau projet
+            </a>
+        </div>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="kpi-grid">
+        <div class="kpi-card primary">
+            <div class="kpi-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="3" width="20" height="14" rx="2" />
+                    <line x1="8" y1="21" x2="16" y2="21" />
+                    <line x1="12" y1="17" x2="12" y2="21" />
+                </svg>
+            </div>
+            <div class="kpi-value">{{ projets().length }}</div>
+            <div class="kpi-label">Total projets</div>
+        </div>
+
+        <div class="kpi-card success">
+            <div class="kpi-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10" />
+                    <polyline points="12 6 12 12 16 14" />
+                </svg>
+            </div>
+            <div class="kpi-value">{{ projetsActifs().length }}</div>
+            <div class="kpi-label">En cours</div>
+        </div>
+
+        <div class="kpi-card warning">
+            <div class="kpi-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path
+                        d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                    <line x1="12" y1="9" x2="12" y2="13" />
+                    <line x1="12" y1="17" x2="12.01" y2="17" />
+                </svg>
+            </div>
+            <div class="kpi-value">{{ projetsEnRetard().length }}</div>
+            <div class="kpi-label">En retard</div>
+        </div>
+
+        <div class="kpi-card info">
+            <div class="kpi-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                </svg>
+            </div>
+            <div class="kpi-value">
+                {{ projets().reduce(this_workaround, 0) }}
+            </div>
+            <div class="kpi-label">Membres affectés</div>
+        </div>
+    </div>
+
+    <!-- Alertes sous-staffing -->
+    @if (projetsEnRetard().length > 0) {
+    <div class="alert-banner">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+            <line x1="12" y1="9" x2="12" y2="13" />
+            <line x1="12" y1="17" x2="12.01" y2="17" />
+        </svg>
+        <span>
+            <strong>{{ projetsEnRetard().length }} projet(s) en retard.</strong>
+            Vérifiez les ressources et plannings.
+        </span>
+        <a routerLink="/chef-projet/projets" class="alert-link">Voir les projets</a>
+    </div>
+    }
+
+    <!-- Liste des projets -->
+    <div class="section-card">
+        <div class="section-header">
+            <h2 class="section-title">Mes projets</h2>
+            <a routerLink="/chef-projet/projets" class="view-all">Voir tout</a>
+        </div>
+
+        @if (loading()) {
+        <div class="loading-state">
+            <div class="spinner"></div>
+            <span>Chargement des projets...</span>
+        </div>
+        } @else if (projets().length === 0) {
+        <div class="empty-state">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="2" y="3" width="20" height="14" rx="2" />
+                <line x1="8" y1="21" x2="16" y2="21" />
+                <line x1="12" y1="17" x2="12" y2="21" />
+            </svg>
+            <p>Aucun projet trouvé</p>
+            <a routerLink="/chef-projet/projets" class="btn-primary">Créer un projet</a>
+        </div>
+        } @else {
+        <div class="projects-list">
+            @for (projet of projets(); track projet.id) {
+            <div class="project-card">
+                <div class="project-header">
+                    <div class="project-info">
+                        <h3 class="project-name">{{ projet.nom }}</h3>
+                        <p class="project-client">{{ projet.client }}</p>
+                    </div>
+                    <div class="project-badges">
+                        <span class="badge statut-{{ projet.statut?.toLowerCase() }}">
+                            {{ getStatutLabel(projet.statut) }}
+                        </span>
+                        <span class="badge priorite-{{ getPrioriteClass(projet.priorite) }}">
+                            {{ projet.priorite }}
+                        </span>
+                    </div>
+                </div>
+                <div class="project-progress">
+                    <div class="progress-header">
+                        <span class="progress-label">Progression</span>
+                        <span class="progress-value">{{ projet.progression }}%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill {{ getProgressionClass(projet.progression) }}"
+                            [style.width.%]="projet.progression"></div>
+                    </div>
+                </div>
+                <div class="project-footer">
+                    <span class="project-date">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2" />
+                            <line x1="16" y1="2" x2="16" y2="6" />
+                            <line x1="8" y1="2" x2="8" y2="6" />
+                            <line x1="3" y1="10" x2="21" y2="10" />
+                        </svg>
+                        Échéance: {{ projet.dateFin | date:'dd/MM/yyyy' }}
+                    </span>
+                    <span class="project-members">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                            <circle cx="9" cy="7" r="4" />
+                        </svg>
+                        {{ projet.nombreMembres ?? 0 }} membres
+                    </span>
+                    <div class="project-actions">
+                        <a [routerLink]="['/chef-projet/matching']" [queryParams]="{ projetId: projet.id }"
+                            class="btn-sm">
+                            Matching
+                        </a>
+                        <a [routerLink]="['/chef-projet/equipe']" [queryParams]="{ projetId: projet.id }"
+                            class="btn-sm outline">
+                            Équipe
+                        </a>
+                    </div>
+                </div>
+            </div>
+            }
+        </div>
+        }
+    </div>
+
+    <!-- Quick links -->
+    <div class="quick-links">
+        <a routerLink="/chef-projet/matching" class="quick-link-card">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+            <span>Lancer un matching</span>
+        </a>
+        <a routerLink="/chef-projet/equipe" class="quick-link-card">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+            </svg>
+            <span>Gérer les équipes</span>
+        </a>
+        <a routerLink="/chef-projet/messagerie" class="quick-link-card">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+            </svg>
+            <span>Messagerie projet</span>
+        </a>
+    </div>
+
+</div>
