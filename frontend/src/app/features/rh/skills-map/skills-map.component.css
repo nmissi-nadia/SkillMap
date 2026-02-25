@@ -492,8 +492,46 @@
     margin: 0;
 }
 
-/* ── Responsive ── */
+/* ══════════════════════════════════════════════
+   RESPONSIVE — Multi-breakpoints
+   ══════════════════════════════════════════════ */
+
+/* Grand écran ≥ 1600px */
+@media (min-width: 1600px) {
+    .rh-skills-map {
+        padding: 2.5rem;
+    }
+
+    .content-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .card-full {
+        grid-column: 1 / -1;
+    }
+
+    .categories-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+/* Tablette large 1025px – 1400px */
+@media (max-width: 1400px) {
+    .content-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .categories-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* Tablette 769px – 1024px */
 @media (max-width: 1024px) {
+    .rh-skills-map {
+        padding: 1.5rem;
+    }
+
     .content-grid {
         grid-template-columns: 1fr;
     }
@@ -501,22 +539,107 @@
     .card-full {
         grid-column: 1;
     }
+
+    .filters-panel {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .categories-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .stats-row {
+        flex-wrap: wrap;
+    }
+
+    .stat-chip {
+        min-width: calc(50% - 0.5rem);
+    }
 }
 
+/* Mobile 481px – 768px */
 @media (max-width: 768px) {
     .rh-skills-map {
         padding: 1rem;
     }
 
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+
     .filters-panel {
         grid-template-columns: 1fr;
+        padding: 1rem;
+    }
+
+    .content-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .card-full {
+        grid-column: 1;
     }
 
     .categories-grid {
         grid-template-columns: 1fr;
     }
 
+    .stats-row {
+        flex-direction: column;
+    }
+
+    .stat-chip {
+        min-width: 100%;
+    }
+
     .level-item {
-        grid-template-columns: 60px 1fr 36px;
+        grid-template-columns: 60px 1fr 40px;
+        gap: 0.5rem;
+    }
+
+    .scrollable {
+        max-height: 280px;
+    }
+}
+
+/* Petit mobile ≤ 480px */
+@media (max-width: 480px) {
+    .rh-skills-map {
+        padding: 0.75rem;
+    }
+
+    .page-header h1 {
+        font-size: 1.25rem;
+    }
+
+    .page-subtitle {
+        font-size: 0.8rem;
+    }
+
+    .card-header {
+        padding: 1rem;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.375rem;
+    }
+
+    .card-body {
+        padding: 0.875rem;
+    }
+
+    .stat-val {
+        font-size: 1.5rem;
+    }
+
+    .skill-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .level-item {
+        grid-template-columns: 55px 1fr 36px;
     }
 }

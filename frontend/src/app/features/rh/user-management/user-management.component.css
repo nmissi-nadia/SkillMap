@@ -581,10 +581,30 @@
     border-top: 1px solid #f1f5f9;
 }
 
-/* ── Responsive ── */
-@media (max-width: 768px) {
+/* ══════════════════════════════════════════════
+   RESPONSIVE — Multi-breakpoints
+   ══════════════════════════════════════════════ */
+
+/* Grand écran ≥ 1600px */
+@media (min-width: 1600px) {
     .rh-users {
-        padding: 1rem;
+        padding: 2.5rem;
+    }
+}
+
+/* Tablette large 1025px – 1400px */
+@media (max-width: 1400px) {
+
+    .users-table th:nth-child(5),
+    .users-table td:nth-child(5) {
+        min-width: 90px;
+    }
+}
+
+/* Tablette 769px – 1024px */
+@media (max-width: 1024px) {
+    .rh-users {
+        padding: 1.5rem;
     }
 
     .filters-bar {
@@ -592,15 +612,98 @@
         align-items: stretch;
     }
 
+    .search-box {
+        max-width: 100%;
+    }
+
+    .modal {
+        max-width: 90vw;
+    }
+}
+
+/* Mobile 481px – 768px */
+@media (max-width: 768px) {
+    .rh-users {
+        padding: 1rem;
+    }
+
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+
+    .btn-primary {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .filters-bar {
+        flex-direction: column;
+    }
+
     .role-filters {
-        flex-wrap: wrap;
+        overflow-x: auto;
+        padding-bottom: 0.25rem;
+        flex-wrap: nowrap;
     }
 
     .table-container {
         overflow-x: auto;
+        border-radius: 0.75rem;
+    }
+
+    .users-table {
+        min-width: 640px;
     }
 
     .form-row {
         grid-template-columns: 1fr;
+    }
+
+    .modal {
+        max-width: 95vw;
+        margin: 1rem;
+    }
+}
+
+/* Petit mobile ≤ 480px */
+@media (max-width: 480px) {
+    .rh-users {
+        padding: 0.75rem;
+    }
+
+    .page-header h1 {
+        font-size: 1.375rem;
+    }
+
+    .filter-chip {
+        font-size: 0.75rem;
+        padding: 0.4rem 0.75rem;
+    }
+
+    .users-table {
+        min-width: 560px;
+    }
+
+    .modal-header h2 {
+        font-size: 1rem;
+    }
+
+    .modal-body {
+        padding: 1rem;
+    }
+
+    .modal-footer {
+        padding: 1rem;
+    }
+
+    .pagination {
+        gap: 0.25rem;
+    }
+
+    .page-btn {
+        min-width: 34px;
+        height: 34px;
     }
 }
