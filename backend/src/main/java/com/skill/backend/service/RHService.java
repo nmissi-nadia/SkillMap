@@ -599,9 +599,15 @@ public class RHService {
      */
     public Page<FormationDTO> getAllFormations(String rhEmail, Pageable pageable) {
         getRHByEmail(rhEmail); // Vérifier les droits
-        
-        Page<Formation> formations = formationRepository.findAll(pageable);
-        
+
+        // Utiliser PageRequest sans sort pour éviter PropertyReferenceException (ex: sort=string depuis Swagger)
+        org.springframework.data.domain.PageRequest safePageable =
+            org.springframework.data.domain.PageRequest.of(
+                pageable.getPageNumber(),
+                pageable.getPageSize()
+            );
+
+        Page<Formation> formations = formationRepository.findAll(safePageable);
         return formations.map(this::toFormationDTO);
     }
 
@@ -614,14 +620,25 @@ public class RHService {
         dto.setOrganisme(formation.getOrganisme());
         dto.setType(formation.getType());
         dto.setStatut(formation.getStatut());
+        dto.setDescription(formation.getDescription());
         dto.setDateDebut(formation.getDateDebut());
         dto.setDateFin(formation.getDateFin());
-        
-        Set<String> employeIds = formation.getEmployes().stream()
-                .map(Employe::getId)
-                .collect(Collectors.toSet());
-        dto.setEmployeIds(employeIds);
-        
+        dto.setCout(formation.getCout());
+        dto.setDureeHeures(formation.getDureeHeures());
+        dto.setMaxParticipants(formation.getMaxParticipants());
+        dto.setNiveauRequis(formation.getNiveauRequis());
+        dto.setCertification(formation.getCertification());
+
+        if (formation.getEmployes() != null) {
+            Set<String> ids = formation.getEmployes().stream()
+                    .map(Employe::getId)
+                    .collect(Collectors.toSet());
+            dto.setEmployeIds(ids);
+            dto.setNombreInscrits(ids.size());
+        } else {
+            dto.setNombreInscrits(0);
+        }
+
         return dto;
     }
 
