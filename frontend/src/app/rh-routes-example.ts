@@ -9,7 +9,7 @@ export const routes: Routes = [
     {
         path: 'rh',
         canActivate: [authGuard, roleGuard],
-        data: { roles: ['RH', 'ADMIN'] },
+        data: { roles: ['RH'] },
         children: [
             {
                 path: '',

@@ -15,10 +15,95 @@
 
     @if (successMessage()) {
     <div class="alert alert-success">
-        <span>OK {{ successMessage() }}</span>
+        <span>✓ {{ successMessage() }}</span>
         <button (click)="successMessage.set(null)">X</button>
     </div>
     }
+
+    <!-- Statistics Dashboard -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon primary">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path
+                        d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
+                </svg>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value">{{ stats().total }}</div>
+                <div class="stat-label">Total</div>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon high">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                </svg>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value">{{ stats().highPriority }}</div>
+                <div class="stat-label">Priorité Haute</div>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon medium">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="M12 6V12L16 14" />
+                </svg>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value">{{ stats().mediumPriority }}</div>
+                <div class="stat-label">Priorité Moyenne</div>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon success">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path
+                        d="M22 11.08V12C21.9988 14.1564 21.3005 16.2547 20.0093 17.9818C18.7182 19.7088 16.9033 20.9725 14.8354 21.5839C12.7674 22.1953 10.5573 22.1219 8.53447 21.3746C6.51168 20.6273 4.78465 19.2461 3.61096 17.4371C2.43727 15.628 1.87979 13.4881 2.02168 11.3363C2.16356 9.18455 2.99721 7.13631 4.39828 5.49706C5.79935 3.85781 7.69279 2.71537 9.79619 2.24013C11.8996 1.76489 14.1003 1.98232 16.07 2.86" />
+                    <path d="M22 4L12 14.01L9 11.01" />
+                </svg>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value">{{ stats().averageLevel }}</div>
+                <div class="stat-label">Niveau Moyen</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search and Filters -->
+    <div class="controls-section">
+        <div class="search-box">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8" />
+                <path d="M21 21L16.65 16.65" />
+            </svg>
+            <input type="text" placeholder="Rechercher par nom ou compétence..." [(ngModel)]="searchQuery"
+                class="search-input">
+        </div>
+
+        <div class="filters">
+            <button class="filter-btn" [class.active]="selectedFilter() === 'all'" (click)="selectedFilter.set('all')">
+                Toutes
+            </button>
+            <button class="filter-btn priority-high" [class.active]="selectedFilter() === 'high'"
+                (click)="selectedFilter.set('high')">
+                Haute ({{ stats().highPriority }})
+            </button>
+            <button class="filter-btn priority-medium" [class.active]="selectedFilter() === 'medium'"
+                (click)="selectedFilter.set('medium')">
+                Moyenne ({{ stats().mediumPriority }})
+            </button>
+            <button class="filter-btn priority-low" [class.active]="selectedFilter() === 'low'"
+                (click)="selectedFilter.set('low')">
+                Basse ({{ stats().lowPriority }})
+            </button>
+        </div>
+    </div>
 
     @if (loading()) {
     <div class="loading-state">
@@ -26,15 +111,24 @@
         <p>Chargement des évaluations...</p>
     </div>
     } @else {
-    @if (evaluations().length === 0) {
+    @if (filteredEvaluations.length === 0) {
     <div class="empty-state">
-        <p>Aucune évaluation en attente</p>
-        <small>Toutes les auto-évaluations ont été traitées</small>
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path
+                d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
+        </svg>
+        <h3>Aucune évaluation trouvée</h3>
+        <p>{{ searchQuery() ? 'Aucun résultat pour votre recherche' : 'Toutes les auto-évaluations ont été traitées' }}
+        </p>
     </div>
     } @else {
     <div class="evaluations-grid">
-        @for (eval of evaluations(); track eval.id) {
-        <div class="evaluation-card">
+        @for (eval of filteredEvaluations; track eval.id) {
+        <div class="evaluation-card" [class]="getPriorityClass(eval.niveauAuto)">
+            <div class="priority-indicator">
+                <span class="priority-badge">{{ getPriorityLabel(eval.niveauAuto) }}</span>
+            </div>
+
             <div class="card-header">
                 <div class="employee-info">
                     <div class="employee-avatar">
@@ -46,7 +140,7 @@
                     </div>
                 </div>
                 <div class="date-badge">
-                    {{ eval.dateAutoEvaluation | date:'dd/MM/yyyy' }}
+                    {{ formatDate(eval.dateAutoEvaluation) }}
                 </div>
             </div>
 
@@ -71,6 +165,11 @@
 
             <div class="card-footer">
                 <button class="btn-primary" (click)="openValidationModal(eval)">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path
+                            d="M22 11.08V12C21.9988 14.1564 21.3005 16.2547 20.0093 17.9818C18.7182 19.7088 16.9033 20.9725 14.8354 21.5839C12.7674 22.1953 10.5573 22.1219 8.53447 21.3746C6.51168 20.6273 4.78465 19.2461 3.61096 17.4371C2.43727 15.628 1.87979 13.4881 2.02168 11.3363C2.16356 9.18455 2.99721 7.13631 4.39828 5.49706C5.79935 3.85781 7.69279 2.71537 9.79619 2.24013C11.8996 1.76489 14.1003 1.98232 16.07 2.86" />
+                        <path d="M22 4L12 14.01L9 11.01" />
+                    </svg>
                     Évaluer
                 </button>
             </div>

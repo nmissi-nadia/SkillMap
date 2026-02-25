@@ -39,7 +39,7 @@
         <p>Chargement de vos tests...</p>
     </div>
     } @else {
-    @if (filteredTests().length === 0) {
+    @if (filteredTests.length === 0) {
     <div class="empty-state">
         <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path
@@ -51,7 +51,7 @@
     </div>
     } @else {
     <div class="tests-grid">
-        @for (assignment of filteredTests(); track assignment.id) {
+        @for (assignment of filteredTests; track assignment.id) {
         <div class="test-card" [class.overdue]="isOverdue(assignment.dateLimite, assignment.statut)">
             <div class="test-header">
                 <div class="test-title-section">

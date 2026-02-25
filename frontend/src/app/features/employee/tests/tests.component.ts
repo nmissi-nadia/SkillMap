@@ -141,7 +141,7 @@ export class EmployeeTestsComponent implements OnInit {
     }
 
     getDifficulteLabel(difficulte: string): string {
-        const labels = {
+        const labels: { [key: string]: string } = {
             'FACILE': 'Facile',
             'MOYEN': 'Moyen',
             'DIFFICILE': 'Difficile'
@@ -150,7 +150,7 @@ export class EmployeeTestsComponent implements OnInit {
     }
 
     getDifficulteClass(difficulte: string): string {
-        const classes = {
+        const classes: { [key: string]: string } = {
             'FACILE': 'badge-success',
             'MOYEN': 'badge-warning',
             'DIFFICILE': 'badge-error'

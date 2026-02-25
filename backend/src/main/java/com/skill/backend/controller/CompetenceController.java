@@ -50,7 +50,7 @@ public class CompetenceController {
      * Créer une compétence (Admin/Manager/RH).
      */
     @PostMapping
-    @PreAuthorize("hasAnyRole('MANAGER', 'RH', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('MANAGER', 'RH')")
     public ResponseEntity<CompetenceDTO> createCompetence(@RequestBody CompetenceDTO dto) {
         return new ResponseEntity<>(competenceService.createCompetence(dto), HttpStatus.CREATED);
     }

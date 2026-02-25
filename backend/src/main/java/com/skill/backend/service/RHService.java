@@ -43,8 +43,8 @@ public class RHService {
         Utilisateur utilisateur = utilisateurRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
         
-        if (utilisateur.getRole() != RoleUtilisateur.RH && utilisateur.getRole() != RoleUtilisateur.ADMIN) {
-            throw new RuntimeException("L'utilisateur n'est pas RH ou ADMIN");
+        if (utilisateur.getRole() != RoleUtilisateur.RH) {
+            throw new RuntimeException("L'utilisateur n'est pas RH");
         }
         
         if (utilisateur instanceof RH) {

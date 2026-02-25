@@ -18,10 +18,24 @@ export class PendingEvaluationsComponent implements OnInit {
     successMessage = signal<string | null>(null);
 
     // Modal state
-    showModal = signal(false);
     selectedEvaluation = signal<PendingEvaluation | null>(null);
     niveauManager = signal(0);
     commentaireManager = signal('');
+
+    // Filter and search
+    selectedFilter = signal<'all' | 'high' | 'medium' | 'low'>('all');
+    searchQuery = signal('');
+
+    // Statistics
+    stats = signal({
+        total: 0,
+        highPriority: 0,
+        mediumPriority: 0,
+        lowPriority: 0,
+        averageLevel: 0
+    });
+
+    showModal = signal(false);
 
     constructor(private managerService: ManagerService) { }
 
@@ -36,6 +50,7 @@ export class PendingEvaluationsComponent implements OnInit {
         this.managerService.getPendingEvaluations().subscribe({
             next: (evaluations) => {
                 this.evaluations.set(evaluations);
+                this.calculateStats(evaluations);
                 this.loading.set(false);
                 console.log('✅ Évaluations en attente chargées:', evaluations);
             },
@@ -45,6 +60,50 @@ export class PendingEvaluationsComponent implements OnInit {
                 this.loading.set(false);
             }
         });
+    }
+
+    calculateStats(evaluations: PendingEvaluation[]) {
+        const total = evaluations.length;
+        const highPriority = evaluations.filter(e => e.niveauAuto >= 4).length;
+        const mediumPriority = evaluations.filter(e => e.niveauAuto === 3).length;
+        const lowPriority = evaluations.filter(e => e.niveauAuto <= 2).length;
+        const averageLevel = total > 0
+            ? Math.round(evaluations.reduce((sum, e) => sum + e.niveauAuto, 0) / total * 10) / 10
+            : 0;
+
+        this.stats.set({
+            total,
+            highPriority,
+            mediumPriority,
+            lowPriority,
+            averageLevel
+        });
+    }
+
+    get filteredEvaluations() {
+        let filtered = this.evaluations();
+
+        // Apply filter
+        const filter = this.selectedFilter();
+        if (filter === 'high') {
+            filtered = filtered.filter(e => e.niveauAuto >= 4);
+        } else if (filter === 'medium') {
+            filtered = filtered.filter(e => e.niveauAuto === 3);
+        } else if (filter === 'low') {
+            filtered = filtered.filter(e => e.niveauAuto <= 2);
+        }
+
+        // Apply search
+        const query = this.searchQuery().toLowerCase();
+        if (query) {
+            filtered = filtered.filter(e =>
+                e.employe.nom.toLowerCase().includes(query) ||
+                e.employe.prenom.toLowerCase().includes(query) ||
+                e.competence.nom.toLowerCase().includes(query)
+            );
+        }
+
+        return filtered;
     }
 
     openValidationModal(evaluation: PendingEvaluation) {
@@ -100,5 +159,30 @@ export class PendingEvaluationsComponent implements OnInit {
 
     getStars(niveau: number): string[] {
         return Array(5).fill('').map((_, i) => i < niveau ? '★' : '☆');
+    }
+
+    getPriorityClass(niveau: number): string {
+        if (niveau >= 4) return 'priority-high';
+        if (niveau === 3) return 'priority-medium';
+        return 'priority-low';
+    }
+
+    getPriorityLabel(niveau: number): string {
+        if (niveau >= 4) return 'Haute';
+        if (niveau === 3) return 'Moyenne';
+        return 'Basse';
+    }
+
+    formatDate(dateInput: Date | string): string {
+        const date = typeof dateInput === 'string' ? new Date(dateInput) : dateInput;
+        const now = new Date();
+        const diffTime = now.getTime() - date.getTime();
+        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+        if (diffDays === 0) return "Aujourd'hui";
+        if (diffDays === 1) return 'Hier';
+        if (diffDays < 7) return `Il y a ${diffDays} jours`;
+
+        return date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' });
     }
 }

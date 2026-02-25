@@ -6,8 +6,7 @@ export enum RoleUtilisateur {
     EMPLOYE = 'EMPLOYE',
     MANAGER = 'MANAGER',
     RH = 'RH',
-    CHEF_PROJET = 'CHEF_PROJET',
-    ADMIN = 'ADMIN'
+    CHEF_PROJET = 'CHEF_PROJET'
 }
 
 /**
@@ -17,6 +16,5 @@ export const RoleLabels: Record<RoleUtilisateur, string> = {
     [RoleUtilisateur.EMPLOYE]: 'Employé',
     [RoleUtilisateur.MANAGER]: 'Manager',
     [RoleUtilisateur.RH]: 'Ressources Humaines',
-    [RoleUtilisateur.CHEF_PROJET]: 'Chef de Projet',
-    [RoleUtilisateur.ADMIN]: 'Administrateur'
+    [RoleUtilisateur.CHEF_PROJET]: 'Chef de Projet'
 };

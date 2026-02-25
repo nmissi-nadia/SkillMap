@@ -8,7 +8,7 @@ import { Employee } from '../../../core/models/employee.model';
 @Component({
     selector: 'app-team-list',
     standalone: true,
-    imports: [CommonModule, RouterLink, FormsModule],
+    imports: [CommonModule, FormsModule],
     templateUrl: './team-list.component.html',
     styleUrls: ['./team-list.component.scss']
 })

@@ -4,6 +4,5 @@ public enum RoleUtilisateur {
     EMPLOYE,
     MANAGER,
     RH,
-    CHEF_PROJET,
-    ADMIN
+    CHEF_PROJET
 }

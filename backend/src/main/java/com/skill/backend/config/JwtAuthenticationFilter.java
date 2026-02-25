@@ -97,8 +97,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 );
                 SecurityContextHolder.getContext().setAuthentication(authToken);
                 
-                System.out.println("🔐 Authentication set in SecurityContext");
+                System.out.println("✅ Authentication set in SecurityContext");
                 System.out.println("🔐 Final authorities in context: " + authToken.getAuthorities());
+                System.out.println("🔍 Verification - SecurityContext.getAuthentication(): " + SecurityContextHolder.getContext().getAuthentication());
+                System.out.println("🔍 Verification - Authorities from context: " + SecurityContextHolder.getContext().getAuthentication().getAuthorities());
             } else {
                 System.out.println("❌ JWT token is NOT valid");
             }
@@ -108,6 +110,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             System.out.println("ℹ️ Authentication already exists in SecurityContext");
         }
         
+        System.out.println("🚀 About to proceed with filter chain for: " + request.getRequestURI());
         filterChain.doFilter(request, response);
         System.out.println("✅ Filter chain completed for: " + request.getRequestURI());
     }

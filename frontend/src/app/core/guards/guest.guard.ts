@@ -19,6 +19,7 @@ export const guestGuard: CanActivateFn = () => {
     // Rediriger vers le dashboard approprié selon le rôle
     const dashboardUrl = authService.getDashboardUrl();
     console.log('🔄 guestGuard - Utilisateur déjà connecté, redirection vers:', dashboardUrl);
-    router.navigate([dashboardUrl]);
-    return false;
+
+    // Utiliser navigateByUrl pour éviter de re-déclencher les guards
+    return router.parseUrl(dashboardUrl);
 };
