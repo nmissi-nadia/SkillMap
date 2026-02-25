@@ -16,10 +16,10 @@ export class SkillsMapComponent implements OnInit {
     rareSkills = signal<RareSkillDTO[]>([]);
     criticalSkills = signal<CriticalSkillDTO[]>([]);
 
-    // Filtres
-    selectedDepartment = signal<string>('');
-    selectedPoste = signal<string>('');
-    selectedNiveau = signal<number | undefined>(undefined);
+    // Filtres (propriétés simples pour ngModel bidirectionnel)
+    selectedDepartment = '';
+    selectedPoste = '';
+    selectedNiveau: number | undefined = undefined;
 
     departments = signal<string[]>([]);
 
@@ -44,9 +44,9 @@ export class SkillsMapComponent implements OnInit {
         this.isLoading.set(true);
         this.error.set(null);
 
-        const dept = this.selectedDepartment() || undefined;
-        const poste = this.selectedPoste() || undefined;
-        const niveau = this.selectedNiveau();
+        const dept = this.selectedDepartment || undefined;
+        const poste = this.selectedPoste || undefined;
+        const niveau = this.selectedNiveau;
 
         // Charger la cartographie
         this.rhService.getSkillsMap(dept, poste, niveau).subscribe({
@@ -79,9 +79,9 @@ export class SkillsMapComponent implements OnInit {
     }
 
     resetFilters(): void {
-        this.selectedDepartment.set('');
-        this.selectedPoste.set('');
-        this.selectedNiveau.set(undefined);
+        this.selectedDepartment = '';
+        this.selectedPoste = '';
+        this.selectedNiveau = undefined;
         this.loadSkillsData();
     }
 
@@ -99,6 +99,17 @@ export class SkillsMapComponent implements OnInit {
         const map = this.skillsMap();
         if (!map || map.totalCompetences === 0) return 0;
         return (map.repartitionParCategorie[categorie] / map.totalCompetences) * 100;
+    }
+
+    getNiveauKeys(): string[] {
+        const map = this.skillsMap();
+        return map?.distributionNiveaux ? Object.keys(map.distributionNiveaux) : [];
+    }
+
+    getLevelPercentage(niveau: string): number {
+        const map = this.skillsMap();
+        if (!map?.distributionNiveaux || map.totalCompetences === 0) return 0;
+        return (map.distributionNiveaux[niveau] / map.totalCompetences) * 100;
     }
 
     getRareteColor(rarete: string): string {

@@ -1,4 +1,5 @@
 import { Component, OnInit, signal } from '@angular/core';
+const Math = globalThis.Math;
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -35,7 +36,7 @@ export class UserManagementComponent implements OnInit {
 
     editUser = signal<UpdateUtilisateurDTO>({});
 
-    roles = ['EMPLOYE', 'MANAGER', 'RH', 'CHEF_PROJET', 'ADMIN'];
+    roles = ['EMPLOYE', 'MANAGER', 'RH', 'CHEF_PROJET'];
 
     constructor(private rhService: RhService) { }
 
@@ -150,13 +151,24 @@ export class UserManagementComponent implements OnInit {
         }
     }
 
+    protected Math = Math;
+
     getRoleColor(role: string): string {
         switch (role) {
-            case 'ADMIN': return '#dc2626';
             case 'RH': return '#7c3aed';
             case 'MANAGER': return '#2563eb';
             case 'CHEF_PROJET': return '#059669';
             default: return '#6b7280';
+        }
+    }
+
+    getRoleLabel(role: string): string {
+        switch (role) {
+            case 'EMPLOYE': return 'Employé';
+            case 'MANAGER': return 'Manager';
+            case 'RH': return 'Ressources Humaines';
+            case 'CHEF_PROJET': return 'Chef de Projet';
+            default: return role;
         }
     }
 

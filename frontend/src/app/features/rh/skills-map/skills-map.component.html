@@ -1,177 +1,248 @@
-<div class="skills-map-page">
+<div class="rh-skills-map">
+
     <!-- Header -->
     <div class="page-header">
-        <div class="header-content">
-            <h1 class="title">
-                Cartographie des Compétences
-            </h1>
-            <p class="subtitle">Analyse détaillée des compétences de l'organisation</p>
+        <div class="header-left">
+            <div class="page-icon">
+                <svg viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" />
+                    <path d="M12 2V5M12 19V22M2 12H5M19 12H22" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" />
+                    <path d="M19.07 4.93L16.95 7.05M7.05 16.95L4.93 19.07M19.07 19.07L16.95 16.95M7.05 7.05L4.93 4.93"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                </svg>
+            </div>
+            <div>
+                <h1>Cartographie des Compétences</h1>
+                <p class="page-subtitle" *ngIf="skillsMap()">{{ skillsMap()!.totalEmployes }} employés · {{
+                    skillsMap()!.totalCompetences }} compétences</p>
+            </div>
         </div>
-        <a routerLink="/rh/dashboard" class="back-btn">← Retour au tableau de bord</a>
+        <button class="btn-refresh" (click)="loadSkillsData()">
+            <svg viewBox="0 0 24 24" fill="none">
+                <path d="M23 4V10H17" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" />
+                <path d="M1 20V14H7" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" />
+                <path
+                    d="M3.51 9C4.01717 7.56678 4.87913 6.2854 6.01547 5.27542C7.1518 4.26543 8.52547 3.55976 10.0083 3.22426C11.4911 2.88875 13.0348 2.93434 14.4952 3.35677C15.9556 3.77921 17.2853 4.56471 18.36 5.64L23 10M1 14L5.64 18.36C6.71475 19.4353 8.04437 20.2208 9.50481 20.6432C10.9652 21.0657 12.5089 21.1112 13.9917 20.7757C15.4745 20.4402 16.8482 19.7346 17.9845 18.7246C19.1209 17.7146 19.9828 16.4332 20.49 15"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            Actualiser
+        </button>
     </div>
 
     <!-- Filters -->
-    <div class="filters-section">
-        <h2>Filtres</h2>
-        <div class="filters-grid">
-            <div class="filter-group">
-                <label for="department">Département</label>
-                <select id="department" [(ngModel)]="selectedDepartment" (change)="applyFilters()">
-                    <option value="">Tous les départements</option>
-                    @for (dept of departments(); track dept) {
-                    <option [value]="dept">{{ dept }}</option>
-                    }
-                </select>
-            </div>
-
-            <div class="filter-group">
-                <label for="poste">Poste</label>
-                <input type="text" id="poste" [(ngModel)]="selectedPoste" placeholder="Ex: Développeur"
-                    (keyup.enter)="applyFilters()" />
-            </div>
-
-            <div class="filter-group">
-                <label for="niveau">Niveau minimum</label>
-                <select id="niveau" [(ngModel)]="selectedNiveau" (change)="applyFilters()">
-                    <option [value]="undefined">Tous les niveaux</option>
-                    <option [value]="1">1 - Débutant</option>
-                    <option [value]="2">2 - Intermédiaire</option>
-                    <option [value]="3">3 - Confirmé</option>
-                    <option [value]="4">4 - Expert</option>
-                    <option [value]="5">5 - Maître</option>
-                </select>
-            </div>
-
-            <div class="filter-actions">
-                <button class="btn-apply" (click)="applyFilters()">Appliquer</button>
-                <button class="btn-reset" (click)="resetFilters()">Réinitialiser</button>
-            </div>
+    <div class="filters-panel">
+        <div class="filter-group">
+            <label>Département</label>
+            <select [(ngModel)]="selectedDepartment" (change)="loadSkillsData()">
+                <option value="">Tous les départements</option>
+                <option *ngFor="let dep of departments()" [value]="dep">{{ dep }}</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label>Poste</label>
+            <input type="text" [(ngModel)]="selectedPoste" placeholder="Filtrer par poste..."
+                (change)="loadSkillsData()" />
+        </div>
+        <div class="filter-group">
+            <label>Niveau minimum</label>
+            <select [(ngModel)]="selectedNiveau" (change)="loadSkillsData()">
+                <option [ngValue]="undefined">Tous les niveaux</option>
+                <option [ngValue]="1">1 — Débutant</option>
+                <option [ngValue]="2">2 — Intermédiaire</option>
+                <option [ngValue]="3">3 — Avancé</option>
+                <option [ngValue]="4">4 — Expert</option>
+                <option [ngValue]="5">5 — Master</option>
+            </select>
         </div>
     </div>
 
-    <!-- Loading State -->
-    @if (isLoading()) {
-    <div class="loading-container">
-        <div class="spinner"></div>
-        <p>Chargement de la cartographie...</p>
+    <!-- Loading -->
+    <div class="loading-row" *ngIf="isLoading()">
+        <div class="loading-spinner"></div>
+        <span>Chargement de la cartographie...</span>
     </div>
-    }
 
-    <!-- Error State -->
-    @if (error()) {
-    <div class="error-banner">
-        <span class="error-icon">!</span>
-        <p>{{ error() }}</p>
+    <!-- Error -->
+    <div class="error-banner" *ngIf="error() && !isLoading()">
+        <svg viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" />
+            <line x1="12" y1="8" x2="12" y2="12" stroke="currentColor" stroke-width="2" />
+            <line x1="12" y1="16" x2="12.01" y2="16" stroke="currentColor" stroke-width="2" />
+        </svg>
+        {{ error() }}
     </div>
-    }
 
-    <!-- Main Content -->
-    @if (!isLoading() && !error() && skillsMap()) {
-    <!-- Global Stats -->
-    <div class="stats-overview">
-        <div class="stat-card">
-            <div class="stat-icon">S</div>
-            <div class="stat-content">
-                <h3>{{ skillsMap()!.totalCompetences }}</h3>
-                <p>Compétences totales</p>
+    <ng-container *ngIf="!isLoading() && skillsMap()">
+
+        <!-- Stats Summary -->
+        <div class="stats-row">
+            <div class="stat-chip">
+                <span class="stat-val">{{ skillsMap()!.totalCompetences }}</span>
+                <span class="stat-lbl">Compétences</span>
+            </div>
+            <div class="stat-chip stat-chip-green">
+                <span class="stat-val">{{ skillsMap()!.competencesMaitrisees }}</span>
+                <span class="stat-lbl">Maîtrisées (≥4)</span>
+            </div>
+            <div class="stat-chip stat-chip-orange">
+                <span class="stat-val">{{ skillsMap()!.competencesEnDeveloppement }}</span>
+                <span class="stat-lbl">En développement</span>
             </div>
         </div>
 
-        <div class="stat-card">
-            <div class="stat-icon">E</div>
-            <div class="stat-content">
-                <h3>{{ skillsMap()!.totalEmployes }}</h3>
-                <p>Employés</p>
-            </div>
-        </div>
+        <!-- Grid sections -->
+        <div class="content-grid">
 
-        <div class="stat-card">
-            <div class="stat-icon">P</div>
-            <div class="stat-content">
-                <h3>{{ skillsMap()!.niveauMoyenGlobal.toFixed(1) }} / 5</h3>
-                <p>Niveau moyen global</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Categories Distribution -->
-    <div class="card categories-section">
-        <div class="card-header">
-            <h2>Répartition par Catégorie</h2>
-        </div>
-
-        <div class="categories-list">
-            @for (categorie of getCategorieKeys(); track categorie) {
-            <div class="category-item">
-                <div class="category-header">
-                    <span class="category-name">{{ categorie }}</span>
-                    <span class="category-count">{{ getCategorieValue(categorie) }} compétences</span>
+            <!-- Répartition par catégorie -->
+            <div class="card card-full">
+                <div class="card-header">
+                    <h2>
+                        <svg viewBox="0 0 24 24" fill="none">
+                            <rect x="3" y="3" width="7" height="7" stroke="currentColor" stroke-width="2" />
+                            <rect x="14" y="3" width="7" height="7" stroke="currentColor" stroke-width="2" />
+                            <rect x="14" y="14" width="7" height="7" stroke="currentColor" stroke-width="2" />
+                            <rect x="3" y="14" width="7" height="7" stroke="currentColor" stroke-width="2" />
+                        </svg>
+                        Répartition par catégorie
+                    </h2>
                 </div>
-                <div class="category-bar">
-                    <div class="category-fill" [style.width.%]="getCategoriePercentage(categorie)"></div>
-                </div>
-                <span class="category-percentage">{{ getCategoriePercentage(categorie).toFixed(1) }}%</span>
-            </div>
-            }
-        </div>
-    </div>
-
-    <!-- Two Column Layout -->
-    <div class="two-column-grid">
-        <!-- Rare Skills -->
-        <div class="card rare-skills-section">
-            <div class="card-header">
-                <h2>Compétences Rares</h2>
-                <span class="badge">{{ rareSkills().length }}</span>
-            </div>
-
-            <div class="skills-list">
-                @for (skill of rareSkills(); track skill.competenceId) {
-                <div class="skill-item">
-                    <div class="skill-header">
-                        <span class="skill-name">{{ skill.competenceNom }}</span>
-                        <span class="rarete-badge" [style.background-color]="getRareteColor(skill.rarete)">
-                            {{ skill.rarete }}
-                        </span>
-                    </div>
-                    <div class="skill-meta">
-                        <span class="skill-category">{{ skill.categorie }}</span>
-                        <span class="employee-count">{{ skill.nombreEmployes }} employé(s)</span>
+                <div class="card-body">
+                    <div class="categories-grid">
+                        <div class="category-item" *ngFor="let cat of getCategorieKeys()">
+                            <div class="category-header">
+                                <span class="category-name">{{ cat }}</span>
+                                <span class="category-count">{{ skillsMap()!.repartitionParCategorie[cat] }}</span>
+                            </div>
+                            <div class="category-bar">
+                                <div class="category-bar-fill"
+                                    [style.width.%]="(skillsMap()!.repartitionParCategorie[cat] / skillsMap()!.totalCompetences) * 100">
+                                </div>
+                            </div>
+                            <span class="category-pct">{{ ((skillsMap()!.repartitionParCategorie[cat] /
+                                skillsMap()!.totalCompetences) * 100).toFixed(0) }}%</span>
+                        </div>
                     </div>
                 </div>
-                } @empty {
-                <p class="empty-state">Aucune compétence rare détectée</p>
-                }
-            </div>
-        </div>
-
-        <!-- Critical Skills -->
-        <div class="card critical-skills-section">
-            <div class="card-header">
-                <h2>Compétences Critiques</h2>
-                <span class="badge alert">{{ criticalSkills().length }}</span>
             </div>
 
-            <div class="skills-list">
-                @for (skill of criticalSkills(); track skill.competenceId) {
-                <div class="skill-item">
-                    <div class="skill-header">
-                        <span class="skill-name">{{ skill.competenceNom }}</span>
-                        <span class="criticite-badge" [style.background-color]="getCriticiteColor(skill.criticite)">
-                            {{ skill.criticite }}
-                        </span>
+            <!-- Compétences rares -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>
+                        <svg viewBox="0 0 24 24" fill="none">
+                            <polygon
+                                points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                        Compétences Rares
+                    </h2>
+                    <span class="badge-count">{{ rareSkills().length }}</span>
+                </div>
+                <div class="card-body scrollable">
+                    <div class="skill-list" *ngIf="rareSkills().length > 0">
+                        <div class="skill-item" *ngFor="let skill of rareSkills()">
+                            <div class="skill-left">
+                                <span class="skill-name">{{ skill.competenceNom }}</span>
+                                <span class="skill-employees">{{ skill.nombreEmployes }} employé(s)</span>
+                            </div>
+                            <span class="skill-badge" [style.background-color]="getRareteColor(skill.rarete) + '20'"
+                                [style.color]="getRareteColor(skill.rarete)"
+                                [style.border]="'1px solid ' + getRareteColor(skill.rarete) + '40'">
+                                {{ skill.rarete }}
+                            </span>
+                        </div>
                     </div>
-                    <div class="skill-meta">
-                        <span class="skill-category">{{ skill.categorie }}</span>
-                        <span class="employee-count">{{ skill.nombreEmployes }} employé(s)</span>
-                        <span class="level-avg">Niveau: {{ skill.niveauMoyen.toFixed(1) }}</span>
+                    <div class="empty-state-sm" *ngIf="rareSkills().length === 0">
+                        <p>Aucune compétence rare détectée</p>
                     </div>
                 </div>
-                } @empty {
-                <p class="empty-state">Aucune compétence critique</p>
-                }
             </div>
+
+            <!-- Compétences critiques -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>
+                        <svg viewBox="0 0 24 24" fill="none">
+                            <path
+                                d="M10.29 3.86L1.82 18C1.64537 18.3024 1.55296 18.6453 1.55199 18.9945C1.55101 19.3437 1.64151 19.6871 1.81442 19.9905C1.98733 20.2939 2.23672 20.5467 2.53771 20.7238C2.8387 20.9009 3.18082 20.9961 3.53 21H20.47C20.8192 20.9961 21.1613 20.9009 21.4623 20.7238C21.7633 20.5467 22.0127 20.2939 22.1856 19.9905C22.3585 19.6871 22.449 19.3437 22.448 18.9945C22.447 18.6453 22.3546 18.3024 22.18 18L13.71 3.86C13.5317 3.56611 13.2807 3.32312 12.9812 3.15448C12.6817 2.98585 12.3437 2.89725 12 2.89725C11.6563 2.89725 11.3183 2.98585 11.0188 3.15448C10.7193 3.32312 10.4683 3.56611 10.29 3.86Z"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            <line x1="12" y1="9" x2="12" y2="13" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" />
+                            <line x1="12" y1="17" x2="12.01" y2="17" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" />
+                        </svg>
+                        Compétences Critiques
+                    </h2>
+                    <span class="badge-count badge-red">{{ criticalSkills().length }}</span>
+                </div>
+                <div class="card-body scrollable">
+                    <div class="skill-list" *ngIf="criticalSkills().length > 0">
+                        <div class="skill-item" *ngFor="let skill of criticalSkills()">
+                            <div class="skill-left">
+                                <span class="skill-name">{{ skill.competenceNom }}</span>
+                                <span class="skill-employees">{{ skill.nombreEmployes }} employé(s)</span>
+                            </div>
+                            <span class="skill-badge"
+                                [style.background-color]="getCriticiteColor(skill.criticite) + '20'"
+                                [style.color]="getCriticiteColor(skill.criticite)"
+                                [style.border]="'1px solid ' + getCriticiteColor(skill.criticite) + '40'">
+                                {{ skill.criticite }}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="empty-state-sm" *ngIf="criticalSkills().length === 0">
+                        <p>Aucune compétence critique détectée</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Distribution des niveaux -->
+            <div class="card card-full" *ngIf="skillsMap()!.distributionNiveaux">
+                <div class="card-header">
+                    <h2>
+                        <svg viewBox="0 0 24 24" fill="none">
+                            <line x1="18" y1="20" x2="18" y2="10" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" />
+                            <line x1="12" y1="20" x2="12" y2="4" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" />
+                            <line x1="6" y1="20" x2="6" y2="14" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" />
+                        </svg>
+                        Distribution des niveaux de compétences
+                    </h2>
+                </div>
+                <div class="card-body">
+                    <div class="levels-grid">
+                        <div class="level-item" *ngFor="let niveau of getNiveauKeys()">
+                            <div class="level-label">Niveau {{ niveau }}</div>
+                            <div class="level-bar-container">
+                                <div class="level-bar" [style.width.%]="getLevelPercentage(niveau)">
+                                    <span class="level-bar-label" *ngIf="getLevelPercentage(niveau) > 10">{{
+                                        skillsMap()!.distributionNiveaux[niveau] }}</span>
+                                </div>
+                                <span class="level-count" *ngIf="getLevelPercentage(niveau) <= 10">{{
+                                    skillsMap()!.distributionNiveaux[niveau] }}</span>
+                            </div>
+                            <span class="level-pct">{{ getLevelPercentage(niveau).toFixed(0) }}%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
+    </ng-container>
+
+    <!-- Empty state when no data -->
+    <div class="empty-state" *ngIf="!isLoading() && !skillsMap() && !error()">
+        <svg viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" />
+            <path d="M12 8V12L15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+        </svg>
+        <h3>Aucune donnée disponible</h3>
+        <p>La cartographie des compétences sera affichée ici une fois les données disponibles.</p>
     </div>
-    }
+
 </div>

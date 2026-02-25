@@ -10,7 +10,7 @@ export interface UtilisateurDTO {
     email: string;
     nom: string;
     prenom: string;
-    role: 'EMPLOYE' | 'MANAGER' | 'RH' | 'CHEF_PROJET' | 'ADMIN';
+    role: 'EMPLOYE' | 'MANAGER' | 'RH' | 'CHEF_PROJET';
     enabled: boolean;
     dateCreation: string;
     provider: 'LOCAL' | 'GOOGLE' | 'OKTA';
@@ -43,6 +43,9 @@ export interface SkillsMapDTO {
     totalEmployes: number;
     niveauMoyenGlobal: number;
     repartitionParCategorie: { [key: string]: number };
+    competencesMaitrisees?: number;
+    competencesEnDeveloppement?: number;
+    distributionNiveaux?: { [key: string]: number };
 }
 
 export interface RareSkillDTO {

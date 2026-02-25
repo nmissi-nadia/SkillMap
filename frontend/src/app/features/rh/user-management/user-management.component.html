@@ -1,211 +1,255 @@
-<div class="user-management-page">
+<div class="rh-users">
+
     <!-- Header -->
     <div class="page-header">
-        <div class="header-content">
-            <h1 class="title">
-                Gestion des Utilisateurs
-            </h1>
-            <p class="subtitle">Administration des comptes et des rôles</p>
-        </div>
-        <div class="header-actions">
-            <a routerLink="/rh/dashboard" class="back-btn">← Retour</a>
-            <button class="create-btn" (click)="openCreateModal()">+ Nouvel Utilisateur</button>
-        </div>
-    </div>
-
-    <!-- Filters -->
-    <div class="filters-section">
-        <div class="filter-group">
-            <label>Filtrer par rôle</label>
-            <div class="role-filters">
-                <button class="role-filter-btn" [class.active]="selectedRole() === ''" (click)="clearFilter()">
-                    Tous
-                </button>
-                @for (role of roles; track role) {
-                <button class="role-filter-btn" [class.active]="selectedRole() === role"
-                    [style.border-color]="getRoleColor(role)" (click)="filterByRole(role)">
-                    {{ role }}
-                </button>
-                }
+        <div class="header-left">
+            <div class="page-icon">
+                <svg viewBox="0 0 24 24" fill="none">
+                    <path
+                        d="M17 21V19C17 17.9391 16.5786 16.9217 15.8284 16.1716C15.0783 15.4214 14.0609 15 13 15H5C3.93913 15 2.92172 15.4214 2.17157 16.1716C1.42143 16.9217 1 17.9391 1 19V21"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    <path
+                        d="M9 11C11.2091 11 13 9.20914 13 7C13 4.79086 11.2091 3 9 3C6.79086 3 5 4.79086 5 7C5 9.20914 6.79086 11 9 11Z"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    <path
+                        d="M23 21V19C22.9993 18.1137 22.7044 17.2528 22.1614 16.5523C21.6184 15.8519 20.8581 15.3516 20 15.13"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    <path
+                        d="M16 3.13C16.8604 3.35031 17.623 3.85071 18.1676 4.55232C18.7122 5.25392 19.0078 6.11683 19.0078 7.005C19.0078 7.89318 18.7122 8.75608 18.1676 9.45769C17.623 10.1593 16.8604 10.6597 16 10.88"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+            </div>
+            <div>
+                <h1>Gestion des Utilisateurs</h1>
+                <p class="page-subtitle">{{ totalElements() }} utilisateur(s) enregistré(s)</p>
             </div>
         </div>
+        <button class="btn-primary" (click)="openCreateModal()">
+            <svg viewBox="0 0 24 24" fill="none">
+                <line x1="12" y1="5" x2="12" y2="19" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                <line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+            </svg>
+            Nouvel utilisateur
+        </button>
+    </div>
 
-        <div class="search-group">
-            <input type="text" placeholder="Rechercher par nom, prénom ou email..." [(ngModel)]="searchTerm"
-                class="search-input" />
+    <!-- Filters Bar -->
+    <div class="filters-bar">
+        <div class="search-box">
+            <svg viewBox="0 0 24 24" fill="none">
+                <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2" />
+                <path d="M21 21L16.65 16.65" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+            </svg>
+            <input type="text" placeholder="Rechercher par nom, prénom ou email..." [value]="searchTerm()"
+                (input)="searchTerm.set($any($event.target).value)" />
+        </div>
+        <div class="role-filters">
+            <button class="filter-chip" [class.active]="selectedRole() === ''" (click)="clearFilter()">Tous</button>
+            <button class="filter-chip" [class.active]="selectedRole() === 'EMPLOYE'"
+                (click)="filterByRole('EMPLOYE')">Employés</button>
+            <button class="filter-chip" [class.active]="selectedRole() === 'MANAGER'"
+                (click)="filterByRole('MANAGER')">Managers</button>
+            <button class="filter-chip" [class.active]="selectedRole() === 'RH'"
+                (click)="filterByRole('RH')">RH</button>
+            <button class="filter-chip" [class.active]="selectedRole() === 'CHEF_PROJET'"
+                (click)="filterByRole('CHEF_PROJET')">Chefs de Projet</button>
         </div>
     </div>
 
-    <!-- Users Table -->
-    @if (isLoading()) {
-    <div class="loading-container">
-        <div class="spinner"></div>
-        <p>Chargement des utilisateurs...</p>
+    <!-- Loading -->
+    <div class="loading-row" *ngIf="isLoading()">
+        <div class="loading-spinner"></div>
+        <span>Chargement...</span>
     </div>
-    } @else {
-    <div class="users-table-container">
+
+    <!-- Table -->
+    <div class="table-container" *ngIf="!isLoading()">
         <table class="users-table">
             <thead>
                 <tr>
-                    <th>Nom</th>
+                    <th>Utilisateur</th>
                     <th>Email</th>
                     <th>Rôle</th>
-                    <th>Provider</th>
                     <th>Statut</th>
-                    <th>Date création</th>
                     <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
-                @for (user of getFilteredUsers(); track user.id) {
-                <tr>
-                    <td class="user-name">
-                        <div class="name-cell">
-                            <span class="name">{{ user.prenom }} {{ user.nom }}</span>
+                <tr *ngFor="let user of getFilteredUsers()" class="user-row">
+                    <td>
+                        <div class="user-cell">
+                            <div class="user-avatar-sm" [style.background-color]="getRoleColor(user.role) + '22'"
+                                [style.color]="getRoleColor(user.role)">
+                                {{ user.prenom?.[0] }}{{ user.nom?.[0] }}
+                            </div>
+                            <div class="user-cell-info">
+                                <span class="user-fullname">{{ user.prenom }} {{ user.nom }}</span>
+                            </div>
                         </div>
                     </td>
-                    <td>{{ user.email }}</td>
                     <td>
-                        <span class="role-badge" [style.background-color]="getRoleColor(user.role)">
-                            {{ user.role }}
-                        </span>
+                        <span class="user-email">{{ user.email }}</span>
                     </td>
                     <td>
-                        <span class="provider-badge">{{ user.provider }}</span>
+                        <span class="role-badge" [style.background-color]="getRoleColor(user.role) + '18'"
+                            [style.color]="getRoleColor(user.role)">
+                            {{ getRoleLabel(user.role) }}
+                        </span>
                     </td>
                     <td>
                         <span class="status-badge" [class.active]="user.enabled" [class.inactive]="!user.enabled">
+                            <span class="status-dot"></span>
                             {{ user.enabled ? 'Actif' : 'Inactif' }}
                         </span>
                     </td>
-                    <td>{{ user.dateCreation | date:'dd/MM/yyyy' }}</td>
                     <td>
-                        <div class="action-buttons">
-                            <button class="btn-edit" (click)="openEditModal(user)" title="Modifier">
-                                Edit
+                        <div class="action-btns">
+                            <button class="btn-icon btn-edit" (click)="openEditModal(user)" title="Modifier">
+                                <svg viewBox="0 0 24 24" fill="none">
+                                    <path
+                                        d="M11 4H4C3.46957 4 2.96086 4.21071 2.58579 4.58579C2.21071 4.96086 2 5.46957 2 6V20C2 20.5304 2.21071 21.0391 2.58579 21.4142C2.96086 21.7893 3.46957 22 4 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V13"
+                                        stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" />
+                                    <path
+                                        d="M18.5 2.50001C18.8978 2.10219 19.4374 1.87869 20 1.87869C20.5626 1.87869 21.1022 2.10219 21.5 2.50001C21.8978 2.89784 22.1213 3.43741 22.1213 4.00001C22.1213 4.56262 21.8978 5.10219 21.5 5.50001L12 15L8 16L9 12L18.5 2.50001Z"
+                                        stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" />
+                                </svg>
                             </button>
-                            <button class="btn-toggle" (click)="toggleUserStatus(user)"
+                            <button class="btn-icon" [class.btn-deactivate]="user.enabled"
+                                [class.btn-activate]="!user.enabled" (click)="toggleUserStatus(user)"
                                 [title]="user.enabled ? 'Désactiver' : 'Activer'">
-                                {{ user.enabled ? 'Lock' : 'Unlock' }}
+                                <svg viewBox="0 0 24 24" fill="none" *ngIf="user.enabled">
+                                    <path d="M18 6L6 18" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" />
+                                    <path d="M6 6L18 18" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" />
+                                </svg>
+                                <svg viewBox="0 0 24 24" fill="none" *ngIf="!user.enabled">
+                                    <path d="M20 6L9 17L4 12" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
                             </button>
                         </div>
                     </td>
                 </tr>
-                } @empty {
-                <tr>
-                    <td colspan="7" class="empty-state">
-                        Aucun utilisateur trouvé
+                <tr *ngIf="getFilteredUsers().length === 0">
+                    <td colspan="5" class="empty-row">
+                        <svg viewBox="0 0 24 24" fill="none">
+                            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" />
+                            <line x1="12" y1="8" x2="12" y2="12" stroke="currentColor" stroke-width="2" />
+                            <line x1="12" y1="16" x2="12.01" y2="16" stroke="currentColor" stroke-width="2" />
+                        </svg>
+                        <p>Aucun utilisateur trouvé</p>
                     </td>
                 </tr>
-                }
             </tbody>
         </table>
     </div>
 
     <!-- Pagination -->
-    <div class="pagination">
+    <div class="pagination" *ngIf="!isLoading() && totalElements() > pageSize()">
         <button class="page-btn" (click)="previousPage()" [disabled]="currentPage() === 0">
-            ← Précédent
+            <svg viewBox="0 0 24 24" fill="none">
+                <polyline points="15 18 9 12 15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" />
+            </svg>
         </button>
-        <span class="page-info">
-            Page {{ currentPage() + 1 }} - {{ totalElements() }} utilisateur(s)
-        </span>
+        <span class="page-info">Page {{ currentPage() + 1 }} sur {{ Math.ceil(totalElements() / pageSize()) }}</span>
         <button class="page-btn" (click)="nextPage()" [disabled]="(currentPage() + 1) * pageSize() >= totalElements()">
-            Suivant →
+            <svg viewBox="0 0 24 24" fill="none">
+                <polyline points="9 18 15 12 9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" />
+            </svg>
         </button>
     </div>
-    }
 
-    <!-- Create Modal -->
-    @if (showCreateModal()) {
-    <div class="modal-overlay" (click)="closeCreateModal()">
-        <div class="modal-content" (click)="$event.stopPropagation()">
+    <!-- =========================================================
+       MODAL — Créer utilisateur
+       ========================================================= -->
+    <div class="modal-overlay" *ngIf="showCreateModal()" (click)="closeCreateModal()">
+        <div class="modal" (click)="$event.stopPropagation()">
             <div class="modal-header">
-                <h2>Créer un Utilisateur</h2>
-                <button class="close-btn" (click)="closeCreateModal()">X</button>
+                <h2>Nouvel utilisateur</h2>
+                <button class="modal-close" (click)="closeCreateModal()">
+                    <svg viewBox="0 0 24 24" fill="none">
+                        <line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" />
+                        <line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" />
+                    </svg>
+                </button>
             </div>
             <div class="modal-body">
-                <form (ngSubmit)="createUser()">
+                <div class="form-row">
                     <div class="form-group">
-                        <label for="create-prenom">Prénom</label>
-                        <input type="text" id="create-prenom" [(ngModel)]="newUser().prenom" name="prenom" required />
+                        <label>Prénom *</label>
+                        <input type="text" [(ngModel)]="newUser().prenom" placeholder="Prénom" />
                     </div>
-
                     <div class="form-group">
-                        <label for="create-nom">Nom</label>
-                        <input type="text" id="create-nom" [(ngModel)]="newUser().nom" name="nom" required />
+                        <label>Nom *</label>
+                        <input type="text" [(ngModel)]="newUser().nom" placeholder="Nom" />
                     </div>
-
-                    <div class="form-group">
-                        <label for="create-email">Email</label>
-                        <input type="email" id="create-email" [(ngModel)]="newUser().email" name="email" required />
-                    </div>
-
-                    <div class="form-group">
-                        <label for="create-password">Mot de passe</label>
-                        <input type="password" id="create-password" [(ngModel)]="newUser().password" name="password"
-                            required />
-                    </div>
-
-                    <div class="form-group">
-                        <label for="create-role">Rôle</label>
-                        <select id="create-role" [(ngModel)]="newUser().role" name="role" required>
-                            @for (role of roles; track role) {
-                            <option [value]="role">{{ role }}</option>
-                            }
-                        </select>
-                    </div>
-
-                    <div class="modal-actions">
-                        <button type="button" class="btn-cancel" (click)="closeCreateModal()">
-                            Annuler
-                        </button>
-                        <button type="submit" class="btn-submit">
-                            Créer
-                        </button>
-                    </div>
-                </form>
+                </div>
+                <div class="form-group">
+                    <label>Email *</label>
+                    <input type="email" [(ngModel)]="newUser().email" placeholder="email@exemple.com" />
+                </div>
+                <div class="form-group">
+                    <label>Mot de passe *</label>
+                    <input type="password" [(ngModel)]="newUser().password" placeholder="••••••••" />
+                </div>
+                <div class="form-group">
+                    <label>Rôle</label>
+                    <select [(ngModel)]="newUser().role">
+                        <option *ngFor="let role of roles" [value]="role">{{ getRoleLabel(role) }}</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" (click)="closeCreateModal()">Annuler</button>
+                <button class="btn-primary" (click)="createUser()">Créer l'utilisateur</button>
             </div>
         </div>
     </div>
-    }
 
-    <!-- Edit Modal -->
-    @if (showEditModal() && selectedUser()) {
-    <div class="modal-overlay" (click)="closeEditModal()">
-        <div class="modal-content" (click)="$event.stopPropagation()">
+    <!-- =========================================================
+       MODAL — Modifier utilisateur
+       ========================================================= -->
+    <div class="modal-overlay" *ngIf="showEditModal()" (click)="closeEditModal()">
+        <div class="modal" (click)="$event.stopPropagation()">
             <div class="modal-header">
-                <h2>Modifier l'Utilisateur</h2>
-                <button class="close-btn" (click)="closeEditModal()">X</button>
+                <h2>Modifier — {{ selectedUser()?.prenom }} {{ selectedUser()?.nom }}</h2>
+                <button class="modal-close" (click)="closeEditModal()">
+                    <svg viewBox="0 0 24 24" fill="none">
+                        <line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" />
+                        <line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" />
+                    </svg>
+                </button>
             </div>
             <div class="modal-body">
-                <form (ngSubmit)="updateUser()">
+                <div class="form-row">
                     <div class="form-group">
-                        <label for="edit-prenom">Prénom</label>
-                        <input type="text" id="edit-prenom" [(ngModel)]="editUser().prenom" name="prenom" />
+                        <label>Prénom</label>
+                        <input type="text" [(ngModel)]="editUser().prenom" />
                     </div>
-
                     <div class="form-group">
-                        <label for="edit-nom">Nom</label>
-                        <input type="text" id="edit-nom" [(ngModel)]="editUser().nom" name="nom" />
+                        <label>Nom</label>
+                        <input type="text" [(ngModel)]="editUser().nom" />
                     </div>
-
-                    <div class="form-group">
-                        <label for="edit-email">Email</label>
-                        <input type="email" id="edit-email" [(ngModel)]="editUser().email" name="email" />
-                    </div>
-
-                    <div class="modal-actions">
-                        <button type="button" class="btn-cancel" (click)="closeEditModal()">
-                            Annuler
-                        </button>
-                        <button type="submit" class="btn-submit">
-                            Enregistrer
-                        </button>
-                    </div>
-                </form>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" [(ngModel)]="editUser().email" />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" (click)="closeEditModal()">Annuler</button>
+                <button class="btn-primary" (click)="updateUser()">Enregistrer</button>
             </div>
         </div>
     </div>
-    }
+
 </div>
