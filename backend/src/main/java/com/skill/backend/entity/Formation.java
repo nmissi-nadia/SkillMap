@@ -25,16 +25,23 @@ public class Formation {
     private String titre;
     private String organisme;
     private String type; // Interne / Externe
-    private String statut; // Recommandée / Suivie / Validée
+    private String statut; // Planifiée / En_cours / Terminée / Annulée
+
+    @Column(columnDefinition = "TEXT")
+    private String description;
+
     private LocalDate dateDebut;
     private LocalDate dateFin;
-    
-    // Workflow suivi formations
+
     private Double cout;
-    private String certification;          // Nom certification obtenue
-    private String urlCertificat;          // URL du certificat uploadé
-    private LocalDateTime dateValidation;  // Date validation RH
-    private String valideePar;             // ID du RH validateur
+    private Integer dureeHeures;
+    private Integer maxParticipants;
+    private Integer niveauRequis;       // 1-5
+
+    private String certification;
+    private String urlCertificat;
+    private LocalDateTime dateValidation;
+    private String valideePar;
 
     @ManyToMany(mappedBy = "formations")
     private Set<Employe> employes = new HashSet<>();

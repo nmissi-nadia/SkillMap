@@ -68,22 +68,33 @@ export interface CriticalSkillDTO {
 export interface FormationDTO {
     id: string;
     titre: string;
-    organisme: string;
-    type: string;
+    organisme?: string;
+    type?: string;
     statut: string;
+    description?: string;
     dateDebut: string;
     dateFin?: string;
-    employeIds: string[];
+    cout?: number;
+    dureeHeures?: number;
+    maxParticipants?: number;
+    niveauRequis?: number;
+    nombreInscrits?: number;
+    certification?: string;
+    employeIds?: string[];
 }
 
 export interface CreateFormationDTO {
     titre: string;
-    organisme: string;
-    type: string;
+    organisme?: string;
+    type?: string;
     statut?: string;
+    description?: string;
     dateDebut: string;
     dateFin?: string;
     cout?: number;
+    dureeHeures?: number;
+    maxParticipants?: number;
+    niveauRequis?: number;
     certification?: string;
 }
 
@@ -97,15 +108,18 @@ export interface FormationBudgetDTO {
     formationId: string;
     titre: string;
     coutTotal?: number;
-    nombreEmployesAssignes: number;
-    nombreEmployesTermines: number;
-    nombreEmployesEnCours: number;
+    coutUnitaire?: number;
+    nombreInscrits?: number;
+    nombreEmployesAssignes?: number;
+    nombreEmployesTermines?: number;
+    nombreEmployesEnCours?: number;
     coutParEmploye?: number;
-    tauxCompletion: number;
-    roi: number;
+    tauxCompletion?: number;
+    roi?: number;
+    budgetRestant?: number;
     dateDebut: string;
     dateFin?: string;
-    employesStatuts: EmployeFormationStatusDTO[];
+    employesStatuts?: EmployeFormationStatusDTO[];
 }
 
 export interface EmployeFormationStatusDTO {

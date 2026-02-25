@@ -17,15 +17,21 @@ public interface FormationMapper {
     FormationMapper INSTANCE = Mappers.getMapper(FormationMapper.class);
 
     @Mapping(source = "employes", target = "employeIds", qualifiedByName = "employesToIds")
+    @Mapping(source = "employes", target = "nombreInscrits", qualifiedByName = "employesToCount")
     FormationDTO toDto(Formation formation);
 
+    @Mapping(target = "employes", ignore = true)
     Formation toEntity(FormationDTO formationDTO);
 
     @Named("employesToIds")
     static Set<String> employesToIds(Set<Employe> employes) {
-        if (employes == null) {
-            return null;
-        }
+        if (employes == null) return null;
         return employes.stream().map(Employe::getId).collect(Collectors.toSet());
+    }
+
+    @Named("employesToCount")
+    static Integer employesToCount(Set<Employe> employes) {
+        if (employes == null) return 0;
+        return employes.size();
     }
 }

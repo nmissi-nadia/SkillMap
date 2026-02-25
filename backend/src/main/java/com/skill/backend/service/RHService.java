@@ -513,6 +513,15 @@ public class RHService {
             budget.setCoutParEmploye(0.0);
             budget.setTauxCompletion(0.0);
         }
+
+        // Champs enrichis
+        budget.setCoutUnitaire(formation.getCout()); // cout unitaire = cout de la formation
+        budget.setNombreInscrits(totalAssignes);
+        if (formation.getMaxParticipants() != null && formation.getCout() != null) {
+            double budgetMax = formation.getMaxParticipants() * formation.getCout();
+            double coutReel = formation.getCout() != null ? formation.getCout() : 0.0;
+            budget.setBudgetRestant(budgetMax - coutReel * totalAssignes);
+        }
         
         // ROI simplifié : basé sur le taux de complétion
         budget.setRoi(calculateFormationROI(formation, formationEmployes));
