@@ -22,6 +22,7 @@ public class AuthController {
     private final AuthService service;
     private final TokenBlacklistService tokenBlacklistService;
     private final AuditLogService auditLogService;
+    private final com.skill.backend.service.JwtService jwtService;
 
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register(
@@ -85,21 +86,51 @@ public class AuthController {
     }
 
     @GetMapping("/validate-token")
-    public ResponseEntity<Map<String, Boolean>> validateToken(
+    public ResponseEntity<Map<String, Object>> validateToken(
             @RequestHeader(value = "Authorization", required = false) String authHeader
     ) {
-        Map<String, Boolean> response = new HashMap<>();
-        
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            String token = authHeader.substring(7);
-            boolean isBlacklisted = tokenBlacklistService.isTokenBlacklisted(token);
-            response.put("valid", !isBlacklisted);
-            response.put("blacklisted", isBlacklisted);
-        } else {
+        Map<String, Object> response = new HashMap<>();
+
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             response.put("valid", false);
             response.put("blacklisted", false);
+            response.put("reason", "No Bearer token provided");
+            return ResponseEntity.ok(response);
         }
-        
+
+        String token = authHeader.substring(7);
+        boolean isBlacklisted = tokenBlacklistService.isTokenBlacklisted(token);
+
+        if (isBlacklisted) {
+            response.put("valid", false);
+            response.put("blacklisted", true);
+            response.put("reason", "Token has been revoked");
+            return ResponseEntity.ok(response);
+        }
+
+        // Vérifier la validité réelle du JWT (signature + expiration)
+        try {
+            String username = jwtService.extractUsername(token);
+            if (username == null) {
+                response.put("valid", false);
+                response.put("blacklisted", false);
+                response.put("reason", "Invalid token structure");
+            } else {
+                response.put("valid", true);
+                response.put("blacklisted", false);
+                response.put("username", username);
+            }
+        } catch (io.jsonwebtoken.ExpiredJwtException e) {
+            response.put("valid", false);
+            response.put("blacklisted", false);
+            response.put("expired", true);
+            response.put("reason", "Token has expired - please login again");
+        } catch (Exception e) {
+            response.put("valid", false);
+            response.put("blacklisted", false);
+            response.put("reason", "Invalid token: " + e.getMessage());
+        }
+
         return ResponseEntity.ok(response);
     }
 }
