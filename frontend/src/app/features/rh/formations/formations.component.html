@@ -18,6 +18,13 @@
                 <p class="page-subtitle">{{ totalElements() }} formation(s) au total</p>
             </div>
         </div>
+        <button class="btn-primary" (click)="openCreateModal()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            Nouvelle Formation
+        </button>
     </div>
 
     <!-- Loading -->
@@ -62,6 +69,22 @@
                     <span class="statut-dot" [style.background-color]="getStatutColor(formation.statut)"></span>
                     {{ getStatutLabel(formation.statut) }}
                 </span>
+                <div class="card-actions">
+                    <button class="action-btn edit" (click)="openEditModal(formation)" title="Modifier">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                        </svg>
+                    </button>
+                    <button class="action-btn delete" (click)="confirmDelete(formation)" title="Supprimer">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="3 6 5 6 21 6"></polyline>
+                            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
+                            <path d="M10 11v6"></path>
+                            <path d="M14 11v6"></path>
+                        </svg>
+                    </button>
+                </div>
             </div>
 
             <p class="formation-desc" *ngIf="formation.description">{{ formation.description }}</p>
@@ -159,6 +182,77 @@
                     stroke-linejoin="round" />
             </svg>
         </button>
+    </div>
+
+    <!-- =========================================================
+       MODAL — Création / Édition
+       ========================================================= -->
+    <div class="modal-overlay" *ngIf="showFormModal()" (click)="closeFormModal()">
+        <div class="modal" (click)="$event.stopPropagation()">
+            <div class="modal-header">
+                <div>
+                    <h2>{{ isEditing() ? 'Modifier la Formation' : 'Nouvelle Formation' }}</h2>
+                    <p class="modal-subtitle">Remplissez les détails ci-dessous</p>
+                </div>
+                <button class="modal-close" (click)="closeFormModal()">
+                    <svg viewBox="0 0 24 24" fill="none">
+                        <line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                        <line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form class="formation-form">
+                    <div class="form-group">
+                        <label>Titre de la formation *</label>
+                        <input type="text" [(ngModel)]="editForm.titre" name="titre" placeholder="Ex: Angular Avancé">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Organisme *</label>
+                            <input type="text" [(ngModel)]="editForm.organisme" name="organisme" placeholder="Ex: Udemy">
+                        </div>
+                        <div class="form-group">
+                            <label>Type *</label>
+                            <select [(ngModel)]="editForm.type" name="type">
+                                <option value="Interne">Interne</option>
+                                <option value="Externe">Externe</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea [(ngModel)]="editForm.description" name="description" rows="3" placeholder="Objectifs et contenu..."></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Date Début *</label>
+                            <input type="date" [(ngModel)]="editForm.dateDebut" name="dateDebut">
+                        </div>
+                        <div class="form-group">
+                            <label>Date Fin</label>
+                            <input type="date" [(ngModel)]="editForm.dateFin" name="dateFin">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Coût (€)</label>
+                            <input type="number" [(ngModel)]="editForm.cout" name="cout">
+                        </div>
+                        <div class="form-group">
+                            <label>Max Inscrits</label>
+                            <input type="number" [(ngModel)]="editForm.maxParticipants" name="maxParticipants">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" (click)="closeFormModal()">Annuler</button>
+                <button class="btn-primary" (click)="saveFormation()" [disabled]="isSaving()">
+                    {{ isSaving() ? 'Enregistrement...' : 'Enregistrer' }}
+                </button>
+            </div>
+        </div>
     </div>
 
     <!-- =========================================================

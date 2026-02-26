@@ -488,6 +488,23 @@ public class RHService {
     }
 
     /**
+     * Supprimer une formation
+     */
+    @Transactional
+    public void deleteFormation(String rhEmail, String formationId) {
+        getRHByEmail(rhEmail); // Vérifier les droits
+        
+        Formation formation = formationRepository.findById(formationId)
+                .orElseThrow(() -> new RuntimeException("Formation non trouvée"));
+        
+        // Supprimer d'abord les liens avec les employés
+        List<FormationEmploye> fe = formationEmployeRepository.findByFormationId(formationId);
+        formationEmployeRepository.deleteAll(fe);
+        
+        formationRepository.delete(formation);
+    }
+
+    /**
      * Assigner une formation à plusieurs employés
      */
     @Transactional

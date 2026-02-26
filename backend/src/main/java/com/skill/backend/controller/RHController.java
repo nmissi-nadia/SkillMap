@@ -236,4 +236,16 @@ public class RHController {
         rhService.validateCertification(authentication.getName(), dto);
         return ResponseEntity.noContent().build();
     }
+
+    @DeleteMapping("/formations/{formationId}")
+    @Operation(summary = "Supprimer une formation",
+               description = "Permet au RH de supprimer une formation - Supprime aussi les inscriptions associées")
+    public ResponseEntity<Void> deleteFormation(
+            @PathVariable String formationId,
+            Authentication authentication) {
+        
+        System.out.println("🎯 RHController.deleteFormation - Deleting: " + formationId);
+        rhService.deleteFormation(authentication.getName(), formationId);
+        return ResponseEntity.noContent().build();
+    }
 }

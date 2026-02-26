@@ -270,6 +270,10 @@ export class RhService {
         return this.http.post<void>(`${this.apiUrl}/certifications/validate`, dto);
     }
 
+    deleteFormation(formationId: string): Observable<void> {
+        return this.http.delete<void>(`${this.apiUrl}/formations/${formationId}`);
+    }
+
     // ========== PHASE 4: GESTION DU RÉFÉRENTIEL COMPÉTENCES ==========
 
     getCompetencies(): Observable<CompetenceDTO[]> {

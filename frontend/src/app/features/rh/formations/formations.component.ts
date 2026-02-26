@@ -27,6 +27,20 @@ export class FormationsComponent implements OnInit {
     isLoadingBudget = signal(false);
     error = signal<string | null>(null);
     showBudgetModal = signal(false);
+    showFormModal = signal(false);
+    isEditing = signal(false);
+    isSaving = signal(false);
+
+    editForm: any = {
+        titre: '',
+        organisme: '',
+        type: 'Interne',
+        description: '',
+        dateDebut: '',
+        dateFin: '',
+        cout: 0,
+        maxParticipants: 10
+    };
 
     constructor(private rhService: RhService) { }
 
@@ -152,11 +166,88 @@ export class FormationsComponent implements OnInit {
     }
 
     formatDate(dateString: string): string {
+        if (!dateString) return 'Non définie';
         const date = new Date(dateString);
         return date.toLocaleDateString('fr-FR', {
             year: 'numeric',
             month: 'long',
             day: 'numeric'
         });
+    }
+
+    // ========== CRUD Logic ==========
+
+    openCreateModal(): void {
+        this.isEditing.set(false);
+        this.editForm = {
+            titre: '',
+            organisme: '',
+            type: 'Interne',
+            description: '',
+            dateDebut: '',
+            dateFin: '',
+            cout: 0,
+            maxParticipants: 10
+        };
+        this.showFormModal.set(true);
+    }
+
+    openEditModal(formation: FormationDTO): void {
+        this.isEditing.set(true);
+        this.selectedFormation.set(formation);
+        this.editForm = {
+            titre: formation.titre,
+            organisme: formation.organisme || '',
+            type: formation.type || 'Interne',
+            description: formation.description || '',
+            dateDebut: formation.dateDebut ? formation.dateDebut.substring(0, 10) : '',
+            dateFin: formation.dateFin ? formation.dateFin.substring(0, 10) : '',
+            cout: formation.cout || 0,
+            maxParticipants: formation.maxParticipants || 10
+        };
+        this.showFormModal.set(true);
+    }
+
+    closeFormModal(): void {
+        this.showFormModal.set(false);
+        this.isSaving.set(false);
+    }
+
+    saveFormation(): void {
+        if (!this.editForm.titre || !this.editForm.dateDebut || !this.editForm.organisme) {
+            this.error.set('Veuillez remplir les champs obligatoires (*)');
+            return;
+        }
+
+        this.isSaving.set(true);
+        const obs = this.isEditing() && this.selectedFormation()
+            ? this.rhService.updateFormation(this.selectedFormation()!.id, this.editForm)
+            : this.rhService.createFormation(this.editForm);
+
+        obs.subscribe({
+            next: () => {
+                this.loadFormations();
+                this.closeFormModal();
+            },
+            error: (err) => {
+                console.error('Erreur sauvegarde formation:', err);
+                this.error.set('Erreur lors de l\'enregistrement de la formation');
+                this.isSaving.set(false);
+            }
+        });
+    }
+
+    confirmDelete(formation: FormationDTO): void {
+        if (confirm(`Voulez-vous vraiment supprimer la formation "${formation.titre}" ?`)) {
+            this.rhService.deleteFormation(formation.id).subscribe({
+                next: () => {
+                    this.loadFormations();
+                },
+                error: (err) => {
+                    console.error('Erreur suppression formation:', err);
+                    this.error.set('Erreur lors de la suppression de la formation');
+                }
+            });
+        }
     }
 }
