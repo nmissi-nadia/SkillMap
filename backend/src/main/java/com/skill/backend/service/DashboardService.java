@@ -47,7 +47,7 @@ public class DashboardService {
     private void populateEmployeStats(DashboardSummaryDTO.DashboardSummaryDTOBuilder builder, String employeId) {
         List<CompetenceEmploye> comps = competenceEmployeRepository.findByEmployeId(employeId);
         long validated = comps.stream()
-                .filter(ce -> ce.getNiveauManager() != null && ce.getNiveauManager() > 0)
+                .filter(ce -> ce.getNiveauManager() > 0)
                 .count();
         
         long ongoing = formationEmployeRepository.findByEmployeIdAndStatut(employeId, "EN_COURS").size();

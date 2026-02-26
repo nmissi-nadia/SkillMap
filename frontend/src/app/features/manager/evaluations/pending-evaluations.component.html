@@ -148,8 +148,10 @@
                 <div class="niveau-section">
                     <label>Auto-évaluation:</label>
                     <div class="stars">
-                        @for (star of getStars(eval.niveauAuto); track $index) {
-                        <span [class.filled]="star === '★'">{{ star }}</span>
+                        @for (i of [1,2,3,4,5]; track i) {
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" [style.color]="i <= eval.niveauAuto ? '#f59e0b' : '#e2e8f0'">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                        </svg>
                         }
                         <span class="niveau-label">{{ getNiveauLabel(eval.niveauAuto) }}</span>
                     </div>
@@ -199,8 +201,10 @@
             <div class="auto-eval-section">
                 <label>Auto-évaluation de l'employé:</label>
                 <div class="stars large">
-                    @for (star of getStars(selectedEvaluation()!.niveauAuto); track $index) {
-                    <span [class.filled]="star === '★'">{{ star }}</span>
+                    @for (i of [1,2,3,4,5]; track i) {
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" [style.color]="i <= selectedEvaluation()!.niveauAuto ? '#f59e0b' : '#e2e8f0'">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                    </svg>
                     }
                     <span class="niveau-label">{{ getNiveauLabel(selectedEvaluation()!.niveauAuto) }}</span>
                 </div>
@@ -213,9 +217,10 @@
                 <label>Votre évaluation (Manager):</label>
                 <div class="rating-input">
                     @for (i of [1, 2, 3, 4, 5]; track i) {
-                    <span class="star-input" [class.active]="i <= niveauManager()" (click)="niveauManager.set(i)">
-                        {{ i <= niveauManager() ? '★' : '☆' }} </span>
-                            }
+                    <svg class="star-input" [class.active]="i <= niveauManager()" (click)="niveauManager.set(i)" width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                    </svg>
+                    }
                 </div>
                 <p class="rating-label">{{ getNiveauLabel(niveauManager()) }}</p>
             </div>

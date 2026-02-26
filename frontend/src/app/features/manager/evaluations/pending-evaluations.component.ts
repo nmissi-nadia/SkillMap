@@ -52,10 +52,10 @@ export class PendingEvaluationsComponent implements OnInit {
                 this.evaluations.set(evaluations);
                 this.calculateStats(evaluations);
                 this.loading.set(false);
-                console.log('✅ Évaluations en attente chargées:', evaluations);
+                console.log('Évaluations en attente chargées:', evaluations);
             },
             error: (error) => {
-                console.error('❌ Erreur lors du chargement des évaluations:', error);
+                console.error('Erreur lors du chargement des évaluations:', error);
                 this.errorMessage.set('Impossible de charger les évaluations');
                 this.loading.set(false);
             }
@@ -140,7 +140,7 @@ export class PendingEvaluationsComponent implements OnInit {
                 setTimeout(() => this.successMessage.set(null), 3000);
             },
             error: (error) => {
-                console.error('❌ Erreur lors de la validation:', error);
+                console.error('Erreur lors de la validation:', error);
                 this.errorMessage.set('Erreur lors de la validation');
             }
         });
@@ -157,9 +157,6 @@ export class PendingEvaluationsComponent implements OnInit {
         return labels[niveau] || 'Non défini';
     }
 
-    getStars(niveau: number): string[] {
-        return Array(5).fill('').map((_, i) => i < niveau ? '★' : '☆');
-    }
 
     getPriorityClass(niveau: number): string {
         if (niveau >= 4) return 'priority-high';

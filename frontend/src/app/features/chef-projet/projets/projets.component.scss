@@ -208,10 +208,34 @@
     }
 }
 
-.priorite-text {
-    font-size: 0.8rem;
-    font-weight: 500;
-    color: #374151;
+.priorite-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.2rem 0.6rem;
+    border-radius: 6px;
+    text-transform: capitalize;
+
+    svg {
+        flex-shrink: 0;
+    }
+
+    &.p-haute {
+        background: #fee2e2;
+        color: #dc2626;
+    }
+
+    &.p-moyenne {
+        background: #fef3c7;
+        color: #d97706;
+    }
+
+    &.p-basse {
+        background: #d1fae5;
+        color: #059669;
+    }
 }
 
 .dates-cell {

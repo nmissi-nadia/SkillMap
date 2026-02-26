@@ -93,8 +93,11 @@
                         </span>
                     </td>
                     <td>
-                        <span class="priorite-text">
-                            {{ getPrioriteIcon(projet.priorite) }} {{ projet.priorite }}
+                        <span class="priorite-badge p-{{ projet.priorite.toLowerCase() }}">
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
+                                <circle cx="12" cy="12" r="10" />
+                            </svg>
+                            {{ projet.priorite }}
                         </span>
                     </td>
                     <td>

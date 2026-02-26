@@ -168,7 +168,12 @@
                     @for (comp of selectedCandidate()!.competencesMatchees; track comp.competenceNom) {
                     <div class="skill-row" [class.ok]="comp.satisfait" [class.nok]="!comp.satisfait">
                         <div class="skill-name">
-                            ({{ comp.satisfait ? 'OK' : 'KO' }}) {{ comp.competenceNom }}
+                            @if (comp.satisfait) {
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #10b981; margin-right: 4px;"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            } @else {
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #ef4444; margin-right: 4px;"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                            }
+                            {{ comp.competenceNom }}
                         </div>
                         <div class="skill-levels">
                             <span class="skill-level-badge employe">Emp: {{ getNiveauLabel(comp.niveauEmploye) }}</span>
