@@ -19,7 +19,7 @@
                 <h1>{{ employee()!.prenom }} {{ employee()!.nom }}</h1>
                 <p class="role-badge">{{ employee()!.role }}</p>
                 <div class="meta-info">
-                    <span>📧 {{ employee()!.email }}</span>
+                    <span>{{ employee()!.email }}</span>
                     @if (employee()!.matricule) {
                     <span>🆔 {{ employee()!.matricule }}</span>
                     }

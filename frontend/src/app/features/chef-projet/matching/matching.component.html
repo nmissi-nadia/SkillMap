@@ -168,7 +168,7 @@
                     @for (comp of selectedCandidate()!.competencesMatchees; track comp.competenceNom) {
                     <div class="skill-row" [class.ok]="comp.satisfait" [class.nok]="!comp.satisfait">
                         <div class="skill-name">
-                            {{ comp.satisfait ? '✅' : '⚠️' }} {{ comp.competenceNom }}
+                            ({{ comp.satisfait ? 'OK' : 'KO' }}) {{ comp.competenceNom }}
                         </div>
                         <div class="skill-levels">
                             <span class="skill-level-badge employe">Emp: {{ getNiveauLabel(comp.niveauEmploye) }}</span>

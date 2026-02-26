@@ -159,7 +159,7 @@ export class EmployeeTestsComponent implements OnInit {
     }
 
     startTest(assignment: TestAssignment) {
-        console.log('🚀 Starting test:', assignment.test.titre);
+        console.log('Starting test:', assignment.test.titre);
         // TODO: Navigate to test taking page
         alert(`Démarrage du test: ${assignment.test.titre}\n\nCette fonctionnalité sera implémentée prochainement.`);
     }
@@ -171,7 +171,7 @@ export class EmployeeTestsComponent implements OnInit {
     }
 
     viewResults(assignment: TestAssignment) {
-        console.log('📊 Viewing results:', assignment.test.titre);
+        console.log('Viewing results:', assignment.test.titre);
         // TODO: Navigate to results page
         alert(`Résultats du test: ${assignment.test.titre}\nScore: ${assignment.score}%\n\nCette fonctionnalité sera implémentée prochainement.`);
     }

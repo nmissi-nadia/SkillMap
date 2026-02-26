@@ -216,9 +216,9 @@
                         <label>Priorité</label>
                         <select [value]="projetEnCours().priorite ?? 'MOYENNE'"
                             (change)="updateField('priorite', $any($event.target).value)">
-                            <option value="HAUTE">🔴 Haute</option>
-                            <option value="MOYENNE">🟡 Moyenne</option>
-                            <option value="BASSE">🟢 Basse</option>
+                            <option value="HAUTE">Haute</option>
+                            <option value="MOYENNE">Moyenne</option>
+                            <option value="BASSE">Basse</option>
                         </select>
                     </div>
                     <div class="form-group">

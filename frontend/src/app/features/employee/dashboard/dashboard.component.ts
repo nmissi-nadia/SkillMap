@@ -27,7 +27,7 @@ export class DashboardComponent implements OnInit {
   today = new Date();
 
   ngOnInit() {
-    console.log('🏠 Employee Dashboard Component - ngOnInit appelé');
+    console.log('Employee Dashboard Component - ngOnInit appelé');
     this.loadDashboardData();
   }
 
@@ -108,10 +108,10 @@ export class DashboardComponent implements OnInit {
   getNotificationIcon(type: string): string {
     switch (type) {
       case 'VALIDATION': return '✓';
-      case 'AFFECTATION': return '📋';
-      case 'MESSAGE': return '💬';
-      case 'FORMATION': return '📚';
-      default: return '📢';
+      case 'AFFECTATION': return '';
+      case 'MESSAGE': return '';
+      case 'FORMATION': return '';
+      default: return '';
     }
   }
 

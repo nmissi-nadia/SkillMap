@@ -14,7 +14,7 @@
     <!-- KPI Dashboard -->
     <section class="stats-dashboard">
         <div class="stat-card total">
-            <div class="stat-icon">📈</div>
+            <div class="stat-icon">STATS</div>
             <div class="stat-info">
                 <h3>{{ stats().total }}</h3>
                 <p>Total Déclarées</p>
@@ -46,7 +46,7 @@
     <!-- Toolbar: Search & Filters -->
     <div class="toolbar glass">
         <div class="search-box">
-            <span class="search-icon">🔍</span>
+            <span class="search-icon">FIND</span>
             <input type="text" placeholder="Rechercher une compétence..." [ngModel]="searchTerm()"
                 (ngModelChange)="searchTerm.set($event)">
         </div>
@@ -73,7 +73,7 @@
     <!-- Messages d'erreur et de succès -->
     @if (errorMessage()) {
     <div class="alert alert-error animate-fade-in">
-        <span>⚠️ {{ errorMessage() }}</span>
+        <span>Error: {{ errorMessage() }}</span>
         <button (click)="errorMessage.set(null)">✕</button>
     </div>
     }
@@ -128,7 +128,7 @@
             </div>
 
             <div class="card-footer">
-                <span class="date">📅 {{ comp.dateEvaluation | date:'shortDate' }}</span>
+                <span class="date">{{ comp.dateEvaluation | date:'shortDate' }}</span>
             </div>
         </div>
         } @empty {

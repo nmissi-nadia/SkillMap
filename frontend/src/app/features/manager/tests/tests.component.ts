@@ -196,13 +196,13 @@ export class ManagerTestsComponent implements OnInit {
     }
 
     viewTestDetails(assignment: TestAssignment) {
-        console.log('📊 Viewing test details:', assignment);
+        console.log('Viewing test details:', assignment);
         // TODO: Navigate to test details page
         alert(`Détails du test pour ${assignment.employePrenom} ${assignment.employeNom}\n\nCette fonctionnalité sera implémentée prochainement.`);
     }
 
     sendReminder(assignment: TestAssignment) {
-        console.log('📧 Sending reminder to:', assignment.employePrenom, assignment.employeNom);
+        console.log('Sending reminder to:', assignment.employePrenom, assignment.employeNom);
         this.successMessage.set(`Rappel envoyé à ${assignment.employePrenom} ${assignment.employeNom}`);
         setTimeout(() => this.successMessage.set(null), 5000);
     }

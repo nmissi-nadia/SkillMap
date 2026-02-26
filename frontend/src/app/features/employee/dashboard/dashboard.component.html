@@ -10,7 +10,7 @@
         <div class="header-actions">
             <button class="btn-icon" title="Notifications">
                 <span class="notification-badge" *ngIf="getUnreadCount() > 0">{{ getUnreadCount() }}</span>
-                🔔
+                Notifications
             </button>
             <div class="user-profile-mini" *ngIf="employee()">
                 <div class="avatar-mini">{{ employee()!.prenom[0] }}{{ employee()!.nom[0] }}</div>
@@ -46,7 +46,7 @@
             <div class="kpi-grid">
                 @if (kpis()) {
                 <div class="kpi-card">
-                    <div class="kpi-icon" style="background: rgba(99, 102, 241, 0.1); color: #6366f1;">📊</div>
+                    <div class="kpi-icon" style="background: rgba(99, 102, 241, 0.1); color: #6366f1;">SCORE</div>
                     <div class="kpi-content">
                         <h3>{{ kpis()!.niveauGlobalCompetences }}%</h3>
                         <p>Niveau global</p>
@@ -62,7 +62,7 @@
                 </div>
 
                 <div class="kpi-card">
-                    <div class="kpi-icon" style="background: rgba(59, 130, 246, 0.1); color: #3b82f6;">📚</div>
+                    <div class="kpi-icon" style="background: rgba(59, 130, 246, 0.1); color: #3b82f6;">DOCS</div>
                     <div class="kpi-content">
                         <h3>{{ kpis()!.formationsEnCours }}</h3>
                         <p>Formations en cours</p>
@@ -70,7 +70,7 @@
                 </div>
 
                 <div class="kpi-card">
-                    <div class="kpi-icon" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;">📋</div>
+                    <div class="kpi-icon" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;">PLAN</div>
                     <div class="kpi-content">
                         <h3>{{ kpis()!.projetsActifs }}</h3>
                         <p>Projets actifs</p>
@@ -98,7 +98,7 @@
                             <div class="todo-meta">
                                 <span class="todo-type">{{ todo.type }}</span>
                                 @if (todo.dueDate) {
-                                <span class="todo-date">📅 {{ todo.dueDate | date:'dd/MM/yyyy' }}</span>
+                                <span class="todo-date">{{ todo.dueDate | date:'dd/MM/yyyy' }}</span>
                                 }
                             </div>
                         </div>
@@ -109,7 +109,7 @@
                     }
                 </div>
                 } @else {
-                <p class="empty-state">Aucune tâche en attente 🎉</p>
+                <p class="empty-state">Aucune tâche en attente</p>
                 }
             </section>
 
@@ -144,28 +144,28 @@
             <h2>Raccourcis</h2>
             <div class="links-grid">
                 <a routerLink="/employee/profile" class="quick-link-card">
-                    <div class="link-icon-container">👤</div>
+                    <div class="link-icon-container">PROFILE</div>
                     <div class="link-info">
                         <h3>Profil</h3>
                         <p>Gérez vos infos</p>
                     </div>
                 </a>
                 <a routerLink="/employee/competencies" class="quick-link-card">
-                    <div class="link-icon-container">🎯</div>
+                    <div class="link-icon-container">GOAL</div>
                     <div class="link-info">
                         <h3>Compétences</h3>
                         <p>Suivez vos acquis</p>
                     </div>
                 </a>
                 <a routerLink="/employee/tests" class="quick-link-card">
-                    <div class="link-icon-container">📝</div>
+                    <div class="link-icon-container">TEST</div>
                     <div class="link-info">
                         <h3>Tests</h3>
                         <p>Validez vos skills</p>
                     </div>
                 </a>
                 <a routerLink="/employee/formations" class="quick-link-card">
-                    <div class="link-icon-container">📚</div>
+                    <div class="link-icon-container">FORM</div>
                     <div class="link-info">
                         <h3>Formations</h3>
                         <p>Apprenez plus</p>

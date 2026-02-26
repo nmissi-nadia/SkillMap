@@ -85,7 +85,7 @@ export class TeamListComponent implements OnInit {
 
     // Action methods
     viewProfile(employee: Employee) {
-        console.log('📋 Viewing profile for:', employee.prenom, employee.nom);
+        console.log('Viewing profile for:', employee.prenom, employee.nom);
         // Navigate to employee detail page
         this.router.navigate(['/manager/team', employee.id]);
     }
@@ -128,7 +128,7 @@ export class TeamListComponent implements OnInit {
     }
 
     openTestModal(employee: Employee) {
-        console.log('📝 Opening test modal for:', employee.prenom, employee.nom);
+        console.log('Opening test modal for:', employee.prenom, employee.nom);
         this.selectedEmployee.set(employee);
         this.selectedTest.set('');
 

@@ -81,7 +81,7 @@
                     }}%</strong></span>
         </div>
         @if (totalAllocation() / (membres().length || 1) < 50) { <div class="alert-under">
-            ⚠️ Équipe sous-staffée — Envisagez d'ajouter des membres
+            Attention: Équipe sous-staffée — Envisagez d'ajouter des membres
     </div>
     }
 </div>
@@ -139,7 +139,7 @@
             </div>
             @if (membre.scoreCompatibilite) {
             <div class="compat-score" [class]="getScoreClass(membre.scoreCompatibilite)">
-                ⚡ {{ membre.scoreCompatibilite }}%
+                Match: {{ membre.scoreCompatibilite }}%
             </div>
             }
         </div>
