@@ -11,5 +11,6 @@ import java.util.Optional;
 @Repository
 public interface CompetenceEmployeRepository extends JpaRepository<CompetenceEmploye, String> {
     List<CompetenceEmploye> findByEmploye(Employe employe);
+    List<CompetenceEmploye> findByEmployeId(String employeId);
     Optional<CompetenceEmploye> findByEmployeIdAndCompetenceId(String employeId, String competenceId);
 }
