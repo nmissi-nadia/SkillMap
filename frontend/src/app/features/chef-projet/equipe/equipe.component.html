@@ -39,7 +39,7 @@
             </div>
             @if (selectedProjet()) {
             <div class="project-meta">
-                <span class="meta-tag statut-{{ selectedProjet()!.statut?.toLowerCase() }}">
+                <span class="meta-tag statut-{{ selectedProjet()!.statut.toLowerCase() }}">
                     {{ selectedProjet()!.statut }}
                 </span>
                 <span class="meta-tag">{{ membresActifs().length }} membres actifs</span>

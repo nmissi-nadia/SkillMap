@@ -112,6 +112,11 @@ export class SkillsMapComponent implements OnInit {
         return (map.distributionNiveaux[niveau] / map.totalCompetences) * 100;
     }
 
+    getNiveauCount(niveau: string): number {
+        const map = this.skillsMap();
+        return map?.distributionNiveaux ? (map.distributionNiveaux[niveau] || 0) : 0;
+    }
+
     getRareteColor(rarete: string): string {
         switch (rarete) {
             case 'UNIQUE': return '#dc2626';

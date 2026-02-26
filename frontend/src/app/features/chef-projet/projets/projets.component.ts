@@ -123,7 +123,7 @@ export class ProjetsComponent implements OnInit {
         return ({ PLANIFIE: 'Planifié', EN_COURS: 'En cours', TERMINE: 'Terminé', SUSPENDU: 'Suspendu' })[s] ?? s;
     }
 
-    getPrioriteIcon(p: string) { return ({ HAUTE: '🔴', MOYENNE: '🟡', BASSE: '🟢' })[p] ?? ''; }
+    getPrioriteIcon(p: string) { return ''; }
 
     trackById(_: number, p: Projet) { return p.id; }
 

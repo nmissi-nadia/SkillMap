@@ -119,7 +119,7 @@
                         <p class="project-client">{{ projet.client }}</p>
                     </div>
                     <div class="project-badges">
-                        <span class="badge statut-{{ projet.statut?.toLowerCase() }}">
+                        <span class="badge statut-{{ projet.statut.toLowerCase() }}">
                             {{ getStatutLabel(projet.statut) }}
                         </span>
                         <span class="badge priorite-{{ getPrioriteClass(projet.priorite) }}">

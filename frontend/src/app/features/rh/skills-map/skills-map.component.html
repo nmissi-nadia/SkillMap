@@ -220,11 +220,13 @@
                             <div class="level-label">Niveau {{ niveau }}</div>
                             <div class="level-bar-container">
                                 <div class="level-bar" [style.width.%]="getLevelPercentage(niveau)">
-                                    <span class="level-bar-label" *ngIf="getLevelPercentage(niveau) > 10">{{
-                                        skillsMap()!.distributionNiveaux[niveau] }}</span>
+                                    <span class="level-bar-label" *ngIf="getLevelPercentage(niveau) > 10">
+                                        {{ getNiveauCount(niveau) }}
+                                    </span>
                                 </div>
-                                <span class="level-count" *ngIf="getLevelPercentage(niveau) <= 10">{{
-                                    skillsMap()!.distributionNiveaux[niveau] }}</span>
+                                <span class="level-count" *ngIf="getLevelPercentage(niveau) <= 10">
+                                    {{ getNiveauCount(niveau) }}
+                                </span>
                             </div>
                             <span class="level-pct">{{ getLevelPercentage(niveau).toFixed(0) }}%</span>
                         </div>
