@@ -14,6 +14,17 @@ export interface UtilisateurDTO {
     enabled: boolean;
     dateCreation: string;
     provider: 'LOCAL' | 'GOOGLE' | 'OKTA';
+    // Champs spécifiques
+    matricule?: string;
+    poste?: string;
+    departement?: string;
+    dateEmbauche?: string;
+    niveauExperience?: string;
+    disponibilite?: boolean;
+    managerId?: string;
+    departementResponsable?: string;
+    service?: string;
+    domaine?: string;
 }
 
 export interface CreateUtilisateurDTO {
@@ -36,6 +47,12 @@ export interface UpdateUtilisateurDTO {
     poste?: string;
     service?: string;
     domaine?: string;
+    matricule?: string;
+    dateEmbauche?: string;
+    niveauExperience?: string;
+    disponibilite?: boolean;
+    managerId?: string;
+    departementResponsable?: string;
 }
 
 export interface SkillsMapDTO {

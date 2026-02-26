@@ -244,6 +244,68 @@
                     <label>Email</label>
                     <input type="email" [(ngModel)]="editUser().email" />
                 </div>
+
+                <!-- Champs spécifiques EMPLOYE -->
+                <ng-container *ngIf="selectedUser()?.role === 'EMPLOYE'">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Matricule</label>
+                            <input type="text" [(ngModel)]="editUser().matricule" />
+                        </div>
+                        <div class="form-group">
+                            <label>Poste</label>
+                            <input type="text" [(ngModel)]="editUser().poste" />
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Département</label>
+                            <input type="text" [(ngModel)]="editUser().departement" />
+                        </div>
+                        <div class="form-group">
+                            <label>Niveau d'expérience</label>
+                            <select [(ngModel)]="editUser().niveauExperience">
+                                <option value="Junior">Junior</option>
+                                <option value="Intermédiaire">Intermédiaire</option>
+                                <option value="Senior">Senior</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Date d'embauche</label>
+                            <input type="date" [(ngModel)]="editUser().dateEmbauche" />
+                        </div>
+                        <div class="form-group align-center checkbox-group">
+                            <label>Disponible</label>
+                            <input type="checkbox" [(ngModel)]="editUser().disponibilite" />
+                        </div>
+                    </div>
+                </ng-container>
+
+                <!-- Champs spécifiques MANAGER -->
+                <ng-container *ngIf="selectedUser()?.role === 'MANAGER'">
+                    <div class="form-group">
+                        <label>Département Responsable</label>
+                        <input type="text" [(ngModel)]="editUser().departementResponsable" />
+                    </div>
+                </ng-container>
+
+                <!-- Champs spécifiques CHEF_PROJET -->
+                <ng-container *ngIf="selectedUser()?.role === 'CHEF_PROJET'">
+                    <div class="form-group">
+                        <label>Domaine d'expertise</label>
+                        <input type="text" [(ngModel)]="editUser().domaine" />
+                    </div>
+                </ng-container>
+
+                <!-- Champs spécifiques RH -->
+                <ng-container *ngIf="selectedUser()?.role === 'RH'">
+                    <div class="form-group">
+                        <label>Service</label>
+                        <input type="text" [(ngModel)]="editUser().service" />
+                    </div>
+                </ng-container>
             </div>
             <div class="modal-footer">
                 <button class="btn-secondary" (click)="closeEditModal()">Annuler</button>

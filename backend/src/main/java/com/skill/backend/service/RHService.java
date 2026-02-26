@@ -152,14 +152,36 @@ public class RHService {
         if (dto.getEmail() != null) utilisateur.setEmail(dto.getEmail());
         
         // Mise à jour spécifique selon le type
-        if (utilisateur instanceof Employe && dto.getPoste() != null) {
-            ((Employe) utilisateur).setPoste(dto.getPoste());
+        if (utilisateur instanceof Employe) {
+            Employe e = (Employe) utilisateur;
+            if (dto.getPoste() != null) e.setPoste(dto.getPoste());
+            if (dto.getDepartement() != null) e.setDepartement(dto.getDepartement());
+            if (dto.getMatricule() != null) e.setMatricule(dto.getMatricule());
+            if (dto.getNiveauExperience() != null) e.setNiveauExperience(dto.getNiveauExperience());
+            if (dto.getDisponibilite() != null) e.setDisponibilite(dto.getDisponibilite());
+            if (dto.getDateEmbauche() != null) e.setDateEmbauche(java.time.LocalDate.parse(dto.getDateEmbauche()));
+            
+            if (dto.getManagerId() != null) {
+                Manager m = managerRepository.findById(dto.getManagerId())
+                        .orElseThrow(() -> new RuntimeException("Manager non trouvé"));
+                e.setManager(m);
+            }
         }
-        if (utilisateur instanceof Employe && dto.getDepartement() != null) {
-            ((Employe) utilisateur).setDepartement(dto.getDepartement());
+        
+        if (utilisateur instanceof Manager) {
+            Manager m = (Manager) utilisateur;
+            if (dto.getDepartementResponsable() != null) m.setDepartementResponsable(dto.getDepartementResponsable());
+            if (dto.getDepartement() != null) m.setDepartementResponsable(dto.getDepartement()); // Alias probable
         }
-        if (utilisateur instanceof Manager && dto.getDepartement() != null) {
-            ((Manager) utilisateur).setDepartementResponsable(dto.getDepartement());
+        
+        if (utilisateur instanceof ChefProjet) {
+            ChefProjet cp = (ChefProjet) utilisateur;
+            if (dto.getDomaine() != null) cp.setDomaine(dto.getDomaine());
+        }
+        
+        if (utilisateur instanceof RH) {
+            RH rh = (RH) utilisateur;
+            if (dto.getService() != null) rh.setService(dto.getService());
         }
         
         utilisateur = utilisateurRepository.save(utilisateur);
@@ -351,7 +373,24 @@ public class RHService {
         dto.setEnabled(utilisateur.isEnabled());
         dto.setDateCreation(utilisateur.getDateCreation());
         dto.setProvider(utilisateur.getProvider());
-        
+
+        if (utilisateur instanceof Employe) {
+            Employe e = (Employe) utilisateur;
+            dto.setMatricule(e.getMatricule());
+            dto.setPoste(e.getPoste());
+            dto.setDepartement(e.getDepartement());
+            dto.setDateEmbauche(e.getDateEmbauche() != null ? e.getDateEmbauche().toString() : null);
+            dto.setNiveauExperience(e.getNiveauExperience());
+            dto.setDisponibilite(e.isDisponibilite());
+            dto.setManagerId(e.getManager() != null ? e.getManager().getId() : null);
+        } else if (utilisateur instanceof Manager) {
+            dto.setDepartementResponsable(((Manager) utilisateur).getDepartementResponsable());
+        } else if (utilisateur instanceof ChefProjet) {
+            dto.setDomaine(((ChefProjet) utilisateur).getDomaine());
+        } else if (utilisateur instanceof RH) {
+            dto.setService(((RH) utilisateur).getService());
+        }
+
         return dto;
     }
 

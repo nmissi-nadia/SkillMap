@@ -103,7 +103,17 @@ export class UserManagementComponent implements OnInit {
         this.editUser.set({
             nom: user.nom,
             prenom: user.prenom,
-            email: user.email
+            email: user.email,
+            departement: user.departement || user.departementResponsable,
+            poste: user.poste,
+            service: user.service,
+            domaine: user.domaine,
+            matricule: user.matricule,
+            dateEmbauche: user.dateEmbauche,
+            niveauExperience: user.niveauExperience,
+            disponibilite: user.disponibilite,
+            managerId: user.managerId,
+            departementResponsable: user.departementResponsable
         });
         this.showEditModal.set(true);
     }

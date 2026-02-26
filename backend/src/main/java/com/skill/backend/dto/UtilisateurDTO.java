@@ -15,4 +15,22 @@ public class UtilisateurDTO {
     private LocalDateTime dateCreation;
     private RoleUtilisateur role;
     private Provider provider;
+
+    // Champs spécifiques EMPLOYE
+    private String matricule;
+    private String poste;
+    private String departement;
+    private String dateEmbauche;
+    private String niveauExperience;
+    private Boolean disponibilite;
+    private String managerId;
+
+    // Champs spécifiques MANAGER
+    private String departementResponsable;
+
+    // Champs spécifiques RH
+    private String service;
+
+    // Champs spécifiques CHEF_PROJET
+    private String domaine;
 }
