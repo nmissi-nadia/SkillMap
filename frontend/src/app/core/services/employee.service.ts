@@ -50,7 +50,7 @@ export class EmployeeService {
      * Pour que l'employé puisse choisir lesquelles ajouter à son profil
      */
     getAllCompetencies(): Observable<{ id: string, nom: string, categorie?: string }[]> {
-        return this.http.get<{ id: string, nom: string, categorie?: string }[]>(`${environment.apiUrl}/competences`);
+        return this.http.get<{ id: string, nom: string, categorie?: string }[]>(`${environment.apiUrl}/competencies`);
     }
 
     /**

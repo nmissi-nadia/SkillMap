@@ -13,4 +13,5 @@ public class CompetenceEmployeDTO {
     private String employeId;
     private String competenceId;
     private String competenceNom;
+    private CompetenceDTO competence;
 }

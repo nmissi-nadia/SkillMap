@@ -14,6 +14,7 @@ public interface CompetenceEmployeMapper {
     @Mapping(source = "employe.id", target = "employeId")
     @Mapping(source = "competence.id", target = "competenceId")
     @Mapping(source = "competence.nom", target = "competenceNom")
+    @Mapping(source = "competence", target = "competence")
     CompetenceEmployeDTO toDto(CompetenceEmploye competenceEmploye);
 
     @Mapping(source = "employeId", target = "employe.id")

@@ -70,8 +70,15 @@ export class CompetenciesComponent implements OnInit {
     constructor(private employeeService: EmployeeService) { }
 
     ngOnInit() {
+        this.loadProfile();
         this.loadCompetencies();
         this.loadAllCompetencies();
+    }
+
+    loadProfile() {
+        if (!this.employeeService.employeeProfile()) {
+            this.employeeService.getMyProfile().subscribe();
+        }
     }
 
     loadCompetencies() {

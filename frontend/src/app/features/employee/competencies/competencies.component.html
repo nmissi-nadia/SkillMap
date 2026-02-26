@@ -96,7 +96,7 @@
             <div class="card-header">
                 <div class="title-area">
                     <h3>{{ comp.competence.nom }}</h3>
-                    <span class="category-badge">{{ comp.competence.categorie || 'Technique' }}</span>
+                    <span class="category-badge">{{ comp.competence.type || comp.competence.categorie || 'Technique' }}</span>
                 </div>
                 <div class="status-indicator" [class.is-validated]="comp.niveauManager">
                     {{ comp.niveauManager ? 'Validée' : 'Auto-évaluée' }}

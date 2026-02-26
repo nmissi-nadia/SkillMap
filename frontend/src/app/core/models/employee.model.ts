@@ -30,6 +30,7 @@ export interface EmployeeCompetence {
     competence: {
         id: string;
         nom: string;
+        type?: string;
         categorie?: string;
     };
     niveauAuto: number; // 1-5
