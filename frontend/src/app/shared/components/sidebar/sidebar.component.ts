@@ -161,7 +161,17 @@ import { RhService } from '../../../core/services/rh.service';
                 <path d="M12 16V12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 <path d="M12 8H12.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
-              <span class="nav-text">Compétences</span>
+              <span class="nav-text">Cartographie</span>
+            </a>
+          </li>
+          <li>
+            <a routerLink="/rh/competencies" routerLinkActive="active">
+              <svg class="nav-icon" viewBox="0 0 24 24" fill="none">
+                <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <span class="nav-text">Gestion Compétences</span>
             </a>
           </li>
           <li>

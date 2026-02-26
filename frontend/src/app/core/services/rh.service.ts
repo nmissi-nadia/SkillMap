@@ -269,4 +269,29 @@ export class RhService {
     validateCertification(dto: CertificationValidationDTO): Observable<void> {
         return this.http.post<void>(`${this.apiUrl}/certifications/validate`, dto);
     }
+
+    // ========== PHASE 4: GESTION DU RÉFÉRENTIEL COMPÉTENCES ==========
+
+    getCompetencies(): Observable<CompetenceDTO[]> {
+        return this.http.get<CompetenceDTO[]>(`${environment.apiUrl}/competencies`);
+    }
+
+    createCompetence(dto: CompetenceDTO): Observable<CompetenceDTO> {
+        return this.http.post<CompetenceDTO>(`${environment.apiUrl}/competencies`, dto);
+    }
+
+    updateCompetence(id: string, dto: CompetenceDTO): Observable<CompetenceDTO> {
+        return this.http.put<CompetenceDTO>(`${environment.apiUrl}/competencies/${id}`, dto);
+    }
+
+    deleteCompetence(id: string): Observable<void> {
+        return this.http.delete<void>(`${environment.apiUrl}/competencies/${id}`);
+    }
+}
+
+export interface CompetenceDTO {
+    id?: string;
+    nom: string;
+    type: 'HARD' | 'SOFT';
+    description?: string;
 }

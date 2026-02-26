@@ -55,6 +55,11 @@ export const routes: Routes = [
         canActivate: [authGuard]
     },
     {
+        path: 'rh/competencies',
+        loadComponent: () => import('./features/rh/competencies-management/competencies-management.component').then(m => m.CompetenciesManagementComponent),
+        canActivate: [authGuard]
+    },
+    {
         path: 'rh/skills-map',
         loadComponent: () => import('./features/rh/skills-map/skills-map.component').then(m => m.SkillsMapComponent),
         canActivate: [authGuard]

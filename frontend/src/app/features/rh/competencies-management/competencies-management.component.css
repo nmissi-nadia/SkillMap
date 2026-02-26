@@ -1,0 +1,258 @@
+/* === GESTION COMPÉTENCES RH — Design Premium === */
+
+.rh-competencies {
+    padding: 2rem;
+    max-width: 1300px;
+    margin: 0 auto;
+    font-family: 'Inter', sans-serif;
+}
+
+/* ── Header ── */
+.page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+}
+
+.page-icon {
+    width: 56px;
+    height: 56px;
+    background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+}
+
+.page-icon svg { width: 28px; height: 28px; }
+
+h1 { font-size: 1.875rem; font-weight: 800; color: #0f172a; margin: 0; letter-spacing: -0.02em; }
+.page-subtitle { margin: 0.25rem 0 0; color: #64748b; font-size: 0.95rem; }
+
+/* ── Filters ── */
+.filters-bar {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.search-box {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: white;
+    padding: 0.75rem 1.25rem;
+    border-radius: 12px;
+    border: 1.5px solid #e2e8f0;
+    transition: all 0.2s;
+}
+
+.search-box:focus-within {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+}
+
+.search-box svg { width: 18px; color: #94a3b8; }
+.search-box input { border: none; outline: none; width: 100%; font-size: 0.95rem; }
+
+.type-filter {
+    padding: 0.75rem 1.25rem;
+    border-radius: 12px;
+    border: 1.5px solid #e2e8f0;
+    background: white;
+    font-size: 0.95rem;
+    color: #475569;
+    cursor: pointer;
+    outline: none;
+}
+
+/* ── Table ── */
+.table-container {
+    background: white;
+    border-radius: 20px;
+    border: 1px solid #f1f5f9;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    overflow: hidden;
+}
+
+.competencies-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    background: #f8fafc;
+    padding: 1.25rem;
+    text-align: left;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+td {
+    padding: 1.25rem;
+    vertical-align: middle;
+    border-bottom: 1px solid #f8fafc;
+}
+
+.comp-row:hover { background: #fdfdfd; }
+
+.comp-name-cell {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.comp-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: #eff6ff;
+    color: #2563eb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 0.9rem;
+}
+
+.comp-icon.soft { background: #ecfdf5; color: #10b981; }
+
+.comp-nom { font-weight: 600; color: #1e293b; }
+
+.badge-type {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 800;
+    background: rgba(37, 99, 235, 0.1);
+    color: #2563eb;
+}
+
+.badge-type.soft {
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+}
+
+.comp-desc { color: #64748b; font-size: 0.875rem; max-width: 400px; }
+
+.action-btns {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+}
+
+.btn-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-edit { background: #f1f5f9; color: #64748b; }
+.btn-edit:hover { background: #e2e8f0; color: #1e293b; }
+.btn-delete { background: #fee2e2; color: #ef4444; }
+.btn-delete:hover { background: #fecaca; color: #dc2626; }
+
+.btn-icon svg { width: 18px; }
+
+/* ── Modal ── */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.5);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.modal {
+    width: 100%;
+    max-width: 500px;
+    background: white;
+    border-radius: 24px;
+    padding: 2.5rem;
+    box-shadow: 0 30px 60px -12px rgba(0,0,0,0.25);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+}
+
+.modal-header h2 { font-size: 1.5rem; font-weight: 800; margin: 0; }
+.modal-close { font-size: 1.5rem; background: none; border: none; cursor: pointer; color: #94a3b8; }
+
+.form-group { margin-bottom: 1.5rem; }
+.form-group label { display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; color: #475569; }
+.form-group input, .form-group select, .form-group textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.form-group input:focus { border-color: #2563eb; }
+
+.modal-footer { display: flex; gap: 1rem; justify-content: flex-end; margin-top: 2rem; }
+
+.btn-primary {
+    background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+.btn-secondary {
+    background: #f1f5f9;
+    color: #475569;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #2563eb;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 3rem auto 1rem;
+}
+
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+.loading-state { text-align: center; padding: 3rem; color: #64748b; }
+.empty-row { text-align: center; padding: 4rem; color: #94a3b8; }
+.empty-row svg { width: 48px; margin-bottom: 1rem; opacity: 0.5; }

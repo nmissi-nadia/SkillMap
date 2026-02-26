@@ -1,0 +1,153 @@
+<div class="rh-competencies">
+
+    <!-- Header -->
+    <div class="page-header">
+        <div class="header-left">
+            <div class="page-icon">
+                <svg viewBox="0 0 24 24" fill="none">
+                    <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+            <div>
+                <h1>Référentiel des Compétences</h1>
+                <p class="page-subtitle">{{ competencies().length }} compétences enregistrées</p>
+            </div>
+        </div>
+        <button class="btn-primary" (click)="openAddModal()">
+            <svg viewBox="0 0 24 24" fill="none" class="icon-sm">
+                <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Nouvelle Compétence
+        </button>
+    </div>
+
+    <!-- Filters Bar -->
+    <div class="filters-bar">
+        <div class="search-box">
+            <svg viewBox="0 0 24 24" fill="none">
+                <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/>
+                <path d="M21 21L16.65 16.65" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            <input type="text" [ngModel]="searchTerm()" (ngModelChange)="searchTerm.set($event)" placeholder="Rechercher une compétence...">
+        </div>
+        
+        <select class="type-filter" [ngModel]="selectedType()" (ngModelChange)="selectedType.set($event)">
+            <option value="">Tous les types</option>
+            <option value="HARD">Hard Skills</option>
+            <option value="SOFT">Soft Skills</option>
+        </select>
+    </div>
+
+    <!-- Error State -->
+    <div class="error-banner" *ngIf="error()">
+        <svg viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+            <path d="M12 8V12M12 16H12.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        {{ error() }}
+        <button class="btn-close-error" (click)="error.set(null)">×</button>
+    </div>
+
+    <!-- Loading State -->
+    <div class="loading-state" *ngIf="isLoading()">
+        <div class="spinner"></div>
+        <span>Chargement du référentiel...</span>
+    </div>
+
+    <!-- Table -->
+    <div class="table-container" *ngIf="!isLoading()">
+        <table class="competencies-table">
+            <thead>
+                <tr>
+                    <th>Nom de la compétence</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                    <th class="text-right">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let comp of filteredCompetencies()" class="comp-row">
+                    <td>
+                        <div class="comp-name-cell">
+                            <div class="comp-icon" [class.soft]="comp.type === 'SOFT'">
+                                {{ comp.nom.charAt(0) }}
+                            </div>
+                            <span class="comp-nom">{{ comp.nom }}</span>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="badge-type" [class.soft]="comp.type === 'SOFT'">
+                            {{ comp.type }}
+                        </span>
+                    </td>
+                    <td class="comp-desc">
+                        {{ comp.description || 'Aucune description' }}
+                    </td>
+                    <td class="text-right">
+                        <div class="action-btns">
+                            <button class="btn-icon btn-edit" title="Modifier" (click)="openEditModal(comp)">
+                                <svg viewBox="0 0 24 24" fill="none">
+                                    <path d="M11 4H4C3.46957 4 2.96086 4.21071 2.58579 4.58579C2.21071 4.96086 2 5.46957 2 6V20C2 20.5304 2.21071 21.0391 2.58579 21.4142C2.96086 21.7893 3.46957 22 4 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V13M18.5 2.5L21.5 5.5L12 15L9 15L9 12L18.5 2.5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </button>
+                            <button class="btn-icon btn-delete" title="Supprimer" (click)="deleteCompetence(comp.id)">
+                                <svg viewBox="0 0 24 24" fill="none">
+                                    <path d="M3 6H21M19 6V20C19 21 18 22 17 22H7C6 22 5 21 5 20V6M8 6V4C8 3 9 2 10 2H14C15 2 16 3 16 4V6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                <tr *ngIf="filteredCompetencies().length === 0">
+                    <td colspan="4" class="empty-row">
+                        <svg viewBox="0 0 24 24" fill="none">
+                            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                            <path d="M12 8V12L15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                        <p>Aucune compétence trouvée</p>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Modal Form -->
+    <div class="modal-overlay" *ngIf="isModalOpen()" (click)="closeModal()">
+        <div class="modal card glass" (click)="$event.stopPropagation()">
+            <div class="modal-header">
+                <h2>{{ isEditMode() ? 'Modifier la Compétence' : 'Ajouter une Compétence' }}</h2>
+                <button class="modal-close" (click)="closeModal()">×</button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Nom de la compétence</label>
+                    <input type="text" [(ngModel)]="editingCompetence().nom" placeholder="Ex: Java, Leadership..." autofocus>
+                </div>
+
+                <div class="form-group">
+                    <label>Type</label>
+                    <select [(ngModel)]="editingCompetence().type">
+                        <option value="HARD">Hard Skill (Technique)</option>
+                        <option value="SOFT">Soft Skill (Comportementale)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Description (Optionnel)</label>
+                    <textarea [(ngModel)]="editingCompetence().description" rows="3" placeholder="Description de la compétence..."></textarea>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn-secondary" (click)="closeModal()">Annuler</button>
+                <button class="btn-primary" (click)="saveCompetence()" [disabled]="!editingCompetence().nom">
+                    {{ isEditMode() ? 'Mettre à jour' : 'Créer la compétence' }}
+                </button>
+            </div>
+        </div>
+    </div>
+
+</div>
