@@ -52,9 +52,17 @@ export class ProjetsComponent implements OnInit {
 
     loadProjets() {
         this.loading.set(true);
+        this.error.set(null);
         this.chefProjetService.getMesProjets().subscribe({
-            next: (data) => { this.projets.set(data); this.loading.set(false); },
-            error: () => { this.projets.set(this.demoData()); this.loading.set(false); }
+            next: (data) => {
+                this.projets.set(data);
+                this.loading.set(false);
+            },
+            error: (err) => {
+                console.error('Erreur chargement projets:', err);
+                this.error.set('Impossible de charger vos projets. Veuillez réessayer plus tard.');
+                this.loading.set(false);
+            }
         });
     }
 
@@ -95,14 +103,10 @@ export class ProjetsComponent implements OnInit {
                 this.saving.set(false);
                 this.closeModal();
             },
-            error: () => {
-                // Simulation pour démo
-                if (!this.isEditing()) {
-                    const demo: Projet = { id: Date.now().toString(), ...(p as any), progression: 0 };
-                    this.projets.update(list => [demo, ...list]);
-                }
+            error: (err) => {
+                console.error('Erreur sauvegarde projet:', err);
+                this.error.set('Erreur lors de l\'enregistrement du projet.');
                 this.saving.set(false);
-                this.closeModal();
             }
         });
     }
@@ -111,7 +115,10 @@ export class ProjetsComponent implements OnInit {
         if (!confirm('Confirmer la suppression de ce projet ?')) return;
         this.chefProjetService.deleteProjet(id).subscribe({
             next: () => this.projets.update(list => list.filter(p => p.id !== id)),
-            error: () => this.projets.update(list => list.filter(p => p.id !== id))
+            error: (err) => {
+                console.error('Erreur suppression projet:', err);
+                this.error.set('Impossible de supprimer le projet.');
+            }
         });
     }
 
@@ -126,13 +133,4 @@ export class ProjetsComponent implements OnInit {
     getPrioriteIcon(p: string) { return ''; }
 
     trackById(_: number, p: Projet) { return p.id; }
-
-    private demoData(): Projet[] {
-        return [
-            { id: '1', nom: 'Refonte Portail Client', description: 'Modernisation UI', dateDebut: '2026-01-01', dateFin: '2026-06-30', statut: 'EN_COURS', client: 'Interne', budget: 50000, priorite: 'HAUTE', chargeEstimee: 120, progression: 45, nombreMembres: 4 },
-            { id: '2', nom: 'API Microservices', description: 'Migration architecture', dateDebut: '2026-02-01', dateFin: '2026-09-30', statut: 'EN_COURS', client: 'TechCorp', budget: 80000, priorite: 'HAUTE', chargeEstimee: 200, progression: 20, nombreMembres: 6 },
-            { id: '3', nom: 'Dashboard Analytics', description: 'Tableau de bord', dateDebut: '2025-10-01', dateFin: '2026-01-31', statut: 'TERMINE', client: 'DataVis SA', budget: 30000, priorite: 'MOYENNE', chargeEstimee: 80, progression: 100, nombreMembres: 3 },
-            { id: '4', nom: 'Migration Cloud AWS', description: 'Infrastructure cloud', dateDebut: '2026-03-01', dateFin: '2026-12-31', statut: 'PLANIFIE', client: 'CloudSys', budget: 120000, priorite: 'HAUTE', chargeEstimee: 300, progression: 0, nombreMembres: 0 }
-        ];
-    }
 }

@@ -56,7 +56,10 @@ export class EquipeComponent implements OnInit {
     loadProjets() {
         this.chefProjetService.getMesProjets().subscribe({
             next: d => { this.projets.set(d); this.loadingProjets.set(false); },
-            error: () => { this.projets.set(this.demoProjets()); this.loadingProjets.set(false); }
+            error: (err) => { 
+                console.error('Erreur chargement projets:', err);
+                this.loadingProjets.set(false); 
+            }
         });
     }
 
@@ -70,7 +73,10 @@ export class EquipeComponent implements OnInit {
         this.membres.set([]);
         this.chefProjetService.getEquipeProjet(projetId).subscribe({
             next: d => { this.membres.set(d); this.loadingMembres.set(false); },
-            error: () => { this.membres.set(this.demoMembres()); this.loadingMembres.set(false); }
+            error: (err) => { 
+                console.error('Erreur chargement membres:', err);
+                this.loadingMembres.set(false); 
+            }
         });
     }
 
@@ -90,9 +96,9 @@ export class EquipeComponent implements OnInit {
                 this.membres.update(list => list.filter(m => m.employeId !== membre.employeId));
                 this.showSuccess(`${membre.employePrenom} ${membre.employeNom} retiré(e) du projet`);
             },
-            error: () => {
-                this.membres.update(list => list.filter(m => m.employeId !== membre.employeId));
-                this.showSuccess(`${membre.employePrenom} ${membre.employeNom} retiré(e) du projet`);
+            error: (err) => {
+                console.error('Erreur retrait membre:', err);
+                alert('Impossible de retirer ce membre du projet.');
             }
         });
     }
@@ -141,21 +147,5 @@ export class EquipeComponent implements OnInit {
     private showSuccess(msg: string) {
         this.successMsg.set(msg);
         setTimeout(() => this.successMsg.set(null), 4000);
-    }
-
-    private demoProjets(): Projet[] {
-        return [
-            { id: '1', nom: 'Refonte Portail Client', description: '', dateDebut: '2026-01-01', dateFin: '2026-06-30', statut: 'EN_COURS', client: 'Interne', budget: 50000, priorite: 'HAUTE', chargeEstimee: 120, progression: 45 },
-            { id: '2', nom: 'API Microservices', description: '', dateDebut: '2026-02-01', dateFin: '2026-09-30', statut: 'EN_COURS', client: 'TechCorp', budget: 80000, priorite: 'HAUTE', chargeEstimee: 200, progression: 20 }
-        ];
-    }
-
-    private demoMembres(): MembreEquipe[] {
-        return [
-            { id: 'a1', employeId: 'e1', employeNom: 'Martin', employePrenom: 'Sophie', employeEmail: 'sophie.martin@company.com', roleDansProjet: 'Développeur Full Stack', tauxAllocation: 100, dateDebut: '2026-01-15', statut: 'ACTIVE', scoreCompatibilite: 92, disponible: true },
-            { id: 'a2', employeId: 'e2', employeNom: 'Dubois', employePrenom: 'Thomas', employeEmail: 'thomas.dubois@company.com', roleDansProjet: 'Lead Technique', tauxAllocation: 80, dateDebut: '2026-01-20', statut: 'ACTIVE', scoreCompatibilite: 78, disponible: true },
-            { id: 'a3', employeId: 'e3', employeNom: 'Bernard', employePrenom: 'Alice', employeEmail: 'alice.bernard@company.com', roleDansProjet: 'QA / Testeur', tauxAllocation: 50, dateDebut: '2026-02-01', statut: 'ACTIVE', scoreCompatibilite: 61, disponible: false },
-            { id: 'a4', employeId: 'e4', employeNom: 'Petit', employePrenom: 'Lucas', employeEmail: 'lucas.petit@company.com', roleDansProjet: 'Architecte', tauxAllocation: 30, dateDebut: '2026-01-10', statut: 'ACTIVE', scoreCompatibilite: 85, disponible: true }
-        ];
     }
 }

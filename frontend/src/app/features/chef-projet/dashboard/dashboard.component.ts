@@ -44,8 +44,7 @@ export class ChefProjetDashboardComponent implements OnInit {
             },
             error: (err) => {
                 console.error('Erreur projets:', err);
-                // Données de démo si l'API n'est pas encore disponible
-                this.projets.set(this.getDemoData());
+                this.error.set('Impossible de charger les données du dashboard.');
                 this.loading.set(false);
             }
         });
@@ -72,27 +71,4 @@ export class ChefProjetDashboardComponent implements OnInit {
     }
 
     trackById(_: number, p: Projet) { return p.id; }
-
-    private getDemoData(): Projet[] {
-        return [
-            {
-                id: '1', nom: 'Refonte Portail Client', description: 'Modernisation de l\'interface client',
-                dateDebut: '2026-01-01', dateFin: '2026-06-30', statut: 'EN_COURS',
-                client: 'Interne', budget: 50000, priorite: 'HAUTE', chargeEstimee: 120, progression: 45,
-                nombreMembres: 4
-            },
-            {
-                id: '2', nom: 'API Microservices', description: 'Migration vers architecture microservices',
-                dateDebut: '2026-02-01', dateFin: '2026-09-30', statut: 'EN_COURS',
-                client: 'TechCorp', budget: 80000, priorite: 'HAUTE', chargeEstimee: 200, progression: 20,
-                nombreMembres: 6
-            },
-            {
-                id: '3', nom: 'Dashboard Analytics', description: 'Tableau de bord analytique temps réel',
-                dateDebut: '2025-10-01', dateFin: '2026-01-31', statut: 'TERMINE',
-                client: 'DataVis SA', budget: 30000, priorite: 'MOYENNE', chargeEstimee: 80, progression: 100,
-                nombreMembres: 3
-            }
-        ];
-    }
 }

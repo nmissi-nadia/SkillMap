@@ -1,0 +1,91 @@
+<div class="formations-container">
+  <header class="page-header">
+    <div class="header-content">
+      <h1>Catalogue des Formations</h1>
+      <p>Développez vos compétences et booster votre carrière</p>
+    </div>
+  </header>
+
+  <!-- Filtres -->
+  <div class="filters-bar">
+    <div class="search-box">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+      <input type="text" placeholder="Rechercher une formation..." [(ngModel)]="searchQuery" (ngModelChange)="searchQuery.set($event)">
+    </div>
+
+    <div class="filter-group">
+      <select [(ngModel)]="selectedType" (ngModelChange)="selectedType.set($event)">
+        <option value="all">Tous les types</option>
+        <option value="Interne">Interne</option>
+        <option value="Externe">Externe</option>
+        <option value="E-learning">E-learning</option>
+      </select>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Chargement du catalogue...</p>
+    </div>
+  } @else if (error()) {
+    <div class="error-state">
+      <p>{{ error() }}</p>
+      <button class="btn-primary" (click)="loadFormations()">Réessayer</button>
+    </div>
+  } @else {
+    <div class="formations-grid">
+      @for (formation of getFilteredFormations(); track formation.id) {
+        <div class="formation-card">
+          <div class="card-header">
+            <span class="type-badge" [class]="formation.type?.toLowerCase()">{{ formation.type }}</span>
+            <span class="status-badge" [class]="formation.statut.toLowerCase()">{{ getStatusLabel(formation.statut) }}</span>
+          </div>
+          
+          <div class="card-body">
+            <h3>{{ formation.titre }}</h3>
+            <p class="description">{{ formation.description }}</p>
+            
+            <div class="meta-info">
+              <div class="meta-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                </svg>
+                <span>{{ formation.organisme }}</span>
+              </div>
+              <div class="meta-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                  <line x1="16" y1="2" x2="16" y2="6"></line>
+                  <line x1="8" y1="2" x2="8" y2="6"></line>
+                  <line x1="3" y1="10" x2="21" y2="10"></line>
+                </svg>
+                <span>{{ formation.dateDebut | date:'dd MMM yyyy' }}</span>
+              </div>
+              <div class="meta-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+                <span>{{ formation.dureeHeures || 0 }}h</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-footer">
+            <button class="btn-enroll" (click)="register(formation)" [disabled]="formation.statut !== 'PLANIFIEE'">
+              S'inscrire
+            </button>
+          </div>
+        </div>
+      } @empty {
+        <div class="empty-state">
+          <p>Aucune formation ne correspond à vos critères.</p>
+        </div>
+      }
+    </div>
+  }
+</div>

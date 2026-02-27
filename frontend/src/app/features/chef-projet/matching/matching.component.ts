@@ -51,7 +51,10 @@ export class MatchingComponent implements OnInit {
     loadProjets() {
         this.chefProjetService.getMesProjets().subscribe({
             next: (data) => { this.projets.set(data); this.loadingProjets.set(false); },
-            error: () => { this.projets.set(this.demoProjects()); this.loadingProjets.set(false); }
+            error: (err) => { 
+                console.error('Erreur chargement projets:', err);
+                this.loadingProjets.set(false); 
+            }
         });
     }
 
@@ -69,9 +72,8 @@ export class MatchingComponent implements OnInit {
                 this.loadingMatching.set(false);
                 this.matchingDone.set(true);
             },
-            error: () => {
-                // Données de démo
-                this.candidates.set(this.demoCandidates());
+            error: (err) => {
+                console.error('Erreur matching:', err);
                 this.loadingMatching.set(false);
                 this.matchingDone.set(true);
             }
@@ -94,9 +96,10 @@ export class MatchingComponent implements OnInit {
                 this.affectationSuccess.set(`${candidate.prenom} ${candidate.nom} affecté(e) avec succès !`);
                 setTimeout(() => this.affectationSuccess.set(null), 4000);
             },
-            error: () => {
-                this.affectationSuccess.set(`${candidate.prenom} ${candidate.nom} affecté(e) avec succès !`);
-                setTimeout(() => this.affectationSuccess.set(null), 4000);
+            error: (err) => {
+                console.error('Erreur affectation:', err);
+                // On peut ajouter un signal d'erreur ici si besoin
+                alert(`Erreur lors de l'affectation de ${candidate.prenom} ${candidate.nom}`);
             }
         });
     }
@@ -117,47 +120,5 @@ export class MatchingComponent implements OnInit {
 
     getNiveauLabel(n: number): string {
         return ['', 'Débutant', 'Intermédiaire', 'Avancé', 'Expert', 'Maître'][n] ?? `Niv.${n}`;
-    }
-
-    private demoProjects(): Projet[] {
-        return [
-            { id: '1', nom: 'Refonte Portail Client', description: '', dateDebut: '2026-01-01', dateFin: '2026-06-30', statut: 'EN_COURS', client: 'Interne', budget: 50000, priorite: 'HAUTE', chargeEstimee: 120, progression: 45 },
-            { id: '2', nom: 'API Microservices', description: '', dateDebut: '2026-02-01', dateFin: '2026-09-30', statut: 'EN_COURS', client: 'TechCorp', budget: 80000, priorite: 'HAUTE', chargeEstimee: 200, progression: 20 }
-        ];
-    }
-
-    private demoCandidates(): EmployeeMatch[] {
-        return [
-            {
-                employeId: 'e1', nom: 'Martin', prenom: 'Sophie', email: 'sophie.martin@company.com',
-                poste: 'Développeur Full Stack', departement: 'IT', scoreGlobal: 92,
-                scoreCompetences: 95, scoreDisponibilite: 85, disponible: true,
-                competencesMatchees: [
-                    { competenceNom: 'Angular', niveauEmploye: 4, niveauRequis: 3, ecart: 1, satisfait: true },
-                    { competenceNom: 'Spring Boot', niveauEmploye: 4, niveauRequis: 4, ecart: 0, satisfait: true },
-                    { competenceNom: 'TypeScript', niveauEmploye: 5, niveauRequis: 3, ecart: 2, satisfait: true }
-                ],
-                competencesManquantes: []
-            },
-            {
-                employeId: 'e2', nom: 'Dubois', prenom: 'Thomas', email: 'thomas.dubois@company.com',
-                poste: 'Lead Developer', departement: 'IT', scoreGlobal: 78,
-                scoreCompetences: 80, scoreDisponibilite: 70, disponible: true,
-                competencesMatchees: [
-                    { competenceNom: 'Angular', niveauEmploye: 3, niveauRequis: 3, ecart: 0, satisfait: true },
-                    { competenceNom: 'Spring Boot', niveauEmploye: 5, niveauRequis: 4, ecart: 1, satisfait: true }
-                ],
-                competencesManquantes: ['TypeScript']
-            },
-            {
-                employeId: 'e3', nom: 'Bernard', prenom: 'Alice', email: 'alice.bernard@company.com',
-                poste: 'Développeur Backend', departement: 'IT', scoreGlobal: 61,
-                scoreCompetences: 65, scoreDisponibilite: 50, disponible: false,
-                competencesMatchees: [
-                    { competenceNom: 'Spring Boot', niveauEmploye: 3, niveauRequis: 4, ecart: -1, satisfait: false }
-                ],
-                competencesManquantes: ['Angular', 'TypeScript']
-            }
-        ];
     }
 }

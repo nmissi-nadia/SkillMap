@@ -124,6 +124,32 @@ export class EmployeeService {
     }
 
     /**
+     * Récupérer les tests techniques actifs pour l'employé
+     */
+    getActiveTests(): Observable<any[]> {
+        return this.http.get<any[]>(`${environment.apiUrl}/tests/active`);
+    }
+
+    /**
+     * Récupérer les formations de l'employé
+     */
+    getMyFormations(): Observable<any[]> {
+        // Pour l'instant on utilise l'endpoint RH ou on simule si nécessaire
+        // Idéalement il faudrait un endpoint /api/employes/me/formations
+        return this.http.get<any[]>(`${environment.apiUrl}/rh/formations`);
+    }
+
+    /**
+     * S'inscrire à une formation
+     */
+    registerToFormation(formationId: string): Observable<any> {
+        return this.http.post(`${environment.apiUrl}/rh/formations/assign`, {
+            formationId,
+            employeIds: [this.employeeProfile()?.id]
+        });
+    }
+
+    /**
      * Récupérer les notifications
      * TODO: Créer l'endpoint backend correspondant
      */

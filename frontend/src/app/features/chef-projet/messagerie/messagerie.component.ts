@@ -49,7 +49,10 @@ export class MessagerieComponent implements OnInit {
     loadProjets() {
         this.chefProjetService.getMesProjets().subscribe({
             next: d => { this.projets.set(d); this.loadingProjets.set(false); },
-            error: () => { this.projets.set(this.demoProjets()); this.loadingProjets.set(false); }
+            error: (err) => { 
+                console.error('Erreur chargement projets:', err);
+                this.loadingProjets.set(false); 
+            }
         });
     }
 
@@ -67,10 +70,9 @@ export class MessagerieComponent implements OnInit {
                 this.loadingMessages.set(false);
                 this.scrollToBottom();
             },
-            error: () => {
-                this.messages.set(this.demoMessages());
+            error: (err) => {
+                console.error('Erreur chargement messages:', err);
                 this.loadingMessages.set(false);
-                this.scrollToBottom();
             }
         });
     }
@@ -90,20 +92,9 @@ export class MessagerieComponent implements OnInit {
                 this.sending.set(false);
                 this.scrollToBottom();
             },
-            error: () => {
-                // Simulation locale
-                const fakeMsg: MessageProjet = {
-                    id: Date.now().toString(),
-                    contenu,
-                    dateEnvoi: new Date().toISOString(),
-                    lu: false,
-                    expediteur: { id: this.currentUserId, nom: 'Moi', prenom: '', role: 'CHEF_PROJET' },
-                    projetId: this.selectedProjetId()
-                };
-                this.messages.update(list => [...list, fakeMsg]);
-                this.nouveauMessage.set('');
+            error: (err) => {
+                console.error('Erreur envoi message:', err);
                 this.sending.set(false);
-                this.scrollToBottom();
             }
         });
     }
@@ -154,23 +145,5 @@ export class MessagerieComponent implements OnInit {
         setTimeout(() => {
             this.messagesEnd?.nativeElement?.scrollIntoView({ behavior: 'smooth' });
         }, 100);
-    }
-
-    private demoProjets(): Projet[] {
-        return [
-            { id: '1', nom: 'Refonte Portail Client', description: '', dateDebut: '2026-01-01', dateFin: '2026-06-30', statut: 'EN_COURS', client: 'Interne', budget: 50000, priorite: 'HAUTE', chargeEstimee: 120, progression: 45 },
-            { id: '2', nom: 'API Microservices', description: '', dateDebut: '2026-02-01', dateFin: '2026-09-30', statut: 'EN_COURS', client: 'TechCorp', budget: 80000, priorite: 'HAUTE', chargeEstimee: 200, progression: 20 }
-        ];
-    }
-
-    private demoMessages(): MessageProjet[] {
-        const now = new Date();
-        const yesterday = new Date(now); yesterday.setDate(now.getDate() - 1);
-        return [
-            { id: '1', contenu: 'Bonjour l\'équipe, le sprint 3 commence lundi. Veuillez préparer vos user stories.', dateEnvoi: yesterday.toISOString(), lu: true, expediteur: { id: 'current-user', nom: 'Moi', prenom: '', role: 'CHEF_PROJET' }, projetId: '1' },
-            { id: '2', contenu: 'Bien reçu ! Je prépare les estimations pour les stories d\'authentification.', dateEnvoi: yesterday.toISOString(), lu: true, expediteur: { id: 'e1', nom: 'Martin', prenom: 'Sophie', role: 'EMPLOYE' }, projetId: '1' },
-            { id: '3', contenu: 'Est-ce que la revue de l\'architecture est confirmée pour vendredi ?', dateEnvoi: now.toISOString(), lu: false, expediteur: { id: 'e2', nom: 'Dubois', prenom: 'Thomas', role: 'EMPLOYE' }, projetId: '1' },
-            { id: '4', contenu: 'Oui, confirmé pour vendredi 14h. Préparez vos slides.', dateEnvoi: now.toISOString(), lu: false, expediteur: { id: 'current-user', nom: 'Moi', prenom: '', role: 'CHEF_PROJET' }, projetId: '1' }
-        ];
     }
 }

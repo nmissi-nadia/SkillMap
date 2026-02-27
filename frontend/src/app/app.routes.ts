@@ -90,6 +90,16 @@ export const routes: Routes = [
         loadComponent: () => import('./features/employee/competencies/competencies.component').then(m => m.CompetenciesComponent),
         canActivate: [authGuard]
     },
+    {
+        path: 'employee/tests',
+        loadComponent: () => import('./features/employee/tests/tests.component').then(m => m.EmployeeTestsComponent),
+        canActivate: [authGuard]
+    },
+    {
+        path: 'employee/formations',
+        loadComponent: () => import('./features/employee/formations/formations.component').then(m => m.FormationsComponent),
+        canActivate: [authGuard]
+    },
     // Chef de Projet routes
     {
         path: 'chef-projet/dashboard',

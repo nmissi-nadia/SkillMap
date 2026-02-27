@@ -336,6 +336,12 @@
         color: #2563eb;
     }
 
+    &.messages:hover {
+        background: #fdf2f8;
+        border-color: #fbcfe8;
+        color: #db2777;
+    }
+
     &.delete:hover {
         background: #fee2e2;
         border-color: #fca5a5;
