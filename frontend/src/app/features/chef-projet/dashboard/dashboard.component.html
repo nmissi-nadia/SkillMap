@@ -161,6 +161,8 @@
                             class="btn-sm">
                             Matching
                         </a>
+                        <a [routerLink]="['/chef-projet/equipe']" [queryParams]="{ projetId: projet.id }"
+                            class="btn-sm">
                             Équipe
                         </a>
                         <a [routerLink]="['/chef-projet/messagerie']" [queryParams]="{ projetId: projet.id }"

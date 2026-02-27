@@ -97,7 +97,7 @@ export const routes: Routes = [
     },
     {
         path: 'employee/formations',
-        loadComponent: () => import('./features/employee/formations/formations.component').then(m => m.FormationsComponent),
+        loadComponent: () => import('./features/employee/formations/formations.component').then(m => m.EmployeeFormationsComponent),
         canActivate: [authGuard]
     },
     // Chef de Projet routes

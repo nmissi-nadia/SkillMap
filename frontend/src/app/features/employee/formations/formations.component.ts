@@ -11,7 +11,7 @@ import { FormationDTO } from '../../../core/services/rh.service';
   templateUrl: './formations.component.html',
   styleUrls: ['./formations.component.scss']
 })
-export class FormationsComponent implements OnInit {
+export class EmployeeFormationsComponent implements OnInit {
   private employeeService = inject(EmployeeService);
 
   formations = signal<FormationDTO[]>([]);
