@@ -3,7 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Employee } from '../models/employee.model';
-import { TeamStats, PendingEvaluation, ValidationRequest, TestAssignment, ManagerDashboard } from '../models/manager.model';
+import { TeamStats, PendingEvaluation, ValidationRequest, ManagerDashboard } from '../models/manager.model';
+import { TestAssignment, TestStatut } from '../models/test.model';
 
 /**
  * Service pour gérer les fonctionnalités du manager

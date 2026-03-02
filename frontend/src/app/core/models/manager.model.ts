@@ -31,21 +31,6 @@ export interface ValidationRequest {
     valide: boolean;
 }
 
-export interface TestAssignment {
-    id: string;
-    employe: {
-        nom: string;
-        prenom: string;
-    };
-    test: {
-        nom: string;
-        competence: string;
-    };
-    dateAssignation: Date;
-    dateEcheance: Date;
-    statut: 'EN_COURS' | 'TERMINE' | 'EXPIRE';
-    score?: number;
-}
 
 export interface ManagerDashboard {
     equipe: {
