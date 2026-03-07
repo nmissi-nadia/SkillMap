@@ -64,18 +64,14 @@ export interface AffectationRequest {
 
 export interface EmployeeMatch {
     employeId: string;
-    nom: string;
-    prenom: string;
-    email: string;
+    employeNom: string;
+    employePrenom: string;
     poste: string;
-    departement: string;
-    scoreGlobal: number;
-    scoreCompetences: number;
-    scoreDisponibilite: number;
-    disponible: boolean;
-    competencesMatchees: CompetenceMatch[];
-    competencesManquantes: string[];
-    chargeActuelle?: number;
+    matchScore: number;
+    competencesMatched: number;
+    competencesRequired: number;
+    disponibilite: 'DISPONIBLE' | 'PARTIELLEMENT' | 'INDISPONIBLE';
+    tauxAllocationActuel: number;
 }
 
 export interface CompetenceMatch {

@@ -98,61 +98,73 @@
 
 .stat-card {
     background: white;
-    border-radius: 12px;
+    border-radius: 20px;
     padding: 1.5rem;
     display: flex;
     align-items: center;
-    gap: 1rem;
-    border: 1px solid #E5E7EB;
-    transition: all 0.2s;
+    gap: 1.25rem;
+    border: 1px solid #E2E8F0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
 
     &:hover {
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        transform: translateY(-4px);
+        border-color: #3B82F633;
     }
 }
 
 .stat-icon {
-    width: 48px;
-    height: 48px;
-    border-radius: 12px;
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
     display: flex;
     align-items: center;
     justify-content: center;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
 
     &.primary {
-        background: #EFF6FF;
+        background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
         color: #3B82F6;
     }
 
     &.warning {
-        background: #FEF3C7;
+        background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%);
         color: #D97706;
     }
 
     &.info {
-        background: #DBEAFE;
-        color: #2563EB;
+        background: linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 100%);
+        color: #0284C7;
     }
 
     &.success {
-        background: #D1FAE5;
-        color: #059669;
+        background: linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 100%);
+        color: #16A34A;
+    }
+
+    svg {
+        width: 28px;
+        height: 28px;
     }
 }
 
 .stat-content {
     .stat-value {
-        font-size: 1.875rem;
-        font-weight: 700;
-        color: var(--text-primary);
+        font-size: 2rem;
+        font-weight: 800;
+        color: #1E293B;
         line-height: 1;
+        letter-spacing: -0.02em;
     }
 
     .stat-label {
-        font-size: 0.875rem;
-        color: var(--text-secondary);
-        margin-top: 0.25rem;
+        font-size: 0.8125rem;
+        font-weight: 600;
+        color: #64748B;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-top: 0.5rem;
     }
 }
 

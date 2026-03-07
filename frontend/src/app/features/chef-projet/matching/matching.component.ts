@@ -26,7 +26,7 @@ export class MatchingComponent implements OnInit {
     affectationSuccess = signal<string | null>(null);
 
     candidatesTries = computed(() =>
-        [...this.candidates()].sort((a, b) => b.scoreGlobal - a.scoreGlobal)
+        [...this.candidates()].sort((a, b) => b.matchScore - a.matchScore)
     );
 
     selectedProjet = computed(() =>
@@ -51,9 +51,9 @@ export class MatchingComponent implements OnInit {
     loadProjets() {
         this.chefProjetService.getMesProjets().subscribe({
             next: (data) => { this.projets.set(data); this.loadingProjets.set(false); },
-            error: (err) => { 
+            error: (err) => {
                 console.error('Erreur chargement projets:', err);
-                this.loadingProjets.set(false); 
+                this.loadingProjets.set(false);
             }
         });
     }
@@ -93,22 +93,15 @@ export class MatchingComponent implements OnInit {
             dateDebut: new Date().toISOString().split('T')[0]
         }).subscribe({
             next: () => {
-                this.affectationSuccess.set(`${candidate.prenom} ${candidate.nom} affecté(e) avec succès !`);
+                this.affectationSuccess.set(`${candidate.employePrenom} ${candidate.employeNom} affecté(e) avec succès !`);
                 setTimeout(() => this.affectationSuccess.set(null), 4000);
             },
             error: (err) => {
                 console.error('Erreur affectation:', err);
                 // On peut ajouter un signal d'erreur ici si besoin
-                alert(`Erreur lors de l'affectation de ${candidate.prenom} ${candidate.nom}`);
+                alert(`Erreur lors de l'affectation de ${candidate.employePrenom} ${candidate.employeNom}`);
             }
         });
-    }
-
-    getScoreClass(score: number): string {
-        if (score >= 80) return 'excellent';
-        if (score >= 60) return 'good';
-        if (score >= 40) return 'medium';
-        return 'low';
     }
 
     getScoreLabel(score: number): string {

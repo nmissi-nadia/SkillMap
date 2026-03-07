@@ -34,6 +34,7 @@ public class ProjetController {
     @PreAuthorize("hasRole('CHEF_PROJET')")
     @Operation(summary = "Mes projets", description = "Retourne les projets gérés par le chef de projet connecté")
     public ResponseEntity<List<ProjetDTO>> getMesProjets() {
+        System.out.println("🎯 ProjetController.getMesProjets - Request received");
         return ResponseEntity.ok(projetService.getMesProjets());
     }
 
@@ -44,6 +45,7 @@ public class ProjetController {
     @PreAuthorize("hasAnyRole('CHEF_PROJET', 'RH', 'MANAGER')")
     @Operation(summary = "Tous les projets")
     public ResponseEntity<List<ProjetDTO>> getAllProjets() {
+        System.out.println("🎯 ProjetController.getAllProjets - Request received");
         return ResponseEntity.ok(projetService.getAllProjets());
     }
 

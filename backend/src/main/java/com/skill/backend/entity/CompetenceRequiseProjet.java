@@ -29,6 +29,7 @@ public class CompetenceRequiseProjet {
     private Integer niveauRequis;      // 1-5
     private Integer nombrePersonnes;   // Nombre de personnes nécessaires
     private String priorite;           // CRITIQUE, IMPORTANTE, SOUHAITABLE
+    private Double poids;              // Importance dans le projet
 
     @PrePersist
     protected void onCreate() {

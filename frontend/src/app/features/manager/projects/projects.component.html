@@ -93,7 +93,7 @@
                             <path
                                 d="M16 3.13C16.8604 3.35031 17.623 3.85071 18.1676 4.55232C18.7122 5.25392 19.0078 6.11683 19.0078 7.005" />
                         </svg>
-                        <span>{{ project.nombreEquipe ?? 0 }} membres</span>
+                        <span>{{ project.nombreMembres ?? 0 }} membres</span>
                     </div>
                     <div class="meta-item">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -109,9 +109,13 @@
             </div>
 
             <div class="card-footer">
-                <button class="btn-details" (click)="viewDetails(project.id)">Détails du projet</button>
+                <button class="btn-details" (click)="viewDetails(project.id)">Détails</button>
+                <button class="btn-matching" [routerLink]="['/chef-projet/matching']"
+                    [queryParams]="{projetId: project.id}">
+                    Matching
+                </button>
                 <button class="btn-gaps" *ngIf="project.nombreSkillGaps > 0" title="Manque de compétences">
-                    <span class="gap-count">{{ project.nombreSkillGaps }}</span> Gaps
+                    <span class="gap-count">{{ project.nombreSkillGaps }}</span>
                 </button>
             </div>
         </div>

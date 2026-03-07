@@ -198,6 +198,15 @@ public class TestTechniqueService {
     }
 
     /**
+     * Récupérer les tests assignés par un manager/RH
+     */
+    public List<TestTechniqueDTO> getTestsAssignedBy(String assignePar) {
+        return testTechniqueRepository.findByAssignePar(assignePar).stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    /**
      * Convertir TestTechnique en DTO
      */
     private TestTechniqueDTO toDTO(TestTechnique test) {

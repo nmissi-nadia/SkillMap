@@ -108,7 +108,8 @@ public class SkillMatchingService {
     }
 
     /**
-     * Calculer le score de matching pour un employé
+     * Calculer le score de matching pour un employé selon la nouvelle formule
+     * score = Σ (min(niveauEmploye / niveauRequis, 1) * poids) / Σ poids
      */
     private EmployeeMatchDTO calculateMatch(Employe employe, List<CompetenceRequiseProjet> competencesRequises) {
         EmployeeMatchDTO match = new EmployeeMatchDTO();
@@ -117,14 +118,16 @@ public class SkillMatchingService {
         match.setEmployePrenom(employe.getPrenom());
         match.setPoste(employe.getPoste());
 
-        // Récupérer les compétences de l'employé
         List<CompetenceEmploye> competencesEmploye = competenceEmployeRepository.findByEmploye(employe);
 
-        int totalCompetences = competencesRequises.size();
-        int competencesMatched = 0;
         double scoreTotal = 0.0;
+        double poidsTotal = 0.0;
+        int competencesMatched = 0;
 
         for (CompetenceRequiseProjet requise : competencesRequises) {
+            double poids = requise.getPoids() != null ? requise.getPoids() : 1.0;
+            poidsTotal += poids;
+
             CompetenceEmploye ce = competencesEmploye.stream()
                     .filter(c -> c.getCompetence().getId().equals(requise.getCompetence().getId()))
                     .findFirst()
@@ -134,36 +137,29 @@ public class SkillMatchingService {
                 Integer niveauManager = ce.getNiveauManager();
                 Integer niveauAuto = ce.getNiveauAuto();
                 int niveauEmploye = (niveauManager != null) ? niveauManager : (niveauAuto != null ? niveauAuto : 0);
-                int niveauRequis = requise.getNiveauRequis();
-
-                // Calculer le score pour cette compétence
-                double scoreCompetence = calculateCompetenceScore(niveauEmploye, niveauRequis, requise.getPriorite());
-                scoreTotal += scoreCompetence;
+                int niveauRequis = requise.getNiveauRequis() != null ? requise.getNiveauRequis() : 1;
 
                 if (niveauEmploye >= niveauRequis) {
                     competencesMatched++;
                 }
+
+                double ratio = (double) niveauEmploye / niveauRequis;
+                ratio = Math.min(ratio, 1.0);
+                scoreTotal += ratio * poids;
             }
-            // Si compétence manquante, score = 0 pour cette compétence
         }
 
-        // Score global (moyenne pondérée)
-        double matchScore = totalCompetences > 0 ? (scoreTotal / totalCompetences) : 0.0;
-        match.setMatchScore(Math.round(matchScore * 100.0) / 100.0);
+        double finalScore = poidsTotal > 0 ? (scoreTotal / poidsTotal) * 100.0 : 0.0;
+        match.setMatchScore(Math.round(finalScore * 100.0) / 100.0);
         match.setCompetencesMatched(competencesMatched);
-        match.setCompetencesRequired(totalCompetences);
+        match.setCompetencesRequired(competencesRequises.size());
 
-        // Calculer la disponibilité
+        // Disponibilité
         int tauxAllocation = calculateCurrentAllocation(employe.getId());
         match.setTauxAllocationActuel(tauxAllocation);
-        
-        if (tauxAllocation <= 50) {
-            match.setDisponibilite("DISPONIBLE");
-        } else if (tauxAllocation <= 80) {
-            match.setDisponibilite("PARTIELLEMENT");
-        } else {
-            match.setDisponibilite("INDISPONIBLE");
-        }
+        if (tauxAllocation <= 50) match.setDisponibilite("DISPONIBLE");
+        else if (tauxAllocation <= 80) match.setDisponibilite("PARTIELLEMENT");
+        else match.setDisponibilite("INDISPONIBLE");
 
         return match;
     }
@@ -211,7 +207,7 @@ public class SkillMatchingService {
     }
 
     /**
-     * Calculer le matching détaillé
+     * Obtenir les détails du matching (utilisé par le contrôleur)
      */
     private EmployeeMatchDetailDTO calculateDetailedMatch(Employe employe, List<CompetenceRequiseProjet> competencesRequises) {
         EmployeeMatchDetailDTO detail = new EmployeeMatchDetailDTO();
@@ -220,14 +216,19 @@ public class SkillMatchingService {
         detail.setEmployePrenom(employe.getPrenom());
         detail.setEmail(employe.getEmail());
         detail.setPoste(employe.getPoste());
-        detail.setDepartement(employe.getDepartement());
+        detail.setDepartement(employe.getDepartement()); // Keep existing field
 
         List<CompetenceEmploye> competencesEmploye = competenceEmployeRepository.findByEmploye(employe);
         List<CompetenceMatchDTO> matched = new ArrayList<>();
         List<CompetenceMatchDTO> missing = new ArrayList<>();
+        
         double scoreTotal = 0.0;
+        double poidsTotal = 0.0;
 
         for (CompetenceRequiseProjet requise : competencesRequises) {
+            double poids = requise.getPoids() != null ? requise.getPoids() : 1.0;
+            poidsTotal += poids;
+
             CompetenceMatchDTO cm = new CompetenceMatchDTO();
             cm.setCompetenceId(requise.getCompetence().getId());
             cm.setCompetenceNom(requise.getCompetence().getNom());
@@ -244,17 +245,13 @@ public class SkillMatchingService {
                 int niveauEmploye = (niveauManager != null) ? niveauManager : (niveauAuto != null ? niveauAuto : 0);
                 cm.setNiveauEmploye(niveauEmploye);
                 
-                double score = calculateCompetenceScore(niveauEmploye, requise.getNiveauRequis(), requise.getPriorite());
-                cm.setScoreMatch(score);
-                scoreTotal += score;
+                double ratio = Math.min((double) niveauEmploye / requise.getNiveauRequis(), 1.0);
+                scoreTotal += ratio * poids;
+                cm.setScoreMatch(ratio * 100.0);
 
-                if (niveauEmploye >= requise.getNiveauRequis() + 1) {
-                    cm.setStatut("PARFAIT");
-                } else if (niveauEmploye >= requise.getNiveauRequis()) {
-                    cm.setStatut("SUFFISANT");
-                } else {
-                    cm.setStatut("INSUFFISANT");
-                }
+                if (niveauEmploye >= requise.getNiveauRequis()) cm.setStatut("SUFFISANT");
+                else cm.setStatut("INSUFFISANT");
+                
                 matched.add(cm);
             } else {
                 cm.setNiveauEmploye(0);
@@ -266,9 +263,10 @@ public class SkillMatchingService {
 
         detail.setCompetencesMatched(matched);
         detail.setCompetencesMissing(missing);
-        detail.setMatchScore(competencesRequises.size() > 0 ? 
-                Math.round((scoreTotal / competencesRequises.size()) * 100.0) / 100.0 : 0.0);
-
+        detail.setMatchScore(poidsTotal > 0 ? Math.round((scoreTotal / poidsTotal) * 100.0 * 100.0) / 100.0 : 0.0);
+        detail.setTauxAllocationActuel(calculateCurrentAllocation(employe.getId()));
+        
+        // Keep existing availability logic
         int tauxAllocation = calculateCurrentAllocation(employe.getId());
         detail.setTauxAllocationActuel(tauxAllocation);
         
