@@ -6,13 +6,17 @@
             <h1 class="page-title">Gestion des équipes</h1>
             <p class="page-subtitle">Affectez et suivez les membres de vos équipes projet</p>
         </div>
-        <a routerLink="/chef-projet/matching" class="btn-primary">
+        @if (selectedProjetId()) {
+        <button class="btn-primary" (click)="openAffectation()">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="11" cy="11" r="8" />
-                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                <circle cx="8.5" cy="7" r="4" />
+                <line x1="20" y1="8" x2="20" y2="14" />
+                <line x1="23" y1="11" x2="17" y2="11" />
             </svg>
-            Trouver des profils (Matching)
-        </a>
+            Affecter un membre
+        </button>
+        }
     </div>
 
     <!-- Toast -->
@@ -65,10 +69,16 @@
             <path d="M16 3.13a4 4 0 0 1 0 7.75" />
         </svg>
         <h3>Aucun membre dans l'équipe</h3>
-        <p>Lancez un matching pour trouver des profils compatibles</p>
-        <a [routerLink]="['/chef-projet/matching']" [queryParams]="{projetId: selectedProjetId()}" class="btn-primary">
-            Lancer le matching
-        </a>
+        <p>Cliquez sur "Affecter un membre" pour ajouter des employés au projet</p>
+        <button class="btn-primary" (click)="openAffectation()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                <circle cx="8.5" cy="7" r="4" />
+                <line x1="20" y1="8" x2="20" y2="14" />
+                <line x1="23" y1="11" x2="17" y2="11" />
+            </svg>
+            Affecter un membre
+        </button>
     </div>
     } @else {
     <!-- Résumé charge -->
@@ -81,8 +91,7 @@
                     }}%</strong></span>
         </div>
         @if (totalAllocation() / (membres().length || 1) < 50) { <div class="alert-under">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-            Équipe sous-staffée — Envisagez d'ajouter des membres
+            ⚠️ Équipe sous-staffée — Envisagez d'ajouter des membres
     </div>
     }
 </div>
@@ -146,18 +155,12 @@
         </div>
 
         <div class="membre-actions">
-            <a [routerLink]="['/chef-projet/matching']" [queryParams]="{ projetId: selectedProjetId() }"
-                class="btn-action info" title="Voir profil matching">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="11" cy="11" r="8" />
-                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
-                </svg>
-            </a>
             <button class="btn-action danger" (click)="retirer(membre)" title="Retirer du projet">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <line x1="18" y1="6" x2="6" y2="18" />
                     <line x1="6" y1="6" x2="18" y2="18" />
                 </svg>
+                Retirer
             </button>
         </div>
     </div>
@@ -177,3 +180,144 @@
 </div>
 }
 </div>
+
+<!-- ======================== MODAL AFFECTATION ======================== -->
+@if (showModalAffectation()) {
+<div class="modal-overlay" (click)="closeModal()">
+    <div class="modal-panel" (click)="$event.stopPropagation()">
+
+        <div class="modal-header">
+            <h2>Affecter un membre au projet</h2>
+            <button class="modal-close" (click)="closeModal()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- Recherche -->
+        <div class="search-box">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+            <input type="text" placeholder="Rechercher un employé (nom, email, poste...)" [value]="searchQuery()"
+                (input)="searchQuery.set($any($event.target).value)">
+        </div>
+
+        <!-- Liste employés -->
+        <div class="employe-list">
+            @if (loadingEmployes()) {
+            <div class="loading-state compact">
+                <div class="spinner-sm"></div>
+                Chargement des employés...
+            </div>
+            } @else if (filteredEmployes().length === 0) {
+            <div class="empty-list">Aucun employé trouvé</div>
+            } @else {
+            @for (emp of filteredEmployes(); track emp.id) {
+            <div class="employe-row" [class.selected]="selectedEmployeId() === emp.id" (click)="selectEmploye(emp)">
+                <div class="emp-avatar" [style.background]="getAvatarColor(emp.nom)">
+                    {{ getInitials(emp.prenom, emp.nom) }}
+                </div>
+                <div class="emp-info">
+                    <span class="emp-name">{{ emp.prenom }} {{ emp.nom }}</span>
+                    <span class="emp-meta">{{ emp.poste || 'Non défini' }} · {{ emp.departement || '—' }}</span>
+                </div>
+                <div class="emp-dispo" [class.available]="emp.disponibilite" [class.unavailable]="!emp.disponibilite">
+                    {{ emp.disponibilite ? 'Disponible' : 'Indisponible' }}
+                </div>
+                @if (selectedEmployeId() === emp.id) {
+                <svg class="check-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981"
+                    stroke-width="3">
+                    <polyline points="20 6 9 17 4 12" />
+                </svg>
+                }
+            </div>
+            }
+            }
+        </div>
+
+        <!-- Formulaire d'affectation (visible si employé sélectionné) -->
+        @if (selectedEmployeId()) {
+        <div class="affectation-form">
+            <div class="form-row">
+                <div class="form-field">
+                    <label>Rôle dans le projet</label>
+                    <select [value]="affectationForm().roleDansProjet"
+                        (change)="updateForm('roleDansProjet', $any($event.target).value)">
+                        <option value="">— Choisir un rôle —</option>
+                        @for (r of roles; track r) {
+                        <option [value]="r">{{ r }}</option>
+                        }
+                    </select>
+                </div>
+                <div class="form-field narrow">
+                    <label>Allocation (%)</label>
+                    <input type="number" min="10" max="100" step="10" [value]="affectationForm().tauxAllocation"
+                        (input)="updateForm('tauxAllocation', +$any($event.target).value)">
+                </div>
+                <div class="form-field narrow">
+                    <label>Date début</label>
+                    <input type="date" [value]="affectationForm().dateDebut"
+                        (input)="updateForm('dateDebut', $any($event.target).value)">
+                </div>
+            </div>
+            <button class="btn-submit" [disabled]="saving()" (click)="submitAffectation()">
+                @if (saving()) {
+                <div class="spinner-sm"></div>
+                Affectation en cours...
+                } @else {
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="20 6 9 17 4 12" />
+                </svg>
+                Confirmer l'affectation
+                }
+            </button>
+        </div>
+        }
+    </div>
+</div>
+}
+
+<!-- ======================== MODAL DÉTAIL EMPLOYÉ ======================== -->
+@if (showDetailEmploye() && detailEmploye()) {
+<div class="modal-overlay" (click)="showDetailEmploye.set(false)">
+    <div class="modal-panel small" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+            <h2>Détails de l'employé</h2>
+            <button class="modal-close" (click)="showDetailEmploye.set(false)">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+            </button>
+        </div>
+        <div class="detail-body">
+            <div class="detail-avatar-big" [style.background]="getAvatarColor(detailEmploye()!.nom)">
+                {{ getInitials(detailEmploye()!.prenom, detailEmploye()!.nom) }}
+            </div>
+            <h3>{{ detailEmploye()!.prenom }} {{ detailEmploye()!.nom }}</h3>
+            <p class="detail-email">{{ detailEmploye()!.email }}</p>
+            <div class="detail-info-grid">
+                <div class="detail-info-item">
+                    <span class="label">Poste</span>
+                    <span class="value">{{ detailEmploye()!.poste || 'Non défini' }}</span>
+                </div>
+                <div class="detail-info-item">
+                    <span class="label">Département</span>
+                    <span class="value">{{ detailEmploye()!.departement || '—' }}</span>
+                </div>
+                <div class="detail-info-item">
+                    <span class="label">Disponibilité</span>
+                    <span class="value" [class.available]="detailEmploye()!.disponibilite"
+                        [class.unavailable]="!detailEmploye()!.disponibilite">
+                        {{ detailEmploye()!.disponibilite ? 'Disponible' : 'Indisponible' }}
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+}

@@ -122,11 +122,6 @@ export const routes: Routes = [
         canActivate: [authGuard]
     },
     {
-        path: 'chef-projet/matching',
-        loadComponent: () => import('./features/chef-projet/matching/matching.component').then(m => m.MatchingComponent),
-        canActivate: [authGuard]
-    },
-    {
         path: 'chef-projet/equipe',
         loadComponent: () => import('./features/chef-projet/equipe/equipe.component').then(m => m.EquipeComponent),
         canActivate: [authGuard]

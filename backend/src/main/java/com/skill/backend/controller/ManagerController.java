@@ -116,7 +116,7 @@ public class ManagerController {
                description = "Permet à un manager ou chef de projet de récupérer ses projets")
     public ResponseEntity<List<com.skill.backend.dto.ProjetDTO>> getMyProjects(Authentication authentication) {
         System.out.println("🎯 ManagerController.getMyProjects - Request received for: " + authentication.getName());
-        List<com.skill.backend.dto.ProjetDTO> projects = projetService.getMesProjets();
+        List<com.skill.backend.dto.ProjetDTO> projects = projetService.getAllProjets();
         System.out.println("✅ Result: " + projects.size() + " projects found.");
         return ResponseEntity.ok(projects);
     }

@@ -24,7 +24,6 @@ export class ChefProjetLayoutComponent {
     readonly navItems: NavItem[] = [
         { label: 'Tableau de bord', icon: 'dashboard', route: '/chef-projet/dashboard', exact: true },
         { label: 'Mes projets', icon: 'projects', route: '/chef-projet/projets' },
-        { label: 'Matching', icon: 'matching', route: '/chef-projet/matching' },
         { label: 'Équipe', icon: 'team', route: '/chef-projet/equipe' },
         { label: 'Messagerie', icon: 'messages', route: '/chef-projet/messagerie' }
     ];

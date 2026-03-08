@@ -7,7 +7,7 @@ import { ManagerService } from '../../../core/services/manager.service';
 @Component({
     selector: 'app-manager-projects',
     standalone: true,
-    imports: [CommonModule, FormsModule],
+    imports: [CommonModule, FormsModule, RouterLink],
     templateUrl: './projects.component.html',
     styleUrls: ['./projects.component.scss']
 })

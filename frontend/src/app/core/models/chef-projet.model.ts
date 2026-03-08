@@ -74,12 +74,22 @@ export interface EmployeeMatch {
     tauxAllocationActuel: number;
 }
 
+export interface EmployeeMatchDetail extends EmployeeMatch {
+    email: string;
+    departement: string;
+    matchedSkills: CompetenceMatch[];
+    missingSkills: CompetenceMatch[];
+    anneesExperience?: number;
+    projetsAnterieurs?: string[];
+}
+
 export interface CompetenceMatch {
+    competenceId: string;
     competenceNom: string;
-    niveauEmploye: number;
     niveauRequis: number;
-    ecart: number;
-    satisfait: boolean;
+    niveauEmploye: number;
+    statut: 'PARFAIT' | 'SUFFISANT' | 'INSUFFISANT' | 'MANQUANT';
+    scoreMatch: number;
 }
 
 export interface MatchingResult {

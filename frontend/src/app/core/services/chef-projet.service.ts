@@ -13,6 +13,16 @@ import {
     ProjetStats
 } from '../models/chef-projet.model';
 
+export interface EmployeSimple {
+    id: string;
+    nom: string;
+    prenom: string;
+    email: string;
+    poste: string;
+    departement: string;
+    disponibilite: boolean;
+}
+
 @Injectable({
     providedIn: 'root'
 })
@@ -72,6 +82,11 @@ export class ChefProjetService {
     // =========================================================
     // GESTION DE L'ÉQUIPE
     // =========================================================
+
+    getAllEmployes(): Observable<EmployeSimple[]> {
+        return this.http.get<EmployeSimple[]>(`${this.apiUrl}/employes`);
+    }
+
 
     getEquipeProjet(projetId: string): Observable<MembreEquipe[]> {
         return this.http.get<MembreEquipe[]>(`${this.apiUrl}/projets/${projetId}/equipe`);

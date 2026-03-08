@@ -208,15 +208,6 @@ import { RhService } from '../../../core/services/rh.service';
             </a>
           </li>
           <li>
-            <a routerLink="/chef-projet/matching" routerLinkActive="active">
-              <svg class="nav-icon" viewBox="0 0 24 24" fill="none">
-                <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <line x1="21" y1="21" x2="16.65" y2="16.65" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-              <span class="nav-text">Matching</span>
-            </a>
-          </li>
-          <li>
             <a routerLink="/chef-projet/equipe" routerLinkActive="active">
               <svg class="nav-icon" viewBox="0 0 24 24" fill="none">
                 <path d="M17 21V19C17 17.9391 16.5786 16.9217 15.8284 16.1716C15.0783 15.4214 14.0609 15 13 15H5C3.93913 15 2.92172 15.4214 2.17157 16.1716C1.42143 16.9217 1 17.9391 1 19V21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
