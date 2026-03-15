@@ -3,9 +3,10 @@ export interface TestTechnique {
     titre: string;
     description: string;
     competenceId: string;
+    technologie?: string;
     dureeMinutes: number;
     niveau: string;
-    questions?: Question[];
+    questions: Question[];
 }
 
 export interface Question {

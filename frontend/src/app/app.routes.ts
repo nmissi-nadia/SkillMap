@@ -136,6 +136,26 @@ export const routes: Routes = [
         redirectTo: 'chef-projet/dashboard',
         pathMatch: 'full'
     },
+    // Technical Tests Routes
+    {
+        path: 'tests',
+        canActivate: [authGuard],
+        children: [
+            { path: '', loadComponent: () => import('./modules/tests/components/test-list.component').then(m => m.TestListComponent) },
+            { path: 'create', loadComponent: () => import('./modules/tests/components/create-test.component').then(m => m.CreateTestComponent) },
+            { path: ':id', loadComponent: () => import('./modules/tests/components/test-detail.component').then(m => m.TestDetailComponent) },
+            { path: 'assign/:id', loadComponent: () => import('./modules/tests/components/assign-test.component').then(m => m.AssignTestComponent) }
+        ]
+    },
+    {
+        path: 'employe/tests',
+        canActivate: [authGuard],
+        children: [
+            { path: '', loadComponent: () => import('./modules/tests/components/employe-tests.component').then(m => m.EmployeTestsComponent) },
+            { path: ':id/pass', loadComponent: () => import('./modules/tests/components/take-test.component').then(m => m.TakeTestComponent) },
+            { path: ':id/result', loadComponent: () => import('./modules/tests/components/test-result.component').then(m => m.TestResultComponent) }
+        ]
+    },
     {
         path: '**',
         redirectTo: '/login'

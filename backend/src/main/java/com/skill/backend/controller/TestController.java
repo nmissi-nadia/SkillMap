@@ -37,6 +37,7 @@ public class TestController {
      * GET /api/tests — Lister tous les tests
      */
     @GetMapping
+    @PreAuthorize("hasAnyAuthority('ROLE_RH', 'ROLE_MANAGER', 'ROLE_CHEF_PROJET', 'ROLE_EMPLOYE')")
     @Operation(summary = "Lister tous les tests techniques")
     public ResponseEntity<List<TestDTO>> getAllTests() {
         return ResponseEntity.ok(testService.getAllTests());
@@ -46,6 +47,7 @@ public class TestController {
      * GET /api/tests/{id} — Récupérer un test par ID
      */
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ROLE_RH', 'ROLE_MANAGER', 'ROLE_CHEF_PROJET', 'ROLE_EMPLOYE')")
     @Operation(summary = "Récupérer un test technique par ID")
     public ResponseEntity<TestDTO> getTestById(@PathVariable String id) {
         return ResponseEntity.ok(testService.getTestById(id));

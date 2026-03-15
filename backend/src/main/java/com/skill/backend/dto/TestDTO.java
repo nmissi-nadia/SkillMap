@@ -1,6 +1,7 @@
 package com.skill.backend.dto;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -24,7 +25,11 @@ public class TestDTO {
     @NotBlank(message = "La compétence est obligatoire")
     private String competenceId;
 
-    private String dureeMinutes;
+    private String technologie;
+
+    @NotNull(message = "La durée est obligatoire")
+    @Min(value = 1, message = "La durée doit être d'au moins 1 minute")
+    private Integer dureeMinutes;
 
     @NotBlank(message = "Le niveau est obligatoire")
     private String niveau; // DEBUTANT, INTERMEDIAIRE, AVANCE, EXPERT

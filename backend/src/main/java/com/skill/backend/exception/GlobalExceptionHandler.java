@@ -53,8 +53,12 @@ public class GlobalExceptionHandler {
     // --- Generic fallback ---
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGenericException(Exception ex) {
-        log.error("Unexpected error: {}", ex.getMessage(), ex);
-        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur interne est survenue");
+        log.error("CRITICAL ERROR: {} - Type: {}", ex.getMessage(), ex.getClass().getName(), ex);
+        String detailedMessage = ex.getMessage();
+        if (ex.getCause() != null) {
+            detailedMessage += " | CAUSE: " + ex.getCause().getMessage();
+        }
+        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "DEBUG CRITICAL: " + detailedMessage);
     }
 
     private ResponseEntity<Map<String, Object>> buildResponse(HttpStatus status, String message) {

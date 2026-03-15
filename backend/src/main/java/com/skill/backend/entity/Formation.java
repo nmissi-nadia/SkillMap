@@ -1,14 +1,14 @@
 package com.skill.backend.entity;
 
+import com.skill.backend.enums.TypeFormation;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -22,32 +22,39 @@ public class Formation {
     @Column(length = 36)
     private String id;
 
+    @Column(nullable = false)
     private String titre;
-    private String organisme;
-    private String type; // Interne / Externe
-    private String statut; // Planifiée / En_cours / Terminée / Annulée
 
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private TypeFormation typeFormation; // PDF, ONLINE, PRESENTIEL
+
+    private String technologie;
+
     private LocalDate dateDebut;
     private LocalDate dateFin;
 
-    private Double cout;
-    private Integer dureeHeures;
-    private Integer maxParticipants;
-    private Integer niveauRequis;       // 1-5
+    private String lieu;
 
-    private String certification;
-    private String urlCertificat;
-    private LocalDateTime dateValidation;
-    private String valideePar;
+    // Nouveau set pour gérer les ressources
+    @OneToMany(mappedBy = "formation", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<RessourceFormation> ressources = new ArrayList<>();
 
-    @ManyToMany(mappedBy = "formations")
-    private Set<Employe> employes = new HashSet<>();
+    // Nouveau set pour gérer les compétences cibles
+    @OneToMany(mappedBy = "formation", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<FormationCompetence> formationCompetences = new ArrayList<>();
+
+    // Nouveau set pour gérer les inscriptions
+    @OneToMany(mappedBy = "formation", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<InscriptionFormation> inscriptions = new ArrayList<>();
 
     @PrePersist
     protected void onCreate() {
-        if (id == null) id = UUID.randomUUID().toString();
+        if (id == null) {
+            id = UUID.randomUUID().toString();
+        }
     }
 }

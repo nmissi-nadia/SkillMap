@@ -67,7 +67,7 @@ class TestServiceTest {
         inputDTO.setDescription("Test de compétences Spring Boot");
         inputDTO.setCompetenceId("comp-001");
         inputDTO.setNiveau("INTERMEDIAIRE");
-        inputDTO.setDureeMinutes("60");
+        inputDTO.setDureeMinutes(60);
         inputDTO.setQuestions(List.of(qDto));
 
         Question questionEntity = new Question();

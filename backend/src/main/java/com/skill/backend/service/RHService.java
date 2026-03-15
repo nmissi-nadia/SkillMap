@@ -7,6 +7,8 @@ import com.skill.backend.enums.TypeCompetence;
 import com.skill.backend.mapper.EmployeMapper;
 import com.skill.backend.mapper.ManagerMapper;
 import com.skill.backend.mapper.RHMapper;
+import com.skill.backend.exception.BadRequestException;
+import com.skill.backend.exception.ResourceNotFoundException;
 import com.skill.backend.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -39,20 +41,26 @@ public class RHService {
 
     // ========== Helper: Récupérer RH par email ==========
     
-    private RH getRHByEmail(String email) {
+    private Utilisateur validateRH(String email) {
         Utilisateur utilisateur = utilisateurRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+                .orElseThrow(() -> new ResourceNotFoundException("Utilisateur non trouvé avec l'email: " + email));
         
         if (utilisateur.getRole() != RoleUtilisateur.RH) {
-            throw new RuntimeException("L'utilisateur n'est pas RH");
+            throw new BadRequestException("Accès refusé : l'utilisateur n'a pas le rôle RH");
         }
+        
+        return utilisateur;
+    }
+
+    private RH getRHByEmail(String email) {
+        Utilisateur utilisateur = validateRH(email);
         
         if (utilisateur instanceof RH) {
             return (RH) utilisateur;
         }
         
         return rhRepository.findById(utilisateur.getId())
-                .orElseThrow(() -> new RuntimeException("RH non trouvé pour l'ID: " + utilisateur.getId()));
+                .orElseThrow(() -> new ResourceNotFoundException("Détails RH non trouvés pour l'utilisateur: " + email));
     }
 
     // ========== PHASE 1: GESTION DES UTILISATEURS ==========
@@ -61,7 +69,7 @@ public class RHService {
      * Récupérer tous les utilisateurs avec filtres
      */
     public Page<UtilisateurDTO> getAllUtilisateurs(String rhEmail, RoleUtilisateur role, Pageable pageable) {
-        getRHByEmail(rhEmail); // Vérifier les droits
+        validateRH(rhEmail); // Vérifier les droits
         
         Page<Utilisateur> utilisateurs;
         if (role != null) {
@@ -78,7 +86,7 @@ public class RHService {
      */
     @Transactional
     public UtilisateurDTO createUtilisateur(String rhEmail, CreateUtilisateurDTO dto) {
-        getRHByEmail(rhEmail); // Vérifier les droits
+        validateRH(rhEmail); // Vérifier les droits
         
         // Vérifier que l'email n'existe pas déjà
         if (utilisateurRepository.findByEmail(dto.getEmail()).isPresent()) {
@@ -142,7 +150,7 @@ public class RHService {
      */
     @Transactional
     public UtilisateurDTO updateUtilisateur(String rhEmail, String userId, UpdateUtilisateurDTO dto) {
-        getRHByEmail(rhEmail); // Vérifier les droits
+        validateRH(rhEmail); // Vérifier les droits
         
         Utilisateur utilisateur = utilisateurRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
@@ -194,7 +202,7 @@ public class RHService {
      */
     @Transactional
     public void deactivateUtilisateur(String rhEmail, String userId) {
-        getRHByEmail(rhEmail); // Vérifier les droits
+        validateRH(rhEmail); // Vérifier les droits
         
         Utilisateur utilisateur = utilisateurRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
@@ -208,7 +216,7 @@ public class RHService {
      */
     @Transactional
     public void activateUtilisateur(String rhEmail, String userId) {
-        getRHByEmail(rhEmail); // Vérifier les droits
+        validateRH(rhEmail); // Vérifier les droits
         
         Utilisateur utilisateur = utilisateurRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
@@ -222,7 +230,7 @@ public class RHService {
      */
     @Transactional
     public EmployeDTO assignManagerToEmployee(String rhEmail, String employeId, String managerId) {
-        getRHByEmail(rhEmail); // Vérifier les droits
+        validateRH(rhEmail); // Vérifier les droits
         
         Employe employe = employeRepository.findById(employeId)
                 .orElseThrow(() -> new RuntimeException("Employé non trouvé"));
@@ -240,7 +248,7 @@ public class RHService {
      * Récupérer la liste des départements
      */
     public List<String> getDepartments(String rhEmail) {
-        getRHByEmail(rhEmail); // Vérifier les droits
+        validateRH(rhEmail); // Vérifier les droits
         
         return employeRepository.findAll().stream()
                 .map(Employe::getDepartement)
@@ -256,7 +264,7 @@ public class RHService {
      * Récupérer la cartographie complète des compétences de l'entreprise
      */
     public SkillsMapDTO getCompanySkillsMap(String rhEmail, String department, String poste, Integer niveau) {
-        getRHByEmail(rhEmail); // Vérifier les droits
+        validateRH(rhEmail); // Vérifier les droits
         
         List<CompetenceEmploye> allCompetences = competenceEmployeRepository.findAll();
         
@@ -290,7 +298,7 @@ public class RHService {
      * Identifier les compétences rares (peu d'employés les possèdent)
      */
     public List<RareSkillDTO> getRareSkills(String rhEmail, int threshold) {
-        getRHByEmail(rhEmail); // Vérifier les droits
+        validateRH(rhEmail); // Vérifier les droits
         
         Map<String, Long> skillCounts = competenceEmployeRepository.findAll().stream()
                 .collect(Collectors.groupingBy(
@@ -323,7 +331,7 @@ public class RHService {
      * Identifier les compétences critiques (essentielles pour l'entreprise)
      */
     public List<CriticalSkillDTO> getCriticalSkills(String rhEmail) {
-        getRHByEmail(rhEmail); // Vérifier les droits
+        validateRH(rhEmail); // Vérifier les droits
         
         // Compétences critiques = compétences requises par beaucoup de projets
         // ou compétences avec niveau moyen faible
@@ -445,7 +453,7 @@ public class RHService {
      */
     @Transactional
     public FormationDTO createFormation(String rhEmail, CreateFormationDTO dto) {
-        getRHByEmail(rhEmail); // Vérifier les droits
+        validateRH(rhEmail); // Vérifier les droits
         
         Formation formation = new Formation();
         formation.setId(UUID.randomUUID().toString());
@@ -468,7 +476,7 @@ public class RHService {
      */
     @Transactional
     public FormationDTO updateFormation(String rhEmail, String formationId, CreateFormationDTO dto) {
-        getRHByEmail(rhEmail); // Vérifier les droits
+        validateRH(rhEmail); // Vérifier les droits
         
         Formation formation = formationRepository.findById(formationId)
                 .orElseThrow(() -> new RuntimeException("Formation non trouvée"));
@@ -492,7 +500,7 @@ public class RHService {
      */
     @Transactional
     public void deleteFormation(String rhEmail, String formationId) {
-        getRHByEmail(rhEmail); // Vérifier les droits
+        validateRH(rhEmail); // Vérifier les droits
         
         Formation formation = formationRepository.findById(formationId)
                 .orElseThrow(() -> new RuntimeException("Formation non trouvée"));
@@ -509,7 +517,7 @@ public class RHService {
      */
     @Transactional
     public List<String> assignFormation(String rhEmail, AssignFormationDTO dto) {
-        getRHByEmail(rhEmail); // Vérifier les droits
+        validateRH(rhEmail); // Vérifier les droits
         
         Formation formation = formationRepository.findById(dto.getFormationId())
                 .orElseThrow(() -> new RuntimeException("Formation non trouvée"));
@@ -540,7 +548,7 @@ public class RHService {
      * Récupérer le suivi budget d'une formation
      */
     public FormationBudgetDTO getFormationBudget(String rhEmail, String formationId) {
-        getRHByEmail(rhEmail); // Vérifier les droits
+        validateRH(rhEmail); // Vérifier les droits
         
         Formation formation = formationRepository.findById(formationId)
                 .orElseThrow(() -> new RuntimeException("Formation non trouvée"));
@@ -621,7 +629,7 @@ public class RHService {
      */
     @Transactional
     public void validateCertification(String rhEmail, CertificationValidationDTO dto) {
-        RH rh = getRHByEmail(rhEmail); // Vérifier les droits
+        Utilisateur rh = validateRH(rhEmail); // Vérifier les droits
         
         List<FormationEmploye> formationEmployes = formationEmployeRepository.findByFormationId(dto.getFormationId());
         
@@ -654,7 +662,7 @@ public class RHService {
      * Récupérer toutes les formations
      */
     public Page<FormationDTO> getAllFormations(String rhEmail, Pageable pageable) {
-        getRHByEmail(rhEmail); // Vérifier les droits
+        validateRH(rhEmail); // Vérifier les droits
 
         // Utiliser PageRequest sans sort pour éviter PropertyReferenceException (ex: sort=string depuis Swagger)
         org.springframework.data.domain.PageRequest safePageable =
