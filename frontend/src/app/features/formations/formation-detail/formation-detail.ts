@@ -10,6 +10,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTableModule } from '@angular/material/table';
+import { MatDividerModule } from '@angular/material/divider';
 
 @Component({
   selector: 'app-formation-detail',
@@ -22,7 +23,8 @@ import { MatTableModule } from '@angular/material/table';
     MatIconModule,
     MatChipsModule,
     MatTabsModule,
-    MatTableModule
+    MatTableModule,
+    MatDividerModule
   ],
   templateUrl: './formation-detail.html',
   styleUrl: './formation-detail.scss',

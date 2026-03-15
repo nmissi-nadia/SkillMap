@@ -4,8 +4,7 @@ import { FormBuilder, FormGroup, Validators, FormArray, ReactiveFormsModule } fr
 import { Router, RouterLink } from '@angular/router';
 import { FormationService } from '../../../core/services/formation.service';
 import { TypeFormation, TypeRessource } from '../../../core/models/formation.model';
-import { CompetenceService } from '../../../core/services/competence.service'; // Assuming available
-import { CompetenceDTO } from '../../../core/models/competence.model'; // Assuming available
+import { HttpClient } from '@angular/common/http';
 
 // Angular Material
 import { MatCardModule } from '@angular/material/card';
@@ -47,7 +46,7 @@ export class FormationCreate implements OnInit {
   constructor(
     private fb: FormBuilder,
     private formationService: FormationService,
-    private competenceService: CompetenceService,
+    private http: HttpClient,
     private router: Router,
     private snackBar: MatSnackBar
   ) { }
@@ -68,7 +67,7 @@ export class FormationCreate implements OnInit {
       lieu: [''],
       competenceId: [''],
       niveauCible: [1, [Validators.min(1), Validators.max(5)]],
-      ressources: this.fb.formArray([])
+      ressources: this.fb.array([])
     });
 
     // Écouter les changements de typeFormation pour ajuster les validateurs
@@ -103,9 +102,9 @@ export class FormationCreate implements OnInit {
   }
 
   loadCompetences(): void {
-    this.competenceService.getAllCompetences().subscribe({
-      next: (data) => this.competences = data,
-      error: (err) => console.error('Erreur chargement compétences', err)
+    this.http.get<any[]>('http://localhost:8080/api/competences').subscribe({
+      next: (data: any[]) => this.competences = data,
+      error: (err: any) => console.error('Erreur chargement compétences', err)
     });
   }
 

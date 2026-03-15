@@ -1,11 +1,7 @@
 package com.skill.backend.service;
 
-import com.skill.backend.dto.ResultatTestDTO;
-import com.skill.backend.entity.Competence;
-import com.skill.backend.entity.CompetenceEmploye;
-import com.skill.backend.entity.Employe;
-import com.skill.backend.entity.ReponseEmploye;
-import com.skill.backend.entity.TestEmploye;
+import com.skill.backend.entity.Evaluation;
+import com.skill.backend.repository.EvaluationRepository;
 import com.skill.backend.repository.CompetenceEmployeRepository;
 import com.skill.backend.repository.CompetenceRepository;
 import com.skill.backend.repository.TestEmployeRepository;
@@ -23,6 +19,7 @@ public class EvaluationService {
     private final TestEmployeRepository testEmployeRepository;
     private final CompetenceEmployeRepository competenceEmployeRepository;
     private final CompetenceRepository competenceRepository;
+    private final EvaluationRepository evaluationRepository;
 
     /**
      * Calcule le score, met à jour le statut du TestEmploye et actualise
@@ -60,6 +57,9 @@ public class EvaluationService {
         if (competenceId != null && !competenceId.isBlank()) {
             updateCompetenceEmploye(testEmploye.getEmploye(), competenceId, niveauCompetence);
         }
+
+        // Créer une évaluation liée au test
+        createEvaluationFromTest(testEmploye, niveauCompetence, scorePercent);
 
         // Construire le résultat
         ResultatTestDTO resultat = new ResultatTestDTO();
@@ -111,5 +111,24 @@ public class EvaluationService {
         ce.setDateEvaluation(LocalDate.now());
         ce.setCommentaire("Niveau mis à jour automatiquement suite au test technique");
         competenceEmployeRepository.save(ce);
+    }
+
+    /**
+     * Crée une évaluation basée sur le résultat du test technique.
+     */
+    private void createEvaluationFromTest(TestEmploye testEmploye, int niveauCompetence, double scorePercent) {
+        Evaluation evaluation = new Evaluation();
+        evaluation.setType("test");
+        evaluation.setScore(scorePercent);
+        evaluation.setCommentaire("Évaluation automatique suite au test technique: " + testEmploye.getTestTechnique().getTitre());
+        evaluation.setEmploye(testEmploye.getEmploye());
+        evaluation.setManager(testEmploye.getManager());
+        evaluation.setCompetence(competenceRepository.findById(testEmploye.getTestTechnique().getCompetenceId()).orElse(null));
+        evaluation.setNiveauAutoEvalue(niveauCompetence);
+        evaluation.setNiveauValide(niveauCompetence); // Auto-validé pour les tests
+        evaluation.setCommentaireEmploye("Test passé automatiquement");
+        evaluation.setCommentaireManager("Validation automatique du test technique");
+        evaluation.setStatut("VALIDEE");
+        evaluationRepository.save(evaluation);
     }
 }

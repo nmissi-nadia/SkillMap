@@ -1,9 +1,7 @@
 package com.skill.backend.service;
 
-import com.skill.backend.dto.TestEmployeDTO;
-import com.skill.backend.entity.Employe;
-import com.skill.backend.entity.TestEmploye;
-import com.skill.backend.entity.TestTechnique;
+import com.skill.backend.entity.Manager;
+import com.skill.backend.repository.ManagerRepository;
 import com.skill.backend.exception.BadRequestException;
 import com.skill.backend.exception.ResourceNotFoundException;
 import com.skill.backend.mapper.TestEmployeMapper;
@@ -24,18 +22,27 @@ public class TestAssignmentService {
     private final TestTechniqueRepository testTechniqueRepository;
     private final TestEmployeRepository testEmployeRepository;
     private final EmployeRepository employeRepository;
+    private final ManagerRepository managerRepository;
     private final TestEmployeMapper testEmployeMapper;
 
     /**
      * Affecter un test à un employé. Crée un TestEmploye avec statut ASSIGNED.
      */
     @Transactional
-    public TestEmployeDTO assignTest(String testId, String employeId) {
+    public TestEmployeDTO assignTest(String testId, String employeId, String managerId) {
         TestTechnique test = testTechniqueRepository.findById(testId)
                 .orElseThrow(() -> new ResourceNotFoundException("TestTechnique", "id", testId));
 
         Employe employe = employeRepository.findById(employeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Employe", "id", employeId));
+
+        Manager manager = managerRepository.findById(managerId)
+                .orElseThrow(() -> new ResourceNotFoundException("Manager", "id", managerId));
+
+        // Vérifier que l'employé appartient bien au manager
+        if (employe.getManager() == null || !employe.getManager().getId().equals(managerId)) {
+            throw new BadRequestException("Vous ne pouvez assigner des tests qu'aux employés qui relèvent de vous.");
+        }
 
         // Vérifier si le test n'est pas déjà affecté
         testEmployeRepository.findByTestTechniqueIdAndEmployeId(testId, employeId).ifPresent(existing -> {
@@ -47,6 +54,7 @@ public class TestAssignmentService {
         TestEmploye testEmploye = new TestEmploye();
         testEmploye.setTestTechnique(test);
         testEmploye.setEmploye(employe);
+        testEmploye.setManager(manager);
         testEmploye.setStatut("ASSIGNED");
         testEmploye.setScore(0.0);
 

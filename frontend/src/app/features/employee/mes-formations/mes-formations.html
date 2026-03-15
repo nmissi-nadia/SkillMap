@@ -1,1 +1,62 @@
-<p>mes-formations works!</p>
+<div class="mes-formations-container">
+    <div class="header-section">
+        <h2>Mes Formations en cours</h2>
+        <p>Suivez votre progression et accédez à vos ressources d'apprentissage.</p>
+    </div>
+
+    <div class="formations-list">
+        <mat-card class="formation-card" *ngFor="let formation of myFormations">
+            <mat-card-header>
+                <div class="title-area">
+                    <mat-card-title>{{formation.titre}}</mat-card-title>
+                    <mat-card-subtitle>{{formation.technologie || formation.typeFormation}}</mat-card-subtitle>
+                </div>
+                <div class="status-badge" *ngIf="getInscription(formation) as ins">
+                    <mat-chip [color]="ins.statut === 'TERMINE' ? 'primary' : 'accent'" selected>
+                        {{ins.statut}}
+                    </mat-chip>
+                </div>
+            </mat-card-header>
+
+            <mat-card-content>
+                <div class="progress-section" *ngIf="getInscription(formation) as ins">
+                    <div class="progress-header">
+                        <span>Progression globale</span>
+                        <span>{{ins.progress}}%</span>
+                    </div>
+                    <mat-progress-bar mode="determinate" [value]="ins.progress"
+                        [color]="ins.progress === 100 ? 'primary' : 'accent'"></mat-progress-bar>
+                    <p class="score" *ngIf="ins.score">Score d'évaluation : <strong>{{ins.score}}/100</strong></p>
+                </div>
+
+                <mat-accordion class="resources-accordion">
+                    <mat-expansion-panel>
+                        <mat-expansion-panel-header>
+                            <mat-panel-title>
+                                <mat-icon>library_books</mat-icon> Ressources d'apprentissage
+                                ({{formation.ressources.length}})
+                            </mat-panel-title>
+                        </mat-expansion-panel-header>
+
+                        <div class="resource-item" *ngFor="let res of formation.ressources">
+                            <mat-icon *ngIf="res.typeRessource === 'PDF'" color="warn">picture_as_pdf</mat-icon>
+                            <mat-icon *ngIf="res.typeRessource === 'LIEN'" color="primary">link</mat-icon>
+                            <span class="res-title">{{res.titre}}</span>
+                            <button mat-icon-button color="primary" (click)="openResource(res.url)">
+                                <mat-icon>open_in_new</mat-icon>
+                            </button>
+                        </div>
+
+                        <p *ngIf="formation.ressources.length === 0" class="no-res">Aucune ressource disponible pour
+                            l'instant.</p>
+                    </mat-expansion-panel>
+                </mat-accordion>
+            </mat-card-content>
+        </mat-card>
+
+        <div *ngIf="myFormations.length === 0" class="empty-state">
+            <mat-icon>school</mat-icon>
+            <p>Vous n'êtes inscrit(e) à aucune formation. Visitez le catalogue pour en découvrir de nouvelles !</p>
+        </div>
+    </div>
+</div>

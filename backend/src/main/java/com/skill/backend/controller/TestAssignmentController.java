@@ -28,8 +28,10 @@ public class TestAssignmentController {
     @Operation(summary = "Affecter un test technique à un employé")
     public ResponseEntity<TestEmployeDTO> assignTest(
             @PathVariable String testId,
-            @PathVariable String employeId) {
-        return ResponseEntity.ok(testAssignmentService.assignTest(testId, employeId));
+            @PathVariable String employeId,
+            Authentication authentication) {
+        String managerId = authentication.getName();
+        return ResponseEntity.ok(testAssignmentService.assignTest(testId, employeId, managerId));
     }
 
     /**

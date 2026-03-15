@@ -12,6 +12,8 @@ public interface TestEmployeMapper {
     @Mapping(source = "testTechnique.titre", target = "testTitre")
     @Mapping(source = "employe.id", target = "employeId")
     @Mapping(expression = "java(testEmploye.getEmploye().getNom() + \" \" + testEmploye.getEmploye().getPrenom())", target = "employeNom")
+    @Mapping(source = "manager.id", target = "managerId")
+    @Mapping(expression = "java(testEmploye.getManager() != null ? testEmploye.getManager().getNom() + \" \" + testEmploye.getManager().getPrenom() : null)", target = "managerNom")
     TestEmployeDTO toDto(TestEmploye testEmploye);
 
     @Mapping(target = "testTechnique", ignore = true)

@@ -11,6 +11,8 @@ public class TestEmployeDTO {
     private String testTitre;
     private String employeId;
     private String employeNom;
+    private String managerId;
+    private String managerNom;
 
     /** ASSIGNED | IN_PROGRESS | COMPLETED */
     private String statut;

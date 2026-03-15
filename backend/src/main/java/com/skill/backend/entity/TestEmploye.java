@@ -37,6 +37,10 @@ public class TestEmploye {
     @JoinColumn(name = "employe_id", nullable = false)
     private Employe employe;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "manager_id")
+    private Manager manager;
+
     @OneToMany(mappedBy = "testEmploye", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ReponseEmploye> reponses = new ArrayList<>();
 

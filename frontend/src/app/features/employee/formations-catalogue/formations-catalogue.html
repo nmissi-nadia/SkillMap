@@ -1,1 +1,41 @@
-<p>formations-catalogue works!</p>
+<div class="catalogue-container">
+    <div class="header-section">
+        <h2>Catalogue des Formations</h2>
+        <p>Découvrez et inscrivez-vous aux formations disponibles pour développer vos compétences.</p>
+    </div>
+
+    <div class="formations-grid">
+        <mat-card class="formation-card" *ngFor="let formation of formations">
+            <mat-card-header>
+                <mat-card-title>{{formation.titre}}</mat-card-title>
+                <mat-card-subtitle>{{formation.technologie || formation.typeFormation}}</mat-card-subtitle>
+            </mat-card-header>
+
+            <mat-card-content>
+                <p class="desc">{{formation.description}}</p>
+
+                <div class="tags">
+                    <mat-chip color="accent" selected>{{formation.typeFormation}}</mat-chip>
+                    <mat-chip *ngIf="formation.competenceNom" color="primary" selected>
+                        {{formation.competenceNom}} (Niveau visé : {{formation.niveauCible}})
+                    </mat-chip>
+                </div>
+
+                <div class="meta-info" *ngIf="formation.typeFormation === 'PRESENTIEL'">
+                    <p><mat-icon>event</mat-icon> {{formation.dateDebut | date}} - {{formation.dateFin | date}}</p>
+                    <p><mat-icon>location_on</mat-icon> {{formation.lieu}}</p>
+                </div>
+            </mat-card-content>
+
+            <mat-card-actions align="end">
+                <button mat-raised-button color="primary" (click)="sinscrire(formation.id)">
+                    S'inscrire
+                </button>
+            </mat-card-actions>
+        </mat-card>
+
+        <div *ngIf="formations.length === 0" class="empty-state">
+            <p>Vous êtes inscrit à toutes les formations disponibles ou le catalogue est vide.</p>
+        </div>
+    </div>
+</div>
