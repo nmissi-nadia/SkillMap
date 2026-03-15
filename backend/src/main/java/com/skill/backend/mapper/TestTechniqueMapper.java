@@ -4,18 +4,23 @@ import com.skill.backend.dto.TestTechniqueDTO;
 import com.skill.backend.entity.TestTechnique;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.factory.Mappers;
 
 @Mapper(componentModel = "spring")
 public interface TestTechniqueMapper {
 
-    TestTechniqueMapper INSTANCE = Mappers.getMapper(TestTechniqueMapper.class);
-
-    @Mapping(source = "employe.id", target = "employeId")
-    @Mapping(source = "notification.id", target = "notificationId")
+    @Mapping(target = "technologie", source = "technologie")
+    @Mapping(target = "employeId", ignore = true)
+    @Mapping(target = "employeNom", ignore = true)
+    @Mapping(target = "notificationId", ignore = true)
+    @Mapping(target = "score", ignore = true)
+    @Mapping(target = "resultat", ignore = true)
+    @Mapping(target = "datePassage", ignore = true)
+    @Mapping(target = "statut", ignore = true)
+    @Mapping(target = "dateAssignation", ignore = true)
+    @Mapping(target = "dateLimite", ignore = true)
+    @Mapping(target = "assignePar", ignore = true)
     TestTechniqueDTO toDto(TestTechnique testTechnique);
 
-    @Mapping(source = "employeId", target = "employe.id")
-    @Mapping(source = "notificationId", target = "notification.id")
+    @Mapping(target = "questions", ignore = true)
     TestTechnique toEntity(TestTechniqueDTO testTechniqueDTO);
 }

@@ -15,21 +15,26 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * Contrôleur legacy — maintenu pour compatibilité.
+ * Les nouveaux clients doivent utiliser TestController, TestAssignmentController
+ * et TestExecutionController.
+ */
 @RestController
-@RequestMapping("/api/tests")
+@RequestMapping("/api/legacy/tests")
 @RequiredArgsConstructor
-@Tag(name = "Tests Techniques", description = "Gestion des tests techniques")
+@Tag(name = "Tests Techniques (Legacy)", description = "API legacy de gestion des tests — utiliser /api/tests pour les nouvelles fonctionnalités")
 @SecurityRequirement(name = "bearerAuth")
 public class TestTechniqueController {
 
     private final TestTechniqueService testTechniqueService;
 
     /**
-     * Assigner un test technique à un employé
+     * Assigner un test technique à un employé (legacy)
      */
     @PostMapping("/assign")
     @PreAuthorize("hasAnyAuthority('ROLE_RH', 'ROLE_MANAGER')")
-    @Operation(summary = "Assigner un test technique")
+    @Operation(summary = "[Legacy] Assigner un test technique")
     public ResponseEntity<TestTechniqueDTO> assignTest(
             @RequestBody AssignTestDTO request,
             Authentication authentication) {
@@ -38,48 +43,31 @@ public class TestTechniqueController {
     }
 
     /**
-     * Récupérer les tests actifs pour un employé
+     * Récupérer les tests actifs pour l'employé connecté (legacy)
      */
     @GetMapping("/active")
     @PreAuthorize("hasAuthority('ROLE_EMPLOYE')")
-    @Operation(summary = "Tests actifs de l'employé connecté")
+    @Operation(summary = "[Legacy] Tests actifs de l'employé connecté")
     public ResponseEntity<List<TestTechniqueDTO>> getActiveTests(Authentication authentication) {
         String employeId = authentication.getName();
         return ResponseEntity.ok(testTechniqueService.getActiveTests(employeId));
     }
 
     /**
-     * Soumettre les réponses d'un test
+     * Récupérer tous les tests — Monitoring (legacy)
      */
-    @PostMapping("/{testId}/submit")
-    @PreAuthorize("hasAuthority('ROLE_EMPLOYE')")
-    @Operation(summary = "Soumettre les réponses d'un test")
-    public ResponseEntity<TestTechniqueDTO> submitTest(
-            @PathVariable String testId,
-            @RequestBody SubmitTestDTO answers,
-            Authentication authentication) {
-        String employeId = authentication.getName();
-        return ResponseEntity.ok(testTechniqueService.submitTest(testId, answers, employeId));
+    @GetMapping
+    @Operation(summary = "[Legacy] Lister tous les tests")
+    public ResponseEntity<List<TestTechniqueDTO>> getAllTests() {
+        return ResponseEntity.ok(testTechniqueService.getAllTests());
     }
 
     /**
-     * Récupérer le résultat d'un test
+     * Récupérer un test par ID (legacy)
      */
-    @GetMapping("/{testId}/result")
-    @Operation(summary = "Résultat d'un test")
-    public ResponseEntity<TestTechniqueDTO> getTestResult(@PathVariable String testId) {
-        // TODO: Implement getTestById in service
-        return ResponseEntity.ok(new TestTechniqueDTO());
-    }
-
-    /**
-     * Monitoring des tests (RH)
-     */
-    @GetMapping("/monitoring")
-    @PreAuthorize("hasAuthority('ROLE_RH')")
-    @Operation(summary = "Monitoring des tests pour RH")
-    public ResponseEntity<List<TestTechniqueDTO>> getTestsMonitoring() {
-        // TODO: Implement monitoring in service
-        return ResponseEntity.ok(List.of());
+    @GetMapping("/{id}")
+    @Operation(summary = "[Legacy] Récupérer un test par ID")
+    public ResponseEntity<TestTechniqueDTO> getTestById(@PathVariable String id) {
+        return ResponseEntity.ok(testTechniqueService.getTestById(id));
     }
 }
