@@ -8,6 +8,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import org.mapstruct.factory.Mappers;
 
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -16,22 +17,22 @@ public interface FormationMapper {
 
     FormationMapper INSTANCE = Mappers.getMapper(FormationMapper.class);
 
-    @Mapping(source = "employes", target = "employeIds", qualifiedByName = "employesToIds")
-    @Mapping(source = "employes", target = "nombreInscrits", qualifiedByName = "employesToCount")
+    @Mapping(source = "inscriptions", target = "employeIds", qualifiedByName = "inscriptionsToIds")
+    @Mapping(source = "inscriptions", target = "nombreInscrits", qualifiedByName = "inscriptionsToCount")
     FormationDTO toDto(Formation formation);
 
-    @Mapping(target = "employes", ignore = true)
+    @Mapping(target = "inscriptions", ignore = true)
     Formation toEntity(FormationDTO formationDTO);
 
-    @Named("employesToIds")
-    static Set<String> employesToIds(Set<Employe> employes) {
-        if (employes == null) return null;
-        return employes.stream().map(Employe::getId).collect(Collectors.toSet());
+    @Named("inscriptionsToIds")
+    static Set<String> inscriptionsToIds(List<com.skill.backend.entity.InscriptionFormation> inscriptions) {
+        if (inscriptions == null) return null;
+        return inscriptions.stream().map(i -> i.getEmploye().getId()).collect(Collectors.toSet());
     }
 
-    @Named("employesToCount")
-    static Integer employesToCount(Set<Employe> employes) {
-        if (employes == null) return 0;
-        return employes.size();
+    @Named("inscriptionsToCount")
+    static Integer inscriptionsToCount(List<com.skill.backend.entity.InscriptionFormation> inscriptions) {
+        if (inscriptions == null) return 0;
+        return inscriptions.size();
     }
 }

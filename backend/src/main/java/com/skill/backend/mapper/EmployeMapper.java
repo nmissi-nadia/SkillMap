@@ -21,7 +21,7 @@ public interface EmployeMapper {
     @Mapping(source = "testEmployes", target = "testTechniqueIds", qualifiedByName = "testEmployesToIds")
     @Mapping(source = "messagesEnvoyes", target = "messageEnvoyeIds", qualifiedByName = "messagesToIds")
     @Mapping(source = "projets", target = "projetIds", qualifiedByName = "projetsToIds")
-    @Mapping(source = "formations", target = "formationIds", qualifiedByName = "formationsToIds")
+    @Mapping(source = "inscriptionsFormation", target = "formationIds", qualifiedByName = "inscriptionsToIds")
     EmployeDTO toDto(Employe employe);
 
     @Mapping(target = "manager", ignore = true)
@@ -30,7 +30,7 @@ public interface EmployeMapper {
     @Mapping(target = "testEmployes", ignore = true)
     @Mapping(target = "messagesEnvoyes", ignore = true)
     @Mapping(target = "projets", ignore = true)
-    @Mapping(target = "formations", ignore = true)
+    @Mapping(target = "inscriptionsFormation", ignore = true)
     @Mapping(target = "password", ignore = true)
     @Mapping(target = "provider", ignore = true)
     @Mapping(target = "providerId", ignore = true)
@@ -77,11 +77,11 @@ public interface EmployeMapper {
         return projets.stream().map(Projet::getId).collect(Collectors.toSet());
     }
 
-    @Named("formationsToIds")
-    static Set<String> formationsToIds(Set<Formation> formations) {
-        if (formations == null) {
+    @Named("inscriptionsToIds")
+    static Set<String> inscriptionsToIds(Set<InscriptionFormation> inscriptions) {
+        if (inscriptions == null) {
             return null;
         }
-        return formations.stream().map(Formation::getId).collect(Collectors.toSet());
+        return inscriptions.stream().map(i -> i.getFormation().getId()).collect(Collectors.toSet());
     }
 }

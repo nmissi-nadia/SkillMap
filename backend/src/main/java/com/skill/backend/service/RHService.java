@@ -458,13 +458,13 @@ public class RHService {
         Formation formation = new Formation();
         formation.setId(UUID.randomUUID().toString());
         formation.setTitre(dto.getTitre());
-        formation.setOrganisme(dto.getOrganisme());
-        formation.setType(dto.getType());
-        formation.setStatut(dto.getStatut() != null ? dto.getStatut() : "Recommandée");
+        // formation.setOrganisme(dto.getOrganisme());
+        // formation.setType(dto.getType());
+        // formation.setStatut(dto.getStatut() != null ? dto.getStatut() : "Recommandée");
         formation.setDateDebut(dto.getDateDebut());
         formation.setDateFin(dto.getDateFin());
-        formation.setCout(dto.getCout());
-        formation.setCertification(dto.getCertification());
+        // formation.setCout(dto.getCout());
+        // formation.setCertification(dto.getCertification());
         
         formation = formationRepository.save(formation);
         
@@ -482,13 +482,13 @@ public class RHService {
                 .orElseThrow(() -> new RuntimeException("Formation non trouvée"));
         
         if (dto.getTitre() != null) formation.setTitre(dto.getTitre());
-        if (dto.getOrganisme() != null) formation.setOrganisme(dto.getOrganisme());
-        if (dto.getType() != null) formation.setType(dto.getType());
-        if (dto.getStatut() != null) formation.setStatut(dto.getStatut());
+        // if (dto.getOrganisme() != null) formation.setOrganisme(dto.getOrganisme());
+        // if (dto.getType() != null) formation.setType(dto.getType());
+        // if (dto.getStatut() != null) formation.setStatut(dto.getStatut());
         if (dto.getDateDebut() != null) formation.setDateDebut(dto.getDateDebut());
         if (dto.getDateFin() != null) formation.setDateFin(dto.getDateFin());
-        if (dto.getCout() != null) formation.setCout(dto.getCout());
-        if (dto.getCertification() != null) formation.setCertification(dto.getCertification());
+        // if (dto.getCout() != null) formation.setCout(dto.getCout());
+        // if (dto.getCertification() != null) formation.setCertification(dto.getCertification());
         
         formation = formationRepository.save(formation);
         
@@ -558,7 +558,7 @@ public class RHService {
         FormationBudgetDTO budget = new FormationBudgetDTO();
         budget.setFormationId(formation.getId());
         budget.setTitre(formation.getTitre());
-        budget.setCoutTotal(formation.getCout());
+        budget.setCoutTotal(0.0); // formation.getCout() supprimé
         budget.setDateDebut(formation.getDateDebut());
         budget.setDateFin(formation.getDateFin());
         
@@ -570,8 +570,8 @@ public class RHService {
         budget.setNombreEmployesTermines((int) termines);
         budget.setNombreEmployesEnCours((int) enCours);
         
-        if (totalAssignes > 0 && formation.getCout() != null) {
-            budget.setCoutParEmploye(formation.getCout() / totalAssignes);
+        if (totalAssignes > 0) {
+            budget.setCoutParEmploye(0.0);
             budget.setTauxCompletion((termines * 100.0) / totalAssignes);
         } else {
             budget.setCoutParEmploye(0.0);
@@ -579,13 +579,9 @@ public class RHService {
         }
 
         // Champs enrichis
-        budget.setCoutUnitaire(formation.getCout()); // cout unitaire = cout de la formation
+        budget.setCoutUnitaire(0.0); // cout unitaire = cout de la formation
         budget.setNombreInscrits(totalAssignes);
-        if (formation.getMaxParticipants() != null && formation.getCout() != null) {
-            double budgetMax = formation.getMaxParticipants() * formation.getCout();
-            double coutReel = formation.getCout() != null ? formation.getCout() : 0.0;
-            budget.setBudgetRestant(budgetMax - coutReel * totalAssignes);
-        }
+        budget.setBudgetRestant(0.0);
         
         // ROI simplifié : basé sur le taux de complétion
         budget.setRoi(calculateFormationROI(formation, formationEmployes));
@@ -647,8 +643,8 @@ public class RHService {
             
             // Mettre à jour la formation principale
             Formation formation = fe.getFormation();
-            formation.setDateValidation(LocalDateTime.now());
-            formation.setValideePar(rh.getId());
+            // formation.setDateValidation(LocalDateTime.now());
+            // formation.setValideePar(rh.getId());
             formationRepository.save(formation);
         } else {
             fe.setValideeParRH(false);
@@ -681,21 +677,21 @@ public class RHService {
         FormationDTO dto = new FormationDTO();
         dto.setId(formation.getId());
         dto.setTitre(formation.getTitre());
-        dto.setOrganisme(formation.getOrganisme());
-        dto.setType(formation.getType());
-        dto.setStatut(formation.getStatut());
+        // dto.setOrganisme(formation.getOrganisme());
+        dto.setType(formation.getTypeFormation() != null ? formation.getTypeFormation().name() : null);
+        // dto.setStatut(formation.getStatut());
         dto.setDescription(formation.getDescription());
         dto.setDateDebut(formation.getDateDebut());
         dto.setDateFin(formation.getDateFin());
-        dto.setCout(formation.getCout());
-        dto.setDureeHeures(formation.getDureeHeures());
-        dto.setMaxParticipants(formation.getMaxParticipants());
-        dto.setNiveauRequis(formation.getNiveauRequis());
-        dto.setCertification(formation.getCertification());
+        // dto.setCout(formation.getCout());
+        // dto.setDureeHeures(formation.getDureeHeures());
+        // dto.setMaxParticipants(formation.getMaxParticipants());
+        // dto.setNiveauRequis(formation.getNiveauRequis());
+        // dto.setCertification(formation.getCertification());
 
-        if (formation.getEmployes() != null) {
-            Set<String> ids = formation.getEmployes().stream()
-                    .map(Employe::getId)
+        if (formation.getInscriptions() != null) {
+            Set<String> ids = formation.getInscriptions().stream()
+                    .map(i -> i.getEmploye().getId())
                     .collect(Collectors.toSet());
             dto.setEmployeIds(ids);
             dto.setNombreInscrits(ids.size());
@@ -706,44 +702,10 @@ public class RHService {
         return dto;
     }
 
-    private Double calculateFormationROI(Formation formation, List<FormationEmploye> formationEmployes) {
-        if (formation.getCout() == null || formation.getCout() == 0) {
-            return 0.0;
-        }
-        
-        // ROI simplifié basé sur :
-        // - Taux de complétion
-        // - Nombre de certifications validées
-        // - Progression moyenne
-        
-        long termines = formationEmployes.stream()
-                .filter(fe -> "TERMINEE".equals(fe.getStatut()))
-                .count();
-        
-        long certifies = formationEmployes.stream()
-                .filter(fe -> fe.getValideeParRH() != null && fe.getValideeParRH())
-                .count();
-        
-        double avgProgression = formationEmployes.stream()
-                .mapToInt(fe -> fe.getProgression() != null ? fe.getProgression() : 0)
-                .average()
-                .orElse(0.0);
-        
-        int totalEmployes = formationEmployes.size();
-        
-        if (totalEmployes == 0) {
-            return 0.0;
-        }
-        
-        // Formule ROI : ((Bénéfices - Coûts) / Coûts) * 100
-        // Bénéfices estimés = (taux complétion * 0.4 + taux certification * 0.4 + progression * 0.2) * coût
-        double tauxCompletion = (double) termines / totalEmployes;
-        double tauxCertification = (double) certifies / totalEmployes;
-        double tauxProgression = avgProgression / 100.0;
-        
-        double benefices = (tauxCompletion * 0.4 + tauxCertification * 0.4 + tauxProgression * 0.2) * formation.getCout();
-        
-        return ((benefices - formation.getCout()) / formation.getCout()) * 100;
+    private Double calculateFormationROI(Formation formation, List<com.skill.backend.entity.FormationEmploye> formationEmployes) {
+        // Le calcul du ROI a été désactivé temporairement suite à la refonte du module Formation (V2)
+        // car le champ coût a été supprimé des spécifications de Formation.
+        return 0.0;
     }
 }
 

@@ -49,10 +49,7 @@ public class Employe extends Utilisateur {
             inverseJoinColumns = @JoinColumn(name = "projet_id"))
     private Set<Projet> projets = new HashSet<>();
 
-        @ManyToMany
-        @JoinTable(name = "employe_formation",
-            joinColumns = @JoinColumn(name = "employe_id"),
-            inverseJoinColumns = @JoinColumn(name = "formation_id"))
-        private Set<Formation> formations = new HashSet<>();
+    @OneToMany(mappedBy = "employe", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<InscriptionFormation> inscriptionsFormation = new HashSet<>();
 
 }
