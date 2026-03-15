@@ -1,0 +1,21 @@
+package com.skill.backend.dto;
+
+import lombok.Data;
+
+import java.time.LocalDateTime;
+
+@Data
+public class TestEmployeDTO {
+    private String id;
+    private String testId;
+    private String testTitre;
+    private String employeId;
+    private String employeNom;
+
+    /** ASSIGNED | IN_PROGRESS | COMPLETED */
+    private String statut;
+
+    private Double score;
+    private LocalDateTime dateAssignation;
+    private LocalDateTime dateSoumission;
+}

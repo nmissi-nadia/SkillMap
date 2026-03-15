@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -20,33 +22,27 @@ public class TestTechnique {
     private String id;
 
     private String titre;
+    private String description;
+
+    /** Compétence testée (ID référence) */
+    private String competenceId;
+
+    /** Anciennement 'technologie', gardé pour compatibilité */
     private String technologie;
-    private double score;
-    private String resultat; // Réussi / Échoué
-    private LocalDateTime datePassage;
-    
-    // Workflow passage test technique
-    private String statut;                 // ASSIGNE, EN_COURS, TERMINE, EXPIRE
-    private LocalDateTime dateAssignation;
-    private LocalDateTime dateLimite;
-    private String assignePar;             // ID du RH ou Manager
-    private Integer niveauCompetence;      // Niveau calculé (1-5)
 
-    @ManyToOne
-    @JoinColumn(name = "employe_id")
-    private Employe employe;
-    
-    @ManyToOne
-    @JoinColumn(name = "competence_id")
-    private Competence competence;         // Compétence testée
+    private Integer dureeMinutes;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "notification_id")
-    private Notification notification;
+    /** Niveau ciblé : DEBUTANT, INTERMEDIAIRE, AVANCE, EXPERT */
+    private String niveau;
+
+    private LocalDateTime dateCreation;
+
+    @OneToMany(mappedBy = "testTechnique", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Question> questions = new ArrayList<>();
 
     @PrePersist
     protected void onCreate() {
         if (id == null) id = UUID.randomUUID().toString();
-        if (datePassage == null) datePassage = LocalDateTime.now();
+        if (dateCreation == null) dateCreation = LocalDateTime.now();
     }
 }
