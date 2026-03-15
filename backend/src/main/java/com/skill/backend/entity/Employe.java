@@ -38,7 +38,7 @@ public class Employe extends Utilisateur {
     private Set<Evaluation> evaluations = new HashSet<>();
 
     @OneToMany(mappedBy = "employe", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<TestTechnique> testsTechniques = new HashSet<>();
+    private Set<TestEmploye> testEmployes = new HashSet<>();
 
     @OneToMany(mappedBy = "expediteur")
     private Set<Message> messagesEnvoyes = new HashSet<>();

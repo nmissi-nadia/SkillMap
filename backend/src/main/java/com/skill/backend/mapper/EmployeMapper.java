@@ -18,7 +18,7 @@ public interface EmployeMapper {
     @Mapping(source = "manager.id", target = "managerId")
     @Mapping(source = "competenceEmployes", target = "competenceEmployeIds", qualifiedByName = "competenceEmployesToIds")
     @Mapping(source = "evaluations", target = "evaluationIds", qualifiedByName = "evaluationsToIds")
-    @Mapping(source = "testsTechniques", target = "testTechniqueIds", qualifiedByName = "testTechniquesToIds")
+    @Mapping(source = "testEmployes", target = "testTechniqueIds", qualifiedByName = "testEmployesToIds")
     @Mapping(source = "messagesEnvoyes", target = "messageEnvoyeIds", qualifiedByName = "messagesToIds")
     @Mapping(source = "projets", target = "projetIds", qualifiedByName = "projetsToIds")
     @Mapping(source = "formations", target = "formationIds", qualifiedByName = "formationsToIds")
@@ -27,7 +27,7 @@ public interface EmployeMapper {
     @Mapping(target = "manager", ignore = true)
     @Mapping(target = "competenceEmployes", ignore = true)
     @Mapping(target = "evaluations", ignore = true)
-    @Mapping(target = "testsTechniques", ignore = true)
+    @Mapping(target = "testEmployes", ignore = true)
     @Mapping(target = "messagesEnvoyes", ignore = true)
     @Mapping(target = "projets", ignore = true)
     @Mapping(target = "formations", ignore = true)
@@ -53,12 +53,12 @@ public interface EmployeMapper {
         return evaluations.stream().map(Evaluation::getId).collect(Collectors.toSet());
     }
 
-    @Named("testTechniquesToIds")
-    static Set<String> testTechniquesToIds(Set<TestTechnique> testTechniques) {
-        if (testTechniques == null) {
+    @Named("testEmployesToIds")
+    static Set<String> testEmployesToIds(Set<TestEmploye> testEmployes) {
+        if (testEmployes == null) {
             return null;
         }
-        return testTechniques.stream().map(TestTechnique::getId).collect(Collectors.toSet());
+        return testEmployes.stream().map(TestEmploye::getId).collect(Collectors.toSet());
     }
 
     @Named("messagesToIds")
