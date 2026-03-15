@@ -9,6 +9,10 @@ import { apiInterceptor } from './core/interceptors/api.interceptor';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { errorInterceptor } from './core/interceptors/error.interceptor';
 
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { importProvidersFrom } from '@angular/core';
+
 registerLocaleData(localeFr);
 
 export const appConfig: ApplicationConfig = {
@@ -18,6 +22,8 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(
       withInterceptors([apiInterceptor, authInterceptor, errorInterceptor])
     ),
+    provideAnimationsAsync(),
+    importProvidersFrom(MatSnackBarModule),
     { provide: LOCALE_ID, useValue: 'fr-FR' }
   ]
 };
