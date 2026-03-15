@@ -1,0 +1,116 @@
+<div class="formation-detail-container" *ngIf="formation">
+    <div class="header-actions">
+        <button mat-icon-button routerLink="/formations">
+            <mat-icon>arrow_back</mat-icon>
+        </button>
+        <h2>{{formation.titre}}</h2>
+        <mat-chip color="primary" selected>{{formation.typeFormation}}</mat-chip>
+    </div>
+
+    <div class="content-grid">
+        <mat-card class="info-card">
+            <mat-card-header>
+                <mat-card-title>Informations Générales</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+                <p><strong>Description :</strong> {{formation.description}}</p>
+                <p><strong>Technologie :</strong> {{formation.technologie || 'Non spécifiée'}}</p>
+                <p><strong>Compétence cible :</strong> {{formation.competenceNom || 'Aucune'}} (Niveau
+                    {{formation.niveauCible || 0}})</p>
+
+                <ng-container *ngIf="formation.typeFormation === 'PRESENTIEL'">
+                    <mat-divider></mat-divider>
+                    <div class="info-row">
+                        <mat-icon color="primary">event</mat-icon>
+                        <span><strong>Période :</strong> {{formation.dateDebut | date}} au {{formation.dateFin |
+                            date}}</span>
+                    </div>
+                    <div class="info-row">
+                        <mat-icon color="primary">location_on</mat-icon>
+                        <span><strong>Lieu :</strong> {{formation.lieu}}</span>
+                    </div>
+                </ng-container>
+            </mat-card-content>
+        </mat-card>
+    </div>
+
+    <mat-card class="tabs-card">
+        <mat-tab-group>
+
+            <!-- Onglet Inscriptions -->
+            <mat-tab label="Inscriptions ({{formation.inscriptions.length}})">
+                <table mat-table [dataSource]="formation.inscriptions">
+                    <ng-container matColumnDef="employe">
+                        <th mat-header-cell *matHeaderCellDef> Employé </th>
+                        <td mat-cell *matCellDef="let element"> {{element.employePrenom}} {{element.employeNom}} </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="date">
+                        <th mat-header-cell *matHeaderCellDef> Date d'inscription </th>
+                        <td mat-cell *matCellDef="let element"> {{element.dateInscription | date:'shortDate'}} </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="statut">
+                        <th mat-header-cell *matHeaderCellDef> Statut </th>
+                        <td mat-cell *matCellDef="let element">
+                            <mat-chip>{{element.statut}}</mat-chip>
+                        </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="progress">
+                        <th mat-header-cell *matHeaderCellDef> Progression </th>
+                        <td mat-cell *matCellDef="let element"> {{element.progress}}% </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="score">
+                        <th mat-header-cell *matHeaderCellDef> Score Test </th>
+                        <td mat-cell *matCellDef="let element"> {{element.score || '-'}}/100 </td>
+                    </ng-container>
+
+                    <tr mat-header-row *matHeaderRowDef="insColumns"></tr>
+                    <tr mat-row *matRowDef="let row; columns: insColumns;"></tr>
+                </table>
+
+                <p class="empty-state" *ngIf="formation.inscriptions.length === 0">Aucun(e) inscrit(e).</p>
+            </mat-tab>
+
+            <!-- Onglet Ressources -->
+            <mat-tab label="Ressources ({{formation.ressources.length}})">
+                <table mat-table [dataSource]="formation.ressources">
+                    <ng-container matColumnDef="titre">
+                        <th mat-header-cell *matHeaderCellDef> Titre de la ressource </th>
+                        <td mat-cell *matCellDef="let element"> {{element.titre}} </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="type">
+                        <th mat-header-cell *matHeaderCellDef> Type </th>
+                        <td mat-cell *matCellDef="let element">
+                            <mat-icon *ngIf="element.typeRessource === 'PDF'" color="warn">picture_as_pdf</mat-icon>
+                            <mat-icon *ngIf="element.typeRessource === 'LIEN'" color="primary">link</mat-icon>
+                            {{element.typeRessource}}
+                        </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="action">
+                        <th mat-header-cell *matHeaderCellDef> Consulter </th>
+                        <td mat-cell *matCellDef="let element">
+                            <button mat-icon-button color="primary" (click)="openResource(element.url)">
+                                <mat-icon>open_in_new</mat-icon>
+                            </button>
+                        </td>
+                    </ng-container>
+
+                    <tr mat-header-row *matHeaderRowDef="resColumns"></tr>
+                    <tr mat-row *matRowDef="let row; columns: resColumns;"></tr>
+                </table>
+
+                <p class="empty-state" *ngIf="formation.ressources.length === 0">Aucune ressource disponible.</p>
+            </mat-tab>
+
+        </mat-tab-group>
+    </mat-card>
+</div>
+
+<div *ngIf="!formation" class="loading-state">
+    <p>Chargement des détails de la formation...</p>
+</div>

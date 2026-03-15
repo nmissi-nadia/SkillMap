@@ -76,8 +76,8 @@ export const routes: Routes = [
     },
     {
         path: 'rh/formations',
-        loadComponent: () => import('./features/rh/formations/formations.component').then(m => m.FormationsComponent),
-        canActivate: [authGuard]
+        redirectTo: '/formations',
+        pathMatch: 'full'
     },
     {
         path: 'rh',
@@ -107,8 +107,8 @@ export const routes: Routes = [
     },
     {
         path: 'employee/formations',
-        loadComponent: () => import('./features/employee/formations/formations.component').then(m => m.EmployeeFormationsComponent),
-        canActivate: [authGuard]
+        redirectTo: '/mes-formations',
+        pathMatch: 'full'
     },
     // Chef de Projet routes
     {
@@ -146,6 +146,22 @@ export const routes: Routes = [
             { path: ':id', loadComponent: () => import('./modules/tests/components/test-detail.component').then(m => m.TestDetailComponent) },
             { path: 'assign/:id', loadComponent: () => import('./modules/tests/components/assign-test.component').then(m => m.AssignTestComponent) }
         ]
+    },
+    // Formations V2 Routes
+    {
+        path: 'formations',
+        canActivate: [authGuard],
+        children: [
+            { path: '', loadComponent: () => import('./features/formations/formation-list/formation-list').then(m => m.FormationList) },
+            { path: 'create', loadComponent: () => import('./features/formations/formation-create/formation-create').then(m => m.FormationCreate) },
+            { path: 'catalogue', loadComponent: () => import('./features/employee/formations-catalogue/formations-catalogue').then(m => m.FormationsCatalogue) },
+            { path: ':id', loadComponent: () => import('./features/formations/formation-detail/formation-detail').then(m => m.FormationDetail) }
+        ]
+    },
+    {
+        path: 'mes-formations',
+        loadComponent: () => import('./features/employee/mes-formations/mes-formations').then(m => m.MesFormations),
+        canActivate: [authGuard]
     },
     {
         path: 'employe/tests',
