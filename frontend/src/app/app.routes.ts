@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
 import { guestGuard } from './core/guards/guest.guard';
+import { roleGuard } from './core/guards/role.guard';
 
 export const routes: Routes = [
     {
@@ -27,27 +28,32 @@ export const routes: Routes = [
     {
         path: 'manager/dashboard',
         loadComponent: () => import('./features/manager/dashboard/manager-dashboard.component').then(m => m.ManagerDashboardComponent),
-        canActivate: [authGuard]
+        canActivate: [authGuard, roleGuard],
+        data: { roles: ['MANAGER', 'CHEF_PROJET'] }
     },
     {
         path: 'manager/team',
         loadComponent: () => import('./features/manager/team/team-list.component').then(m => m.TeamListComponent),
-        canActivate: [authGuard]
+        canActivate: [authGuard, roleGuard],
+        data: { roles: ['MANAGER', 'CHEF_PROJET'] }
     },
     {
         path: 'manager/evaluations',
         loadComponent: () => import('./features/manager/evaluations/pending-evaluations.component').then(m => m.PendingEvaluationsComponent),
-        canActivate: [authGuard]
+        canActivate: [authGuard, roleGuard],
+        data: { roles: ['MANAGER', 'CHEF_PROJET'] }
     },
     {
         path: 'manager/tests',
         loadComponent: () => import('./features/manager/tests/tests.component').then(m => m.ManagerTestsComponent),
-        canActivate: [authGuard]
+        canActivate: [authGuard, roleGuard],
+        data: { roles: ['MANAGER', 'RH'] }
     },
     {
         path: 'manager/projets',
         loadComponent: () => import('./features/manager/projects/projects.component').then(m => m.ManagerProjectsComponent),
-        canActivate: [authGuard]
+        canActivate: [authGuard, roleGuard],
+        data: { roles: ['MANAGER', 'CHEF_PROJET'] }
     },
     {
         path: 'manager',
@@ -57,22 +63,26 @@ export const routes: Routes = [
     {
         path: 'rh/dashboard',
         loadComponent: () => import('./features/rh/dashboard/dashboard.component').then(m => m.RhDashboardComponent),
-        canActivate: [authGuard]
+        canActivate: [authGuard, roleGuard],
+        data: { roles: ['RH'] }
     },
     {
         path: 'rh/users',
         loadComponent: () => import('./features/rh/user-management/user-management.component').then(m => m.UserManagementComponent),
-        canActivate: [authGuard]
+        canActivate: [authGuard, roleGuard],
+        data: { roles: ['RH', 'ADMIN'] }
     },
     {
         path: 'rh/competencies',
         loadComponent: () => import('./features/rh/competencies-management/competencies-management.component').then(m => m.CompetenciesManagementComponent),
-        canActivate: [authGuard]
+        canActivate: [authGuard, roleGuard],
+        data: { roles: ['RH', 'MANAGER'] }
     },
     {
         path: 'rh/skills-map',
         loadComponent: () => import('./features/rh/skills-map/skills-map.component').then(m => m.SkillsMapComponent),
-        canActivate: [authGuard]
+        canActivate: [authGuard, roleGuard],
+        data: { roles: ['RH', 'MANAGER', 'CHEF_PROJET'] }
     },
     {
         path: 'rh/formations',
@@ -88,22 +98,26 @@ export const routes: Routes = [
     {
         path: 'employee/dashboard',
         loadComponent: () => import('./features/employee/dashboard/dashboard.component').then(m => m.DashboardComponent),
-        canActivate: [authGuard]
+        canActivate: [authGuard, roleGuard],
+        data: { roles: ['EMPLOYE'] }
     },
     {
         path: 'employee/profile',
         loadComponent: () => import('./features/employee/profile/profile.component').then(m => m.ProfileComponent),
-        canActivate: [authGuard]
+        canActivate: [authGuard, roleGuard],
+        data: { roles: ['EMPLOYE'] }
     },
     {
         path: 'employee/competencies',
         loadComponent: () => import('./features/employee/competencies/competencies.component').then(m => m.CompetenciesComponent),
-        canActivate: [authGuard]
+        canActivate: [authGuard, roleGuard],
+        data: { roles: ['EMPLOYE'] }
     },
     {
         path: 'employee/tests',
         loadComponent: () => import('./features/employee/tests/tests.component').then(m => m.EmployeeTestsComponent),
-        canActivate: [authGuard]
+        canActivate: [authGuard, roleGuard],
+        data: { roles: ['EMPLOYE'] }
     },
     {
         path: 'employee/formations',
@@ -114,22 +128,26 @@ export const routes: Routes = [
     {
         path: 'chef-projet/dashboard',
         loadComponent: () => import('./features/chef-projet/dashboard/dashboard.component').then(m => m.ChefProjetDashboardComponent),
-        canActivate: [authGuard]
+        canActivate: [authGuard, roleGuard],
+        data: { roles: ['CHEF_PROJET'] }
     },
     {
         path: 'chef-projet/projets',
         loadComponent: () => import('./features/chef-projet/projets/projets.component').then(m => m.ProjetsComponent),
-        canActivate: [authGuard]
+        canActivate: [authGuard, roleGuard],
+        data: { roles: ['CHEF_PROJET'] }
     },
     {
         path: 'chef-projet/equipe',
         loadComponent: () => import('./features/chef-projet/equipe/equipe.component').then(m => m.EquipeComponent),
-        canActivate: [authGuard]
+        canActivate: [authGuard, roleGuard],
+        data: { roles: ['CHEF_PROJET'] }
     },
     {
         path: 'chef-projet/messagerie',
         loadComponent: () => import('./features/chef-projet/messagerie/messagerie.component').then(m => m.MessagerieComponent),
-        canActivate: [authGuard]
+        canActivate: [authGuard, roleGuard],
+        data: { roles: ['CHEF_PROJET', 'MANAGER', 'RH', 'EMPLOYE'] } // Messagerie unifié potentiellement
     },
     {
         path: 'chef-projet',
@@ -153,7 +171,12 @@ export const routes: Routes = [
         canActivate: [authGuard],
         children: [
             { path: '', loadComponent: () => import('./features/formations/formation-list/formation-list').then(m => m.FormationList) },
-            { path: 'create', loadComponent: () => import('./features/formations/formation-create/formation-create').then(m => m.FormationCreate) },
+            {
+                path: 'create',
+                loadComponent: () => import('./features/formations/formation-create/formation-create').then(m => m.FormationCreate),
+                canActivate: [roleGuard],
+                data: { roles: ['RH'] }
+            },
             { path: 'catalogue', loadComponent: () => import('./features/employee/formations-catalogue/formations-catalogue').then(m => m.FormationsCatalogue) },
             { path: ':id', loadComponent: () => import('./features/formations/formation-detail/formation-detail').then(m => m.FormationDetail) }
         ]
@@ -161,15 +184,25 @@ export const routes: Routes = [
     {
         path: 'mes-formations',
         loadComponent: () => import('./features/employee/mes-formations/mes-formations').then(m => m.MesFormations),
-        canActivate: [authGuard]
+        canActivate: [authGuard, roleGuard],
+        data: { roles: ['EMPLOYE'] }
     },
     {
         path: 'employe/tests',
-        canActivate: [authGuard],
+        canActivate: [authGuard, roleGuard],
+        data: { roles: ['EMPLOYE'] },
         children: [
             { path: '', loadComponent: () => import('./modules/tests/components/employe-tests.component').then(m => m.EmployeTestsComponent) },
             { path: ':id/pass', loadComponent: () => import('./modules/tests/components/take-test.component').then(m => m.TakeTestComponent) },
             { path: ':id/result', loadComponent: () => import('./modules/tests/components/test-result.component').then(m => m.TestResultComponent) }
+        ]
+    },
+    {
+        path: 'messages',
+        canActivate: [authGuard],
+        children: [
+            { path: '', loadComponent: () => import('./features/messaging/messages-list/messages-list').then(m => m.MessagesList) },
+            { path: ':id', loadComponent: () => import('./features/messaging/chat/chat').then(m => m.ChatComponent) }
         ]
     },
     {

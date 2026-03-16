@@ -1,0 +1,59 @@
+<div
+    class="h-[calc(100vh-100px)] flex flex-col bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+
+    <!-- Header -->
+    <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center gap-4">
+        <a routerLink="/messages" class="text-gray-500 hover:text-blue-600 transition-colors">
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+        </a>
+        <div
+            class="h-10 w-10 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center text-blue-600 dark:text-blue-300 font-bold">
+            C
+        </div>
+        <div>
+            <h2 class="font-semibold text-gray-900 dark:text-white">Conversation</h2>
+            <p class="text-xs text-gray-500">ID: {{ conversationId() }}</p>
+        </div>
+    </div>
+
+    <!-- Messages Container -->
+    <div #messagesContainer class="flex-1 p-4 overflow-y-auto space-y-4">
+        <div *ngIf="loading()" class="text-center py-8">
+            <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-blue-500 border-t-transparent">
+            </div>
+        </div>
+
+        <div *ngFor="let msg of messages()" class="flex mb-4" [ngClass]="{'justify-end': isMine(msg)}">
+            <div class="max-w-[70%]">
+                <div class="text-xs text-gray-500 mb-1" [ngClass]="{'text-right': isMine(msg)}">
+                    {{ msg.expediteurPrenom }} {{ msg.expediteurNom }} &bull; {{ msg.dateEnvoi | date:'shortTime' }}
+                </div>
+                <div class="p-3 rounded-2xl"
+                    [ngClass]="isMine(msg) ? 'bg-blue-600 text-white rounded-br-none' : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100 rounded-bl-none'">
+                    {{ msg.contenu }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Input Area -->
+    <div class="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 rounded-b-lg">
+        <form (ngSubmit)="sendMessage()" class="flex gap-2">
+            <input type="text" [ngModel]="newMessage()" (ngModelChange)="newMessage.set($event)" name="msg"
+                placeholder="Écrivez un message..."
+                class="flex-1 rounded-full border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 focus:ring-blue-500 focus:border-blue-500 px-4 py-2 text-sm dark:text-white"
+                [disabled]="sending()">
+
+            <button type="submit"
+                class="h-10 w-10 rounded-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center transition-colors disabled:opacity-50"
+                [disabled]="sending() || !newMessage().trim()">
+                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                </svg>
+            </button>
+        </form>
+    </div>
+</div>
