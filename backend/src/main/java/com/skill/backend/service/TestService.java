@@ -95,6 +95,69 @@ public class TestService {
         return toTestDTO(test);
     }
 
+    /**
+     * Mettre à jour un test existant.
+     */
+    @Transactional
+    public TestDTO updateTest(String id, TestDTO dto) {
+        TestTechnique test = testTechniqueRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("TestTechnique", "id", id));
+
+        test.setTitre(dto.getTitre());
+        test.setDescription(dto.getDescription());
+        test.setCompetenceId(dto.getCompetenceId());
+        test.setTechnologie(dto.getTechnologie());
+        test.setNiveau(dto.getNiveau());
+        test.setDureeMinutes(dto.getDureeMinutes());
+
+        // Synchronisation des questions
+        if (dto.getQuestions() != null) {
+            // Supprimer les anciennes questions qui ne sont plus dans le DTO
+            List<String> dtoQuestionIds = dto.getQuestions().stream()
+                    .map(QuestionDTO::getId)
+                    .filter(java.util.Objects::nonNull)
+                    .collect(Collectors.toList());
+            
+            test.getQuestions().removeIf(q -> !dtoQuestionIds.contains(q.getId()));
+
+            // Mettre à jour ou ajouter les questions
+            for (QuestionDTO qDto : dto.getQuestions()) {
+                if (qDto.getId() != null) {
+                    // Mise à jour question existante
+                    test.getQuestions().stream()
+                            .filter(q -> q.getId().equals(qDto.getId()))
+                            .findFirst()
+                            .ifPresent(q -> {
+                                q.setContenu(qDto.getContenu());
+                                q.setTypeQuestion(qDto.getTypeQuestion());
+                                q.setBonneReponse(qDto.getBonneReponse());
+                                q.setPoints(qDto.getPoints());
+                            });
+                } else {
+                    // Ajout nouvelle question
+                    Question question = questionMapper.toEntity(qDto);
+                    question.setId(UUID.randomUUID().toString());
+                    question.setTestTechnique(test);
+                    test.getQuestions().add(question);
+                }
+            }
+        }
+
+        TestTechnique saved = testTechniqueRepository.save(test);
+        return toTestDTO(saved);
+    }
+
+    /**
+     * Supprimer un test.
+     */
+    @Transactional
+    public void deleteTest(String id) {
+        if (!testTechniqueRepository.existsById(id)) {
+            throw new ResourceNotFoundException("TestTechnique", "id", id);
+        }
+        testTechniqueRepository.deleteById(id);
+    }
+
     // ---- Helper ----
 
     public TestDTO toTestDTO(TestTechnique test) {

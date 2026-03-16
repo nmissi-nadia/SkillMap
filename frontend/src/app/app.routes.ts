@@ -155,6 +155,7 @@ export const routes: Routes = [
         children: [
             { path: '', loadComponent: () => import('./modules/tests/components/test-list.component').then(m => m.TestListComponent) },
             { path: 'create', loadComponent: () => import('./modules/tests/components/create-test.component').then(m => m.CreateTestComponent) },
+            { path: 'edit/:id', loadComponent: () => import('./modules/tests/components/edit-test.component').then(m => m.EditTestComponent) },
             { path: ':id', loadComponent: () => import('./modules/tests/components/test-detail.component').then(m => m.TestDetailComponent) },
             { path: 'assign/:id', loadComponent: () => import('./modules/tests/components/assign-test.component').then(m => m.AssignTestComponent) }
         ]

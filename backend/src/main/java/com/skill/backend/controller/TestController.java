@@ -52,4 +52,25 @@ public class TestController {
     public ResponseEntity<TestDTO> getTestById(@PathVariable String id) {
         return ResponseEntity.ok(testService.getTestById(id));
     }
+
+    /**
+     * PUT /api/tests/{id} — Mettre à jour un test
+     */
+    @PutMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ROLE_RH', 'ROLE_MANAGER')")
+    @Operation(summary = "Mettre à jour un test technique")
+    public ResponseEntity<TestDTO> updateTest(@PathVariable String id, @Valid @RequestBody TestDTO testDTO) {
+        return ResponseEntity.ok(testService.updateTest(id, testDTO));
+    }
+
+    /**
+     * DELETE /api/tests/{id} — Supprimer un test
+     */
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ROLE_RH', 'ROLE_MANAGER')")
+    @Operation(summary = "Supprimer un test technique")
+    public ResponseEntity<Void> deleteTest(@PathVariable String id) {
+        testService.deleteTest(id);
+        return ResponseEntity.noContent().build();
+    }
 }

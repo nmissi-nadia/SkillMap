@@ -26,4 +26,12 @@ export class TestService {
     assignTest(testId: string, employeId: string): Observable<TestEmploye> {
         return this.http.post<TestEmploye>(`${this.apiUrl}/${testId}/assign/${employeId}`, {});
     }
+
+    updateTest(id: string, test: TestTechnique): Observable<TestTechnique> {
+        return this.http.put<TestTechnique>(`${this.apiUrl}/${id}`, test);
+    }
+
+    deleteTest(id: string): Observable<void> {
+        return this.http.delete<void>(`${this.apiUrl}/${id}`);
+    }
 }

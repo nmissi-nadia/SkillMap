@@ -15,6 +15,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 
 import { TestService } from '../services/test.service';
 import { TestTechnique } from '../models/test.model';
@@ -37,7 +38,8 @@ import { TestTechnique } from '../models/test.model';
     MatDividerModule,
     MatTooltipModule,
     MatProgressBarModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatSnackBarModule
   ],
   template: `
     <div class="page-layout">
@@ -113,7 +115,7 @@ import { TestTechnique } from '../models/test.model';
             [routerLink]="['/tests', test.id]"
           >
             <div class="card-status">
-              <span class="badge" [class]="test.niveau.toLowerCase() || 'default'">
+              <span class="badge" [class]="test.niveau?.toLowerCase() || 'default'">
                 {{test.niveau || 'Standard'}}
               </span>
               <span class="tech-label">{{test.technologie || 'Tech Mixte'}}</span>
@@ -138,8 +140,11 @@ import { TestTechnique } from '../models/test.model';
                 <button mat-icon-button (click)="$event.stopPropagation()" [routerLink]="['/tests/assign', test.id]" matTooltip="Assigner à un candidat">
                   <mat-icon>person_add</mat-icon>
                 </button>
-                <button mat-icon-button color="primary">
-                  <mat-icon>arrow_forward</mat-icon>
+                <button mat-icon-button color="primary" (click)="$event.stopPropagation()" [routerLink]="['/tests/edit', test.id]" matTooltip="Modifier le test">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button mat-icon-button color="warn" (click)="$event.stopPropagation(); deleteTest(test.id)" matTooltip="Supprimer le test">
+                  <mat-icon>delete</mat-icon>
                 </button>
               </div>
             </div>
@@ -239,6 +244,7 @@ import { TestTechnique } from '../models/test.model';
 export class TestListComponent implements OnInit {
 
   private testService = inject(TestService);
+  private snackBar = inject(import('@angular/material/snack-bar').MatSnackBar);
 
   allTests = signal<TestTechnique[]>([]);
   searchQuery = signal('');
@@ -310,5 +316,22 @@ export class TestListComponent implements OnInit {
     this.searchQuery.set('');
     this.selectedLevel.set('');
   }
+
+  deleteTest(id: string) {
+    if (confirm('Êtes-vous sûr de vouloir supprimer ce test ? Cette action est irréversible.')) {
+      this.testService.deleteTest(id).subscribe({
+        next: () => {
+          this.snackBar.open('Test supprimé avec succès', 'OK', { duration: 3000 });
+          this.loadTests();
+        },
+        error: (err) => {
+          console.error('Delete error:', err);
+          this.snackBar.open('Erreur lors de la suppression', 'Fermer', { duration: 5000 });
+        }
+      });
+    }
+  }
+
+}
 
 }
