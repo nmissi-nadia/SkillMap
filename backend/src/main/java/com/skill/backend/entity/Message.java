@@ -37,6 +37,10 @@ public class Message {
     @JoinColumn(name = "projet_id")
     private Projet projet;
 
+    @ManyToOne
+    @JoinColumn(name = "conversation_id")
+    private Conversation conversation;
+
     @PrePersist
     protected void onCreate() {
         if (id == null) id = UUID.randomUUID().toString();

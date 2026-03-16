@@ -12,4 +12,5 @@ public class MessageDTO {
     private String expediteurId;
     private String destinataireId;
     private String projetId;
+    private String conversationId;
 }
