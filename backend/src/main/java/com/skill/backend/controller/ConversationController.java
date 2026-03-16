@@ -19,6 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Tag(name = "Conversations", description = "Gestion des conversations de groupe et privées")
 @SecurityRequirement(name = "bearerAuth")
+@org.springframework.security.access.prepost.PreAuthorize("isAuthenticated()")
 public class ConversationController {
 
     private final ConversationService conversationService;

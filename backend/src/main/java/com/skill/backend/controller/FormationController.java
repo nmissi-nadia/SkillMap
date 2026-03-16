@@ -21,21 +21,25 @@ public class FormationController {
     private final InscriptionFormationService inscriptionService;
 
     @PostMapping("/formations")
+    @org.springframework.security.access.prepost.PreAuthorize("hasAuthority('ROLE_RH')")
     public ResponseEntity<FormationDetailDTO> createFormation(@RequestBody CreateFormationRequestDTO dto) {
         return ResponseEntity.ok(formationService.createFormation(dto));
     }
 
     @GetMapping("/formations")
+    @org.springframework.security.access.prepost.PreAuthorize("hasAnyAuthority('ROLE_RH', 'ROLE_MANAGER', 'ROLE_CHEF_PROJET', 'ROLE_EMPLOYE')")
     public ResponseEntity<List<FormationDetailDTO>> getAllFormations() {
         return ResponseEntity.ok(formationService.getAllFormations());
     }
 
     @GetMapping("/formations/{id}")
+    @org.springframework.security.access.prepost.PreAuthorize("hasAnyAuthority('ROLE_RH', 'ROLE_MANAGER', 'ROLE_CHEF_PROJET', 'ROLE_EMPLOYE')")
     public ResponseEntity<FormationDetailDTO> getFormationById(@PathVariable String id) {
         return ResponseEntity.ok(formationService.getFormationById(id));
     }
 
     @PostMapping("/formations/{id}/ressources")
+    @org.springframework.security.access.prepost.PreAuthorize("hasAuthority('ROLE_RH')")
     public ResponseEntity<RessourceFormationDTO> addResourceToFormation(
             @PathVariable("id") String formationId,
             @RequestBody CreateRessourceDTO dto) {
@@ -43,6 +47,7 @@ public class FormationController {
     }
 
     @PostMapping("/formations/{id}/inscriptions/{employeeId}")
+    @org.springframework.security.access.prepost.PreAuthorize("hasAnyAuthority('ROLE_RH', 'ROLE_MANAGER')")
     public ResponseEntity<InscriptionDTO> assignFormationToEmployee(
             @PathVariable("id") String formationId,
             @PathVariable("employeeId") String employeeId) {
@@ -50,6 +55,7 @@ public class FormationController {
     }
 
     @GetMapping("/employes/{employeeId}/formations")
+    @org.springframework.security.access.prepost.PreAuthorize("hasAnyAuthority('ROLE_RH', 'ROLE_MANAGER', 'ROLE_EMPLOYE')")
     public ResponseEntity<List<FormationDetailDTO>> getEmployeeFormations(
             @PathVariable("employeeId") String employeeId) {
         return ResponseEntity.ok(inscriptionService.getEmployeeFormations(employeeId));
