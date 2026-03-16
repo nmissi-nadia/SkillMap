@@ -53,19 +53,7 @@ public class EmployeController {
         return ResponseEntity.ok(employeService.getMyProfile(authentication.getName()));
     }
 
-    @GetMapping("/debug/auth")
-    @Operation(summary = "Debug - Vérifier l'authentification actuelle")
-    public ResponseEntity<Map<String, Object>> debugAuth(Authentication authentication) {
-        Map<String, Object> debug = new HashMap<>();
-        debug.put("username", authentication.getName());
-        debug.put("authorities", authentication.getAuthorities().stream()
-                .map(a -> a.getAuthority())
-                .collect(java.util.stream.Collectors.toList()));
-        debug.put("authenticated", authentication.isAuthenticated());
-        debug.put("principalType", authentication.getPrincipal().getClass().getName());
-        System.out.println("🐛 DEBUG AUTH: " + debug);
-        return ResponseEntity.ok(debug);
-    }
+
 
     @GetMapping("/me/competences")
     @PreAuthorize("hasAuthority('ROLE_EMPLOYE')")
