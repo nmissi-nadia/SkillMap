@@ -5,6 +5,7 @@ export interface TechnicalTest {
     type: TestType;
     duree: number; // en minutes
     difficulte: TestDifficulte;
+    technologie: string;
     competences: string[];
     questions?: TestQuestion[];
     dateCreation: Date;

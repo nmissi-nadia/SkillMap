@@ -40,6 +40,7 @@ export class EmployeeTestsComponent implements OnInit {
                         type: 'TECHNIQUE' as any,
                         duree: 60,
                         difficulte: 'MOYEN' as any,
+                        technologie: 'Angular',
                         competences: ['Angular', 'TypeScript', 'RxJS'],
                         dateCreation: new Date()
                     },
@@ -61,6 +62,7 @@ export class EmployeeTestsComponent implements OnInit {
                         type: 'TECHNIQUE' as any,
                         duree: 90,
                         difficulte: 'DIFFICILE' as any,
+                        technologie: 'Java',
                         competences: ['Java', 'Spring Boot', 'JPA'],
                         dateCreation: new Date()
                     },
@@ -83,6 +85,7 @@ export class EmployeeTestsComponent implements OnInit {
                         type: 'TECHNIQUE' as any,
                         duree: 45,
                         difficulte: 'MOYEN' as any,
+                        technologie: 'Cloud/DevOps',
                         competences: ['Architecture', 'Design Patterns'],
                         dateCreation: new Date()
                     },

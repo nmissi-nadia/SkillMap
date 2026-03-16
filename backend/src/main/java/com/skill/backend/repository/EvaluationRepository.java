@@ -11,4 +11,5 @@ import java.util.List;
 public interface EvaluationRepository extends JpaRepository<Evaluation, String> {
     List<Evaluation> findByManagerAndStatut(Manager manager, String statut);
     List<Evaluation> findByEmployeId(String employeId);
+    long countByManagerIdAndStatut(String managerId, String statut);
 }

@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { Employee } from '../models/employee.model';
 import { TeamStats, PendingEvaluation, ValidationRequest, ManagerDashboard } from '../models/manager.model';
@@ -75,7 +76,32 @@ export class ManagerService {
      * Récupérer les tests assignés par le manager
      */
     getAssignedTests(): Observable<TestAssignment[]> {
-        return this.http.get<TestAssignment[]>(`${this.apiUrl}/me/tests/assigned`);
+        return this.http.get<any[]>(`${this.apiUrl}/me/tests/assigned`).pipe(
+            map((dtos: any[]) => dtos.map((dto: any) => ({
+                id: dto.id,
+                testId: dto.testId,
+                employeId: dto.employeId,
+                employeNom: dto.employeNom,
+                employePrenom: dto.employePrenom,
+                managerId: dto.managerId,
+                statut: dto.statut,
+                score: dto.score,
+                dateAssignation: new Date(dto.dateAssignation),
+                dateLimite: dto.dateLimite ? new Date(dto.dateLimite) : undefined,
+                test: {
+                    id: dto.testId,
+                    titre: dto.testTitre,
+                    technologie: dto.technologie,
+                    // Valeurs par défaut pour le reste
+                    description: '',
+                    type: 'TECHNIQUE' as any,
+                    duree: 0,
+                    difficulte: 'MOYEN' as any,
+                    competences: [],
+                    dateCreation: new Date()
+                }
+            } as TestAssignment)))
+        );
     }
 
     /**
@@ -115,5 +141,19 @@ export class ManagerService {
      */
     getDashboard(): Observable<ManagerDashboard> {
         return this.http.get<ManagerDashboard>(`${this.apiUrl}/me/dashboard`);
+    }
+
+    /**
+     * Récupérer tous les tests disponibles dans le système
+     */
+    getAllAvailableTests(): Observable<any[]> {
+        return this.http.get<any[]>(`${environment.apiUrl}/tests`);
+    }
+
+    /**
+     * Récupérer toutes les compétences disponibles dans le système
+     */
+    getAllAvailableCompetencies(): Observable<any[]> {
+        return this.http.get<any[]>(`${environment.apiUrl}/competencies`);
     }
 }

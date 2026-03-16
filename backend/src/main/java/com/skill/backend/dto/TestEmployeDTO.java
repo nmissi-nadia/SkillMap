@@ -11,6 +11,7 @@ public class TestEmployeDTO {
     private String testTitre;
     private String employeId;
     private String employeNom;
+    private String employePrenom;
     private String managerId;
     private String managerNom;
 
@@ -18,6 +19,8 @@ public class TestEmployeDTO {
     private String statut;
 
     private Double score;
+    private String technologie;
     private LocalDateTime dateAssignation;
     private LocalDateTime dateSoumission;
+    private LocalDateTime dateLimite;
 }

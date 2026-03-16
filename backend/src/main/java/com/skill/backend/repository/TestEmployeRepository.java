@@ -12,4 +12,6 @@ public interface TestEmployeRepository extends JpaRepository<TestEmploye, String
     List<TestEmploye> findByEmployeId(String employeId);
     Optional<TestEmploye> findByTestTechniqueIdAndEmployeId(String testTechniqueId, String employeId);
     List<TestEmploye> findByTestTechniqueId(String testTechniqueId);
+    List<TestEmploye> findByManagerId(String managerId);
+    long countByManagerIdAndStatutIn(String managerId, List<String> statuts);
 }

@@ -1,214 +1,259 @@
-<div class="tests-container">
-    <div class="page-header">
-        <div class="header-content">
-            <h1>Tests de l'Équipe</h1>
-            <p>Suivez les tests techniques de votre équipe</p>
+<div class="min-h-screen bg-[#f8fafc] dark:bg-[#0f172a] p-4 lg:p-8 animate-fade-in">
+    <!-- Header Section -->
+    <div class="mb-10">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
+            <div>
+                <h1
+                    class="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-indigo-600 dark:from-purple-400 dark:to-indigo-400 mb-2">
+                    Tests Techniques
+                </h1>
+                <p class="text-gray-500 dark:text-gray-400 text-lg">Suivez la progression des tests assignés et analysez
+                    les scores techniques de votre équipe.</p>
+            </div>
         </div>
-        <a routerLink="/manager/dashboard" class="btn-back">← Retour au dashboard</a>
+
+        <!-- KPI Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div
+                class="bg-white/70 dark:bg-gray-800/50 backdrop-blur-xl p-6 rounded-3xl border border-white/20 dark:border-gray-700/30 shadow-sm transition-all hover:shadow-md">
+                <div class="flex items-center gap-4">
+                    <div
+                        class="p-3 bg-indigo-100 dark:bg-indigo-900/40 rounded-2xl text-indigo-600 dark:text-indigo-400">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                        </svg>
+                    </div>
+                    <div>
+                        <span class="block text-2xl font-black text-gray-800 dark:text-white">{{ stats().total }}</span>
+                        <span class="text-xs text-gray-400 uppercase tracking-widest font-black">Total Assignés</span>
+                    </div>
+                </div>
+            </div>
+
+            <div
+                class="bg-white/70 dark:bg-gray-800/50 backdrop-blur-xl p-6 rounded-3xl border border-white/20 dark:border-gray-700/30 shadow-sm transition-all hover:shadow-md">
+                <div class="flex items-center gap-4">
+                    <div class="p-3 bg-blue-100 dark:bg-blue-900/40 rounded-2xl text-blue-600 dark:text-blue-400">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <span class="block text-2xl font-black text-gray-800 dark:text-white">{{ stats().inProgress
+                            }}</span>
+                        <span class="text-xs text-gray-400 uppercase tracking-widest font-black">En Cours</span>
+                    </div>
+                </div>
+            </div>
+
+            <div
+                class="bg-white/70 dark:bg-gray-800/50 backdrop-blur-xl p-6 rounded-3xl border border-white/20 dark:border-gray-700/30 shadow-sm transition-all hover:shadow-md">
+                <div class="flex items-center gap-4">
+                    <div
+                        class="p-3 bg-emerald-100 dark:bg-emerald-900/40 rounded-2xl text-emerald-600 dark:text-emerald-400">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                    </div>
+                    <div>
+                        <span class="block text-2xl font-black text-gray-800 dark:text-white">{{ stats().completed
+                            }}</span>
+                        <span class="text-xs text-gray-400 uppercase tracking-widest font-black">Terminés</span>
+                    </div>
+                </div>
+            </div>
+
+            <div
+                class="bg-white/70 dark:bg-gray-800/50 backdrop-blur-xl p-6 rounded-3xl border border-white/20 dark:border-gray-700/30 shadow-sm transition-all hover:shadow-md">
+                <div class="flex items-center gap-4">
+                    <div class="p-3 bg-amber-100 dark:bg-amber-900/40 rounded-2xl text-amber-600 dark:text-amber-400">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <span class="block text-2xl font-black text-gray-800 dark:text-white">{{ stats().averageScore
+                            }}%</span>
+                        <span class="text-xs text-gray-400 uppercase tracking-widest font-black">Score Moyen</span>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
+    <!-- Filters Bar -->
+    <div
+        class="flex flex-wrap items-center gap-2 mb-8 bg-white/50 dark:bg-gray-800/30 p-2 rounded-2xl border border-gray-100 dark:border-gray-700/30 w-fit">
+        <button (click)="selectedFilter.set('all')"
+            [class]="'px-6 py-2.5 rounded-xl font-extrabold text-sm transition-all ' + (selectedFilter() === 'all' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/30' : 'text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700')">
+            Tous les tests
+        </button>
+        <button (click)="selectedFilter.set('in_progress')"
+            [class]="'px-6 py-2.5 rounded-xl font-extrabold text-sm transition-all ' + (selectedFilter() === 'in_progress' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : 'text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700')">
+            En Cours
+        </button>
+        <button (click)="selectedFilter.set('completed')"
+            [class]="'px-6 py-2.5 rounded-xl font-extrabold text-sm transition-all ' + (selectedFilter() === 'completed' ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-500/30' : 'text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700')">
+            Terminés
+        </button>
+    </div>
+
+    <!-- Alerts -->
     @if (errorMessage()) {
-    <div class="alert alert-error">
-        <span>! {{ errorMessage() }}</span>
-        <button (click)="errorMessage.set(null)">X</button>
+    <div class="mb-6 animate-slide-down">
+        <div
+            class="bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 p-4 rounded-r-xl flex items-center justify-between">
+            <span class="text-red-700 dark:text-red-300 font-extrabold">{{ errorMessage() }}</span>
+            <button (click)="errorMessage.set(null)" class="text-red-400 hover:text-red-600"><svg class="w-5 h-5"
+                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg></button>
+        </div>
     </div>
     }
 
     @if (successMessage()) {
-    <div class="alert alert-success">
-        <span>✓ {{ successMessage() }}</span>
-        <button (click)="successMessage.set(null)">X</button>
+    <div class="mb-6 animate-slide-down">
+        <div
+            class="bg-emerald-50 dark:bg-emerald-900/20 border-l-4 border-emerald-500 p-4 rounded-r-xl flex items-center justify-between">
+            <span class="text-emerald-700 dark:text-emerald-300 font-extrabold">{{ successMessage() }}</span>
+            <button (click)="successMessage.set(null)" class="text-emerald-400 hover:text-emerald-600"><svg
+                    class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg></button>
+        </div>
     </div>
     }
 
-    <!-- Statistics -->
-    <div class="stats-grid">
-        <div class="stat-card">
-            <div class="stat-icon primary">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path
-                        d="M14 2H6C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V8L14 2Z" />
-                    <path d="M14 2V8H20" />
-                </svg>
-            </div>
-            <div class="stat-content">
-                <div class="stat-value">{{ stats().total }}</div>
-                <div class="stat-label">Tests Total</div>
-            </div>
-        </div>
-
-        <div class="stat-card">
-            <div class="stat-icon warning">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="10" />
-                    <path d="M12 6V12L16 14" />
-                </svg>
-            </div>
-            <div class="stat-content">
-                <div class="stat-value">{{ stats().assigned }}</div>
-                <div class="stat-label">À faire</div>
-            </div>
-        </div>
-
-        <div class="stat-card">
-            <div class="stat-icon info">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polygon points="5 3 19 12 5 21 5 3" />
-                </svg>
-            </div>
-            <div class="stat-content">
-                <div class="stat-value">{{ stats().inProgress }}</div>
-                <div class="stat-label">En cours</div>
-            </div>
-        </div>
-
-        <div class="stat-card">
-            <div class="stat-icon success">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path
-                        d="M22 11.08V12C21.9988 14.1564 21.3005 16.2547 20.0093 17.9818C18.7182 19.7088 16.9033 20.9725 14.8354 21.5839C12.7674 22.1953 10.5573 22.1219 8.53447 21.3746C6.51168 20.6273 4.78465 19.2461 3.61096 17.4371C2.43727 15.628 1.87979 13.4881 2.02168 11.3363C2.16356 9.18455 2.99721 7.13631 4.39828 5.49706C5.79935 3.85781 7.69279 2.71537 9.79619 2.24013C11.8996 1.76489 14.1003 1.98232 16.07 2.86" />
-                    <path d="M22 4L12 14.01L9 11.01" />
-                </svg>
-            </div>
-            <div class="stat-content">
-                <div class="stat-value">{{ stats().averageScore }}%</div>
-                <div class="stat-label">Score Moyen</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Filters -->
-    <div class="filters">
-        <button class="filter-btn" [class.active]="selectedFilter() === 'all'" (click)="selectedFilter.set('all')">
-            Tous ({{ stats().total }})
-        </button>
-        <button class="filter-btn" [class.active]="selectedFilter() === 'assigned'"
-            (click)="selectedFilter.set('assigned')">
-            À faire ({{ stats().assigned }})
-        </button>
-        <button class="filter-btn" [class.active]="selectedFilter() === 'in_progress'"
-            (click)="selectedFilter.set('in_progress')">
-            En cours ({{ stats().inProgress }})
-        </button>
-        <button class="filter-btn" [class.active]="selectedFilter() === 'completed'"
-            (click)="selectedFilter.set('completed')">
-            Terminés ({{ stats().completed }})
-        </button>
-    </div>
-
+    <!-- Content -->
     @if (loading()) {
-    <div class="loading-state">
-        <div class="spinner"></div>
-        <p>Chargement des tests...</p>
+    <div class="flex flex-col items-center justify-center min-h-[400px]">
+        <div
+            class="w-12 h-12 border-4 border-indigo-200 dark:border-indigo-900 border-t-indigo-600 rounded-full animate-spin mb-4">
+        </div>
+        <p class="text-gray-500 dark:text-gray-400 italic">Chargement des tests...</p>
     </div>
     } @else {
-    @if (filteredTests.length === 0) {
-    <div class="empty-state">
-        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path
-                d="M14 2H6C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V8L14 2Z" />
-            <path d="M14 2V8H20" />
-        </svg>
-        <h3>Aucun test trouvé</h3>
-        <p>Aucun test dans cette catégorie</p>
-    </div>
-    } @else {
-    <div class="tests-table-container">
-        <table class="tests-table">
-            <thead>
-                <tr>
-                    <th>Employé</th>
-                    <th>Test</th>
-                    <th>Statut</th>
-                    <th>Date limite</th>
-                    <th>Score</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @for (assignment of filteredTests; track assignment.id) {
-                <tr [class.overdue]="isOverdue(assignment.dateLimite, assignment.statut)">
-                    <td>
-                        <div class="employee-info">
-                            <div class="employee-avatar">
-                                {{ assignment.employePrenom.charAt(0) }}{{ assignment.employeNom.charAt(0) }}
-                            </div>
-                            <div class="employee-details">
-                                <div class="employee-name">{{ assignment.employePrenom }} {{ assignment.employeNom }}
-                                </div>
-                            </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+        @for (test of filteredTests; track test.id) {
+        <div
+            class="group bg-white dark:bg-gray-800/80 backdrop-blur-xl rounded-[32px] border border-gray-100 dark:border-gray-700/50 shadow-sm hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-300 overflow-hidden">
+            <div class="p-8">
+                <div class="flex justify-between items-start mb-6">
+                    <div class="flex items-center gap-4">
+                        <div
+                            class="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-black text-lg shadow-lg shadow-indigo-500/20">
+                            {{ test.employePrenom.charAt(0) }}{{ test.employeNom.charAt(0) }}
                         </div>
-                    </td>
-                    <td>
-                        <div class="test-info">
-                            <div class="test-title">{{ assignment.test.titre }}</div>
-                            <div class="test-meta">
-                                <span class="meta-item">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                        stroke-width="2">
-                                        <circle cx="12" cy="12" r="10" />
-                                        <path d="M12 6V12L16 14" />
-                                    </svg>
-                                    {{ assignment.test.duree }} min
-                                </span>
-                            </div>
+                        <div>
+                            <h3 class="font-black text-gray-800 dark:text-white leading-tight">{{ test.employePrenom }}
+                                {{ test.employeNom }}</h3>
+                            <p class="text-xs text-gray-400 font-black uppercase tracking-widest">{{
+                                test.test.technologie }}</p>
                         </div>
-                    </td>
-                    <td>
-                        <span [class]="'badge ' + getStatutClass(assignment.statut)">
-                            {{ getStatutLabel(assignment.statut) }}
-                        </span>
-                    </td>
-                    <td>
-                        <div class="deadline-info">
-                            @if (isOverdue(assignment.dateLimite, assignment.statut)) {
-                            <span class="overdue-text">Expiré</span>
-                            } @else if (getDaysRemaining(assignment.dateLimite) === 0) {
-                            <span class="urgent-text">Aujourd'hui</span>
-                            } @else if (getDaysRemaining(assignment.dateLimite) === 1) {
-                            <span class="urgent-text">Demain</span>
+                    </div>
+                    <span
+                        [class]="'px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-tighter ' + (getStatutClass(test.statut).replace('badge-', 'bg-').replace('-success', '-emerald-100 text-emerald-700').replace('-warning', '-amber-100 text-amber-700').replace('-info', '-blue-100 text-blue-700'))">
+                        {{ getStatutLabel(test.statut) }}
+                    </span>
+                </div>
+
+                <div
+                    class="bg-gray-50 dark:bg-gray-900/50 rounded-3xl p-6 mb-6 border border-gray-100 dark:border-gray-700/50">
+                    <div class="text-[10px] text-gray-400 uppercase tracking-widest font-black mb-2">Test technique
+                    </div>
+                    <div class="text-xl font-black text-gray-800 dark:text-white mb-4 line-clamp-1">{{ test.test.titre
+                        }}</div>
+
+                    <div class="flex items-center justify-between text-sm">
+                        <div class="flex items-center gap-2 text-gray-500">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            @if (test.statut === 'TERMINE' || test.statut === 'EVALUE') {
+                            <span class="font-extrabold text-emerald-600">Complété</span>
                             } @else {
-                            <span>Dans {{ getDaysRemaining(assignment.dateLimite) }} jours</span>
+                            <span
+                                [class]="'font-extrabold ' + (isOverdue(test.dateLimite, test.statut) ? 'text-red-500' : 'text-gray-500')">
+                                {{ isOverdue(test.dateLimite, test.statut) ? 'En retard' :
+                                getDaysRemaining(test.dateLimite) + ' j restants' }}
+                            </span>
                             }
                         </div>
-                    </td>
-                    <td>
-                        @if (assignment.score !== undefined) {
-                        <div class="score-badge" [class.high-score]="assignment.score >= 80"
-                            [class.medium-score]="assignment.score >= 60 && assignment.score < 80">
-                            {{ assignment.score }}%
+                        <div class="flex items-center gap-2">
+                            <span class="text-[10px] text-gray-400 font-black uppercase">Difficulté:</span>
+                            <span class="text-xs font-black text-gray-700 dark:text-gray-300">{{
+                                getDifficulteLabel(test.test.difficulte) }}</span>
                         </div>
-                        } @else {
-                        <span class="text-muted">-</span>
-                        }
-                    </td>
-                    <td>
-                        <div class="actions">
-                            <button class="btn-icon btn-primary" (click)="viewTestDetails(assignment)"
-                                title="Voir les détails">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                    stroke-width="2">
-                                    <path d="M1 12S5 4 12 4s11 8 11 8-4 8-11 8S1 12 1 12z" />
-                                    <circle cx="12" cy="12" r="3" />
-                                </svg>
-                            </button>
-                            @if (assignment.statut === 'ASSIGNE' || assignment.statut === 'EN_COURS') {
-                            <button class="btn-icon btn-warning" (click)="sendReminder(assignment)"
-                                title="Envoyer un rappel">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                    stroke-width="2">
-                                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-                                    <path d="M13.73 21a2 2 0 0 1-3.46 0" />
-                                </svg>
-                            </button>
-                            }
+                    </div>
+                </div>
+
+                <!-- Progress or Score -->
+                @if (test.statut === 'TERMINE' || test.statut === 'EVALUE') {
+                <div class="mb-8">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm font-black text-gray-500">Score final</span>
+                        <span
+                            [class]="'text-2xl font-black ' + (test.score && test.score >= 70 ? 'text-emerald-500' : test.score && test.score >= 40 ? 'text-amber-500' : 'text-red-500')">{{
+                            test.score }}%</span>
+                    </div>
+                    <div class="h-2.5 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
+                        <div [style.width]="test.score + '%'"
+                            [class]="'h-full transition-all duration-1000 ' + (test.score && test.score >= 70 ? 'bg-emerald-500' : test.score && test.score >= 40 ? 'bg-amber-500' : 'bg-red-500')">
                         </div>
-                    </td>
-                </tr>
+                    </div>
+                </div>
+                } @else {
+                <div class="mb-8">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm font-black text-gray-500">Progression</span>
+                        <span class="text-sm font-bold text-indigo-600">{{ test.statut === 'EN_COURS' ? '50%' : '0%'
+                            }}</span>
+                    </div>
+                    <div class="h-2.5 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
+                        <div [style.width]="test.statut === 'EN_COURS' ? '50%' : '5%'"
+                            class="h-full bg-indigo-500 transition-all duration-1000"></div>
+                    </div>
+                </div>
                 }
-            </tbody>
-        </table>
+
+                <div class="flex gap-3">
+                    <button (click)="viewTestDetails(test)"
+                        class="flex-1 py-3 text-indigo-600 dark:text-indigo-400 border-2 border-indigo-100 dark:border-indigo-800/50 rounded-2xl font-black text-sm hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-all">
+                        Détails
+                    </button>
+                    @if (test.statut === 'ASSIGNE' || test.statut === 'EN_COURS') {
+                    <button (click)="sendReminder(test)"
+                        class="p-3 text-amber-600 border-2 border-amber-100 rounded-2xl hover:bg-amber-50 transition-all">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                        </svg>
+                    </button>
+                    }
+                </div>
+            </div>
+        </div>
+        } @empty {
+        <div
+            class="col-span-full py-24 text-center bg-gray-50 dark:bg-gray-800/30 rounded-[64px] border-2 border-dashed border-gray-200 dark:border-gray-700">
+            <div
+                class="w-24 h-24 bg-indigo-50 dark:bg-indigo-900/40 rounded-full flex items-center justify-center mx-auto mb-6 text-indigo-500">
+                <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                </svg>
+            </div>
+            <h3 class="text-2xl font-black text-gray-400 dark:text-gray-500">Aucun test trouvé</h3>
+            <p class="text-gray-400 dark:text-gray-600">Tous les tests ont été complétés ou aucun n'a été lancé.</p>
+        </div>
+        }
     </div>
-    }
     }
 </div>

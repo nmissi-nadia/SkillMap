@@ -28,6 +28,7 @@ public class TestEmploye {
 
     private LocalDateTime dateAssignation;
     private LocalDateTime dateSoumission;
+    private LocalDateTime dateLimite;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "test_technique_id", nullable = false)

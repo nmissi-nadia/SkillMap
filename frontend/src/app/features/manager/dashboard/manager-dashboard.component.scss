@@ -8,6 +8,14 @@
     &:hover {
         @apply shadow-xl transform -translate-y-1;
     }
+
+    /* Sécurité pour les icônes si Tailwind ne charge pas immédiatement */
+    svg {
+        width: 1.5rem;
+        /* 24px */
+        height: 1.5rem;
+        display: block;
+    }
 }
 
 .badge-skill {
@@ -23,7 +31,7 @@
 }
 
 .action-btn {
-    @apply flex object-cover items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 transition-all cursor-pointer;
+    @apply flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 transition-all cursor-pointer;
 
     &:hover {
         @apply shadow-md transform -translate-y-0.5 border-blue-200 dark:border-blue-800;
@@ -31,6 +39,11 @@
 
     .action-icon-container {
         @apply p-3 rounded-xl transition-colors duration-300;
+
+        svg {
+            width: 1.5rem;
+            height: 1.5rem;
+        }
     }
 }
 

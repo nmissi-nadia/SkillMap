@@ -1,207 +1,311 @@
-<div class="team-container">
-    <div class="page-header">
-        <div class="header-content">
-            <h1>Mon Équipe</h1>
-            <p>Gérez et suivez les membres de votre équipe</p>
+<div class="min-h-screen bg-[#f8fafc] dark:bg-[#0f172a] p-4 lg:p-8 animate-fade-in">
+    <!-- Header Section -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
+        <div>
+            <h1
+                class="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 mb-2">
+                Mon Équipe
+            </h1>
+            <p class="text-gray-500 dark:text-gray-400 text-lg">Gérez vos talents, évaluez les performances et
+                développez les compétences.</p>
+        </div>
+        <div class="flex gap-4">
+            <div
+                class="bg-white/50 dark:bg-gray-800/50 backdrop-blur-md px-6 py-3 rounded-2xl border border-white/20 dark:border-gray-700/30 shadow-sm flex items-center gap-3">
+                <div class="p-2 bg-blue-100 dark:bg-blue-900/40 rounded-xl text-blue-600 dark:text-blue-400">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                </div>
+                <div>
+                    <span class="block text-2xl font-bold text-gray-800 dark:text-white">{{ team().length }}</span>
+                    <span class="text-xs text-gray-500 uppercase tracking-wider font-semibold">Membres</span>
+                </div>
+            </div>
         </div>
     </div>
 
+    <!-- Feedback Alerts -->
     @if (errorMessage()) {
-    <div class="alert alert-error">
-        <span>! {{ errorMessage() }}</span>
-        <button (click)="errorMessage.set(null)">X</button>
+    <div class="mb-6 animate-slide-down">
+        <div
+            class="bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 p-4 rounded-r-xl flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span class="text-red-700 dark:text-red-300 font-medium">{{ errorMessage() }}</span>
+            </div>
+            <button (click)="errorMessage.set(null)" class="text-red-500 hover:text-red-700 transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
     </div>
     }
 
     @if (successMessage()) {
-    <div class="alert alert-success">
-        <span>✓ {{ successMessage() }}</span>
-        <button (click)="successMessage.set(null)">X</button>
+    <div class="mb-6 animate-slide-down">
+        <div
+            class="bg-emerald-50 dark:bg-emerald-900/20 border-l-4 border-emerald-500 p-4 rounded-r-xl flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+                <span class="text-emerald-700 dark:text-emerald-300 font-medium">{{ successMessage() }}</span>
+            </div>
+            <button (click)="successMessage.set(null)"
+                class="text-emerald-500 hover:text-emerald-700 transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
     </div>
     }
 
+    <!-- Main Content -->
     @if (loading()) {
-    <div class="loading-state">
-        <div class="spinner"></div>
-        <p>Chargement de votre équipe...</p>
+    <div class="flex flex-col items-center justify-center min-h-[400px]">
+        <div class="relative w-16 h-16 mb-4">
+            <div class="absolute inset-0 border-4 border-blue-200 dark:border-blue-900 rounded-full"></div>
+            <div class="absolute inset-0 border-4 border-blue-600 rounded-full border-t-transparent animate-spin"></div>
+        </div>
+        <p class="text-gray-500 dark:text-gray-400 font-medium italic">Préparation de la liste...</p>
     </div>
     } @else {
     @if (team().length === 0) {
-    <div class="empty-state">
-        <p>Aucun employé dans votre équipe</p>
+    <div
+        class="bg-white dark:bg-gray-800 rounded-3xl p-16 text-center border border-gray-100 dark:border-gray-700 shadow-sm">
+        <div
+            class="w-24 h-24 bg-gray-50 dark:bg-gray-700/50 rounded-full flex items-center justify-center mx-auto mb-6 text-gray-400">
+            <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+            </svg>
+        </div>
+        <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-2">Aucun membre trouvé</h3>
+        <p class="text-gray-500 dark:text-gray-400">Il semble que votre équipe soit vide pour le moment.</p>
     </div>
     } @else {
-    <div class="team-table-container">
-        <table class="team-table">
-            <thead>
-                <tr>
-                    <th>Nom</th>
-                    <th>Poste</th>
-                    <th>Département</th>
-                    <th>Expérience</th>
-                    <th>Disponibilité</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @for (member of team(); track member.id) {
-                <tr>
-                    <td>
-                        <div class="member-info">
-                            <div class="member-avatar">
-                                {{ member.prenom.charAt(0) }}{{ member.nom.charAt(0) }}
+    <div
+        class="bg-white/70 dark:bg-gray-800/50 backdrop-blur-xl rounded-3xl shadow-xl border border-white/20 dark:border-gray-700/30 overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left">
+                <thead>
+                    <tr
+                        class="bg-gray-50/50 dark:bg-gray-900/50 text-gray-500 dark:text-gray-400 uppercase text-xs font-bold tracking-widest">
+                        <th class="px-8 py-6">Employé</th>
+                        <th class="px-6 py-6 font-bold lg:hidden ">Détails</th> <!-- Mobile view -->
+                        <th class="px-6 py-6 hidden lg:table-cell">Poste & Département</th>
+                        <th class="px-6 py-6 hidden lg:table-cell text-center">Niveau</th>
+                        <th class="px-6 py-6 hidden lg:table-cell text-center">Disponibilité</th>
+                        <th class="px-8 py-6 text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100 dark:divide-gray-700/50">
+                    @for (member of team(); track member.id) {
+                    <tr class="group hover:bg-blue-50/30 dark:hover:bg-blue-900/10 transition-all duration-300">
+                        <td class="px-8 py-6">
+                            <div class="flex items-center gap-4">
+                                <div
+                                    class="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-blue-500/30">
+                                    {{ member.prenom.charAt(0) }}{{ member.nom.charAt(0) }}
+                                </div>
+                                <div>
+                                    <div
+                                        class="font-bold text-gray-800 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                                        {{ member.prenom }} {{ member.nom }}</div>
+                                    <div class="text-sm text-gray-500 dark:text-gray-400">{{ member.email }}</div>
+                                </div>
                             </div>
-                            <div class="member-details">
-                                <div class="member-name">{{ member.prenom }} {{ member.nom }}</div>
-                                <div class="member-email">{{ member.email }}</div>
+                        </td>
+                        <!-- Mobile View Info -->
+                        <td class="px-6 py-6 lg:hidden font-bold ">
+                            <div class="text-sm text-gray-700 dark:text-gray-300 font-bold ">{{ member.poste }}</div>
+                            <div class="text-xs text-gray-500 italic font-bold ">{{ member.departement }}</div>
+                        </td>
+
+                        <td class="px-6 py-6 hidden lg:table-cell">
+                            <div class="text-gray-700 dark:text-gray-300 font-semibold">{{ member.poste || 'Non défini'
+                                }}</div>
+                            <div class="text-xs text-gray-400 font-medium uppercase tracking-wider">{{
+                                member.departement || 'Non défini' }}</div>
+                        </td>
+                        <td class="px-6 py-6 hidden lg:table-cell">
+                            <div class="flex justify-center">
+                                <span
+                                    class="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-lg text-xs font-bold ring-1 ring-gray-200 dark:ring-gray-600">
+                                    {{ member.niveauExperience || 'Junior' }}
+                                </span>
                             </div>
-                        </div>
-                    </td>
-                    <td>{{ member.poste || 'Non défini' }}</td>
-                    <td>{{ member.departement || 'Non défini' }}</td>
-                    <td>
-                        <span class="badge badge-info">
-                            {{ member.niveauExperience || 'Non défini' }}
-                        </span>
-                    </td>
-                    <td>
-                        <span [class]="'badge ' + getDisponibiliteClass(member.disponibilite)">
-                            {{ getDisponibiliteLabel(member.disponibilite) }}
-                        </span>
-                    </td>
-                    <td>
-                        <div class="actions">
-                            <button class="btn-icon btn-primary" (click)="viewProfile(member)" title="Voir le profil">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                    stroke-width="2">
-                                    <path
-                                        d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21" />
-                                    <circle cx="12" cy="7" r="4" />
-                                </svg>
-                                Profile
-                            </button>
-                            <button class="btn-icon btn-success" (click)="openEvaluateModal(member)" title="Évaluer">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                    stroke-width="2">
-                                    <path
-                                        d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
-                                </svg>
-                                Eval
-                            </button>
-                            <button class="btn-icon btn-info" (click)="openTestModal(member)" title="Assigner un test">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                    stroke-width="2">
-                                    <path
-                                        d="M14 2H6C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V8L14 2Z" />
-                                    <path d="M14 2V8H20" />
-                                </svg>
-                                Test
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-                }
-            </tbody>
-        </table>
+                        </td>
+                        <td class="px-6 py-6 hidden lg:table-cell">
+                            <div class="flex justify-center">
+                                <span
+                                    [class]="'inline-flex items-center px-3 py-1 rounded-full text-xs font-bold leading-non ring-1 '"
+                                    [ngClass]="member.disponibilite ? 'bg-emerald-50 text-emerald-700 ring-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 dark:ring-emerald-800' : 'bg-amber-50 text-amber-700 ring-amber-200 dark:bg-amber-900/30 dark:text-amber-400 dark:ring-amber-800'">
+                                    <span class="w-1.5 h-1.5 rounded-full mr-1.5"
+                                        [ngClass]="member.disponibilite ? 'bg-emerald-500' : 'bg-amber-500'"></span>
+                                    {{ getDisponibiliteLabel(member.disponibilite) }}
+                                </span>
+                            </div>
+                        </td>
+                        <td class="px-8 py-6 text-right whitespace-nowrap">
+                            <div class="flex justify-end gap-2">
+                                <button (click)="viewProfile(member)"
+                                    class="p-2 text-blue-600 hover:bg-blue-100 dark:text-blue-400 dark:hover:bg-blue-900/40 rounded-xl transition-all"
+                                    title="Détails">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                    </svg>
+                                </button>
+                                <button (click)="openEvaluateModal(member)"
+                                    class="p-2 text-emerald-600 hover:bg-emerald-100 dark:text-emerald-400 dark:hover:bg-emerald-900/40 rounded-xl transition-all"
+                                    title="Évaluer">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                    </svg>
+                                </button>
+                                <button (click)="openTestModal(member)"
+                                    class="p-2 text-purple-600 hover:bg-purple-100 dark:text-purple-400 dark:hover:bg-purple-900/40 rounded-xl transition-all"
+                                    title="Assigner Test">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     </div>
     }
     }
 </div>
 
-<!-- Evaluate Modal -->
-@if (showEvaluateModal()) {
-<div class="modal-overlay" (click)="closeEvaluateModal()">
-    <div class="modal-content" (click)="$event.stopPropagation()">
-        <div class="modal-header">
-            <h2>Évaluer {{ selectedEmployee()?.prenom }} {{ selectedEmployee()?.nom }}</h2>
-            <button class="btn-close" (click)="closeEvaluateModal()">X</button>
-        </div>
+<!-- Modal Overlay & Content Styling (Direct Tailwind) -->
+@if (showEvaluateModal() || showTestModal()) {
+<div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm animate-fade-in"
+    (click)="closeEvaluateModal(); closeTestModal()">
 
-        <div class="modal-body">
-            <div class="form-group">
-                <label for="competence">Compétence *</label>
-                <select id="competence" [(ngModel)]="selectedCompetence" class="form-control" required>
+    <!-- Evaluate Modal Content -->
+    @if (showEvaluateModal()) {
+    <div class="bg-white dark:bg-gray-800 w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden animate-slide-up"
+        (click)="$event.stopPropagation()">
+        <div
+            class="px-8 py-6 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center text-white bg-gradient-to-r from-emerald-600 to-teal-600 ">
+            <h2 class="text-xl font-bold">Évaluer {{ selectedEmployee()?.prenom }}</h2>
+            <button (click)="closeEvaluateModal()" class="text-white/80 hover:text-white transition-colors">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+        <div class="p-8 space-y-6">
+            <div class="space-y-2">
+                <label
+                    class="block text-sm font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Compétence</label>
+                <select [(ngModel)]="selectedCompetenceId"
+                    class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl px-4 py-3 focus:ring-2 focus:ring-emerald-500 outline-none transition-all">
                     <option value="">Sélectionnez une compétence</option>
-                    @for (comp of availableCompetences(); track comp) {
-                    <option [value]="comp">{{ comp }}</option>
+                    @for (comp of availableCompetences(); track comp.id) {
+                    <option [value]="comp.id">{{ comp.nom }}</option>
                     }
                 </select>
             </div>
 
-            <div class="form-group">
-                <label for="level">Niveau (1-5) *</label>
-                <div class="level-selector">
-                    @for (level of [1, 2, 3, 4, 5]; track level) {
-                    <button type="button" class="level-btn" [class.active]="evaluationLevel() === level"
-                        (click)="evaluationLevel.set(level)">
-                        <svg width="24" height="24" viewBox="0 0 24 24"
-                            [attr.fill]="evaluationLevel() >= level ? 'currentColor' : 'none'" stroke="currentColor"
-                            stroke-width="2">
-                            <path
-                                d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
-                        </svg>
+            <div class="space-y-2">
+                <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Niveau
+                    (1-5)</label>
+                <div class="flex gap-4">
+                    @for (level of [1,2,3,4,5]; track level) {
+                    <button (click)="evaluationLevel.set(level)"
+                        [class]="'flex-1 py-3 rounded-2xl font-bold transition-all border ' + (evaluationLevel() === level ? 'bg-emerald-600 text-white border-emerald-600 shadow-lg shadow-emerald-500/30' : 'bg-gray-50 dark:bg-gray-900 text-gray-500 border-gray-200 dark:border-gray-700 hover:bg-gray-100')">
+                        {{ level }}
                     </button>
                     }
                 </div>
-                <small class="level-label">{{ evaluationLevel() }}/5</small>
             </div>
 
-            <div class="form-group">
-                <label for="comment">Commentaire (optionnel)</label>
-                <textarea id="comment" [(ngModel)]="evaluationComment" class="form-control" rows="4"
-                    placeholder="Ajoutez un commentaire sur cette évaluation..."></textarea>
+            <div class="space-y-2">
+                <label
+                    class="block text-sm font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Commentaire</label>
+                <textarea [(ngModel)]="evaluationComment" rows="3"
+                    class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl px-4 py-3 outline-none"
+                    placeholder="Observations facultatives..."></textarea>
             </div>
         </div>
-
-        <div class="modal-footer">
-            <button class="btn btn-secondary" (click)="closeEvaluateModal()">Annuler</button>
-            <button class="btn btn-primary" (click)="submitEvaluation()" [disabled]="!selectedCompetence()">Valider
-                l'évaluation</button>
+        <div class="px-8 py-6 bg-gray-50 dark:bg-gray-900/50 flex gap-4">
+            <button (click)="closeEvaluateModal()"
+                class="flex-1 px-6 py-3 rounded-2xl font-bold text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all">Annuler</button>
+            <button (click)="submitEvaluation()" [disabled]="!selectedCompetenceId()"
+                class="flex-1 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white rounded-2xl font-bold shadow-lg shadow-emerald-500/20 transition-all">Valider</button>
         </div>
     </div>
-</div>
-}
+    }
 
-<!-- Assign Test Modal -->
-@if (showTestModal()) {
-<div class="modal-overlay" (click)="closeTestModal()">
-    <div class="modal-content" (click)="$event.stopPropagation()">
-        <div class="modal-header">
-            <h2>Assigner un test à {{ selectedEmployee()?.prenom }} {{ selectedEmployee()?.nom }}</h2>
-            <button class="btn-close" (click)="closeTestModal()">X</button>
+    <!-- Test Modal Content -->
+    @if (showTestModal()) {
+    <div class="bg-white dark:bg-gray-800 w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden animate-slide-up"
+        (click)="$event.stopPropagation()">
+        <div
+            class="px-8 py-6 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center text-white bg-gradient-to-r from-purple-600 to-indigo-600 ">
+            <h2 class="text-xl font-bold font-bold ">Assigner un Test Technique</h2>
+            <button (click)="closeTestModal()" class="text-white/80 hover:text-white transition-colors">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
         </div>
+        <div class="p-8 space-y-6">
+            <div
+                class="bg-indigo-50 dark:bg-indigo-900/20 p-4 rounded-2xl flex gap-3 text-indigo-700 dark:text-indigo-300 text-sm">
+                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <p>L'employé {{ selectedEmployee()?.prenom }} recevra une notification pour passer ce test.</p>
+            </div>
 
-        <div class="modal-body">
-            <div class="form-group">
-                <label for="test">Test technique *</label>
-                <select id="test" [(ngModel)]="selectedTest" class="form-control" required>
+            <div class="space-y-2">
+                <label
+                    class="block text-sm font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider font-bold ">Choisir
+                    le test</label>
+                <select [(ngModel)]="selectedTestId"
+                    class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl px-4 py-3 focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
                     <option value="">Sélectionnez un test</option>
-                    @for (test of availableTests(); track test) {
-                    <option [value]="test">{{ test }}</option>
+                    @for (test of availableTests(); track test.id) {
+                    <option [value]="test.id">{{ test.titre }} ({{ test.technologie }})</option>
                     }
                 </select>
             </div>
 
-            <div class="form-group">
-                <label for="dueDate">Date limite *</label>
-                <input type="date" id="dueDate" [(ngModel)]="testDueDate" class="form-control" required>
-            </div>
-
-            <div class="info-box">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="10" />
-                    <path d="M12 16V12" />
-                    <path d="M12 8H12.01" />
-                </svg>
-                <p>L'employé recevra une notification par email avec les instructions pour passer le test.</p>
+            <div class="space-y-2">
+                <label
+                    class="block text-sm font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider font-bold ">Date
+                    limite</label>
+                <input type="date" [(ngModel)]="testDueDate"
+                    class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl px-4 py-3 outline-none" />
             </div>
         </div>
-
-        <div class="modal-footer">
-            <button class="btn btn-secondary" (click)="closeTestModal()">Annuler</button>
-            <button class="btn btn-primary" (click)="submitTestAssignment()"
-                [disabled]="!selectedTest() || !testDueDate()">Assigner le test</button>
+        <div class="px-8 py-6 bg-gray-50 dark:bg-gray-900/50 flex gap-4">
+            <button (click)="closeTestModal()"
+                class="flex-1 px-6 py-3 rounded-2xl font-bold text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all font-bold ">Annuler</button>
+            <button (click)="submitTestAssignment()" [disabled]="!selectedTestId()"
+                class="flex-1 px-6 py-3 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white rounded-2xl font-bold shadow-lg shadow-indigo-500/20 transition-all font-bold ">Assigner</button>
         </div>
     </div>
+    }
 </div>
 }

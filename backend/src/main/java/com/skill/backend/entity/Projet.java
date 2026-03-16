@@ -42,6 +42,9 @@ public class Projet {
     private ChefProjet chefProjet;
 
     @OneToMany(mappedBy = "projet")
+    private Set<AffectationProjet> affectations = new HashSet<>();
+
+    @OneToMany(mappedBy = "projet")
     private Set<Message> messages = new HashSet<>();
 
     @PrePersist

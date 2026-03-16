@@ -1,6 +1,5 @@
 import { Component, OnInit, signal, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ManagerService } from '../../../core/services/manager.service';
 import { TestAssignment, TestStatut } from '../../../core/models/test.model';
@@ -8,7 +7,7 @@ import { TestAssignment, TestStatut } from '../../../core/models/test.model';
 @Component({
     selector: 'app-manager-tests',
     standalone: true,
-    imports: [CommonModule, RouterLink, FormsModule],
+    imports: [CommonModule, FormsModule],
     templateUrl: './tests.component.html',
     styleUrls: ['./tests.component.scss']
 })
