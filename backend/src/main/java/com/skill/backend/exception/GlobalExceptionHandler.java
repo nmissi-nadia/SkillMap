@@ -20,16 +20,30 @@ public class GlobalExceptionHandler {
 
     // --- 404 ---
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<Map<String, Object>> handleResourceNotFoundException(ResourceNotFoundException ex) {
+    public ResponseEntity<Map<String, Object>> handleResourceNotFoundException(ResourceNotFoundException ex, jakarta.servlet.http.HttpServletRequest request) {
         log.warn("Resource not found: {}", ex.getMessage());
-        return buildResponse(HttpStatus.NOT_FOUND, ex.getMessage());
+        return buildResponse(HttpStatus.NOT_FOUND, ex.getMessage(), request.getRequestURI());
     }
 
     // --- 400 ---
     @ExceptionHandler(BadRequestException.class)
-    public ResponseEntity<Map<String, Object>> handleBadRequestException(BadRequestException ex) {
+    public ResponseEntity<Map<String, Object>> handleBadRequestException(BadRequestException ex, jakarta.servlet.http.HttpServletRequest request) {
         log.warn("Bad request: {}", ex.getMessage());
-        return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+        return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), request.getRequestURI());
+    }
+
+    // --- 403 Forbidden ---
+    @ExceptionHandler(UnauthorizedAccessException.class)
+    public ResponseEntity<Map<String, Object>> handleUnauthorizedAccessException(UnauthorizedAccessException ex, jakarta.servlet.http.HttpServletRequest request) {
+        log.warn("Unauthorized access: {}", ex.getMessage());
+        return buildResponse(HttpStatus.FORBIDDEN, ex.getMessage(), request.getRequestURI());
+    }
+
+    // --- 422 Unprocessable Entity ---
+    @ExceptionHandler(BusinessRuleException.class)
+    public ResponseEntity<Map<String, Object>> handleBusinessRuleException(BusinessRuleException ex, jakarta.servlet.http.HttpServletRequest request) {
+        log.warn("Business rule violation: {}", ex.getMessage());
+        return buildResponse(HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage(), request.getRequestURI());
     }
 
     // --- Validation Errors (@Valid) ---
@@ -47,26 +61,28 @@ public class GlobalExceptionHandler {
         body.put("status", HttpStatus.BAD_REQUEST.value());
         body.put("error", "Validation Failed");
         body.put("details", validationErrors);
+        // On récupère le path du header de la requête si possible, mais ce n'est pas fourni directement dans cette exception.
         return ResponseEntity.badRequest().body(body);
     }
 
     // --- Generic fallback ---
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<Map<String, Object>> handleGenericException(Exception ex) {
+    public ResponseEntity<Map<String, Object>> handleGenericException(Exception ex, jakarta.servlet.http.HttpServletRequest request) {
         log.error("CRITICAL ERROR: {} - Type: {}", ex.getMessage(), ex.getClass().getName(), ex);
         String detailedMessage = ex.getMessage();
         if (ex.getCause() != null) {
             detailedMessage += " | CAUSE: " + ex.getCause().getMessage();
         }
-        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "DEBUG CRITICAL: " + detailedMessage);
+        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "DEBUG CRITICAL: " + detailedMessage, request.getRequestURI());
     }
 
-    private ResponseEntity<Map<String, Object>> buildResponse(HttpStatus status, String message) {
+    private ResponseEntity<Map<String, Object>> buildResponse(HttpStatus status, String message, String path) {
         Map<String, Object> body = new HashMap<>();
         body.put("timestamp", LocalDateTime.now().toString());
         body.put("status", status.value());
         body.put("error", status.getReasonPhrase());
         body.put("message", message);
+        body.put("path", path);
         return ResponseEntity.status(status).body(body);
     }
 }
