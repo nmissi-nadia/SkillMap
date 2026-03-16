@@ -24,7 +24,9 @@ export class TeamListComponent implements OnInit {
     // Modal states
     showEvaluateModal = signal(false);
     showTestModal = signal(false);
+    showAddMemberModal = signal(false);
     selectedEmployee = signal<Employee | null>(null);
+    availableEmployees = signal<Employee[]>([]);
 
     // Evaluate modal data
     selectedCompetenceId = signal<string>('');
@@ -131,6 +133,34 @@ export class TeamListComponent implements OnInit {
                 setTimeout(() => this.successMessage.set(null), 3000);
             },
             error: () => this.errorMessage.set('Erreur lors de l\'assignation du test')
+        });
+    }
+
+    // ========== Gestion de l'équipe (Ajout membres) ==========
+
+    openAddMemberModal() {
+        this.managerService.getAvailableEmployees().subscribe({
+            next: (employees) => {
+                this.availableEmployees.set(employees);
+                this.showAddMemberModal.set(true);
+            },
+            error: () => this.errorMessage.set('Erreur lors de la récupération des employés disponibles')
+        });
+    }
+
+    closeAddMemberModal() {
+        this.showAddMemberModal.set(false);
+    }
+
+    assignMember(employee: Employee) {
+        this.managerService.assignEmployeeToTeam(employee.id).subscribe({
+            next: () => {
+                this.successMessage.set(`${employee.prenom} a été ajouté à votre équipe`);
+                this.loadTeam();
+                this.closeAddMemberModal();
+                setTimeout(() => this.successMessage.set(null), 3000);
+            },
+            error: () => this.errorMessage.set('Erreur lors de l\'ajout du membre')
         });
     }
 }

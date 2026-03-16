@@ -9,6 +9,7 @@ import com.skill.backend.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -17,7 +18,8 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class SkillMatchingService {
+@Transactional(readOnly = true)
+public class MatchingService {
 
     private final EmployeRepository employeRepository;
     private final ProjetRepository projetRepository;

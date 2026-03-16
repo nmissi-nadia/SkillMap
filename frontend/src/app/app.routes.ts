@@ -29,31 +29,25 @@ export const routes: Routes = [
         path: 'manager/dashboard',
         loadComponent: () => import('./features/manager/dashboard/manager-dashboard.component').then(m => m.ManagerDashboardComponent),
         canActivate: [authGuard, roleGuard],
-        data: { roles: ['MANAGER', 'CHEF_PROJET'] }
+        data: { roles: ['MANAGER'] }
     },
     {
         path: 'manager/team',
         loadComponent: () => import('./features/manager/team/team-list.component').then(m => m.TeamListComponent),
         canActivate: [authGuard, roleGuard],
-        data: { roles: ['MANAGER', 'CHEF_PROJET'] }
+        data: { roles: ['MANAGER'] }
     },
     {
         path: 'manager/evaluations',
         loadComponent: () => import('./features/manager/evaluations/pending-evaluations.component').then(m => m.PendingEvaluationsComponent),
         canActivate: [authGuard, roleGuard],
-        data: { roles: ['MANAGER', 'CHEF_PROJET'] }
+        data: { roles: ['MANAGER'] }
     },
     {
         path: 'manager/tests',
         loadComponent: () => import('./features/manager/tests/tests.component').then(m => m.ManagerTestsComponent),
         canActivate: [authGuard, roleGuard],
-        data: { roles: ['MANAGER', 'RH'] }
-    },
-    {
-        path: 'manager/projets',
-        loadComponent: () => import('./features/manager/projects/projects.component').then(m => m.ManagerProjectsComponent),
-        canActivate: [authGuard, roleGuard],
-        data: { roles: ['MANAGER', 'CHEF_PROJET'] }
+        data: { roles: ['MANAGER'] }
     },
     {
         path: 'manager',
@@ -82,7 +76,7 @@ export const routes: Routes = [
         path: 'rh/skills-map',
         loadComponent: () => import('./features/rh/skills-map/skills-map.component').then(m => m.SkillsMapComponent),
         canActivate: [authGuard, roleGuard],
-        data: { roles: ['RH', 'MANAGER', 'CHEF_PROJET'] }
+        data: { roles: ['RH'] }
     },
     {
         path: 'rh/formations',

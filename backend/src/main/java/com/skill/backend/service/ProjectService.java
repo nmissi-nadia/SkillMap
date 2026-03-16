@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class ProjetService {
+public class ProjectService {
 
     private final ProjetRepository projetRepository;
     private final ChefProjetRepository chefProjetRepository;
@@ -40,7 +40,7 @@ public class ProjetService {
     }
 
     // ========================================================
-    // PROJETS
+    // PROJECTS
     // ========================================================
 
     public List<ProjetDTO> getMesProjets() {
@@ -86,6 +86,23 @@ public class ProjetService {
     @Transactional
     public void deleteProjet(String id) {
         projetRepository.deleteById(id);
+    }
+
+    public List<ProjetDTO> getProjectsByUserRole(String userRole) {
+        // This method assumes 'userRole' is a string representing the role,
+        // e.g., "CHEF_PROJET" or "RH".
+        // In a real application, roles would typically be extracted from the
+        // SecurityContextHolder's Authentication object.
+        if ("CHEF_PROJET".equalsIgnoreCase(userRole)) {
+            return getMesProjets();
+        } else if ("RH".equalsIgnoreCase(userRole)) {
+            return getAllProjets();
+        } else {
+            // Default behavior or throw an exception for unsupported roles
+            // For now, let's return all projects as a fallback for unknown roles
+            // or if the user has broader permissions.
+            return getAllProjets();
+        }
     }
 
     // ========================================================

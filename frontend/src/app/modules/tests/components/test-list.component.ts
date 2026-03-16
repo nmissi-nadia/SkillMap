@@ -113,7 +113,7 @@ import { TestTechnique } from '../models/test.model';
             [routerLink]="['/tests', test.id]"
           >
             <div class="card-status">
-              <span class="badge" [class]="test.niveau?.toLowerCase() || 'default'">
+              <span class="badge" [class]="test.niveau.toLowerCase() || 'default'">
                 {{test.niveau || 'Standard'}}
               </span>
               <span class="tech-label">{{test.technologie || 'Tech Mixte'}}</span>
@@ -130,7 +130,7 @@ import { TestTechnique } from '../models/test.model';
                 </div>
                 <div class="metric">
                   <mat-icon>quiz</mat-icon>
-                  <span>{{test.questions?.length || 0}} Questions</span>
+                  <span>{{test.questions.length || 0}} Questions</span>
                 </div>
               </div>
 

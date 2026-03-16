@@ -40,6 +40,20 @@ export class ManagerService {
         return this.http.get<Employee>(`${this.apiUrl}/me/team/${employeeId}`);
     }
 
+    /**
+     * Récupérer les employés sans manager (disponibles pour l'équipe)
+     */
+    getAvailableEmployees(): Observable<Employee[]> {
+        return this.http.get<Employee[]>(`${this.apiUrl}/me/available-employes`);
+    }
+
+    /**
+     * Assigner un employé à son équipe
+     */
+    assignEmployeeToTeam(employeeId: string): Observable<void> {
+        return this.http.post<void>(`${this.apiUrl}/me/team/assign/${employeeId}`, {});
+    }
+
     // ========== Évaluation des compétences ==========
 
     /**
@@ -109,29 +123,6 @@ export class ManagerService {
      */
     getTestResults(testId: string): Observable<any> {
         return this.http.get(`${environment.apiUrl}/tests/${testId}/results`);
-    }
-
-    // ========== Projets ==========
-
-    /**
-     * Récupérer les projets du manager
-     */
-    getMyProjects(): Observable<any[]> {
-        return this.http.get<any[]>(`${this.apiUrl}/me/projects`);
-    }
-
-    /**
-     * Proposer un employé pour un projet
-     */
-    proposeEmployeeForProject(projectId: string, proposal: any): Observable<any> {
-        return this.http.post(`${environment.apiUrl}/projets/${projectId}/propose-employee`, proposal);
-    }
-
-    /**
-     * Récupérer les manques de compétences d'un projet
-     */
-    getProjectSkillGaps(projectId: string): Observable<any[]> {
-        return this.http.get<any[]>(`${environment.apiUrl}/projets/${projectId}/skill-gaps`);
     }
 
     // ========== Dashboard ==========

@@ -31,7 +31,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class SkillMatchingServiceTest {
+public class MatchingServiceTest {
 
     @Mock
     private EmployeRepository employeRepository;
@@ -43,10 +43,9 @@ public class SkillMatchingServiceTest {
     private AffectationProjetRepository affectationProjetRepository;
     @Mock
     private AuditLogService auditLogService;
-    // competenceEmployeRepository mock removed as it's optimized out of the inner loop
 
     @InjectMocks
-    private SkillMatchingService matchingService;
+    private MatchingService matchingService;
 
     private Projet projet;
     private Employe employeParfait;

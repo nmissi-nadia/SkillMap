@@ -7,6 +7,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import org.mapstruct.factory.Mappers;
 
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -39,49 +40,67 @@ public interface EmployeMapper {
 
     @Named("competenceEmployesToIds")
     static Set<String> competenceEmployesToIds(Set<CompetenceEmploye> competenceEmployes) {
-        if (competenceEmployes == null) {
+        if (competenceEmployes == null || !org.hibernate.Hibernate.isInitialized(competenceEmployes)) {
             return null;
         }
-        return competenceEmployes.stream().map(CompetenceEmploye::getId).collect(Collectors.toSet());
+        return competenceEmployes.stream()
+                .filter(Objects::nonNull)
+                .map(CompetenceEmploye::getId)
+                .collect(Collectors.toSet());
     }
 
     @Named("evaluationsToIds")
     static Set<String> evaluationsToIds(Set<Evaluation> evaluations) {
-        if (evaluations == null) {
+        if (evaluations == null || !org.hibernate.Hibernate.isInitialized(evaluations)) {
             return null;
         }
-        return evaluations.stream().map(Evaluation::getId).collect(Collectors.toSet());
+        return evaluations.stream()
+                .filter(Objects::nonNull)
+                .map(Evaluation::getId)
+                .collect(Collectors.toSet());
     }
 
     @Named("testEmployesToIds")
     static Set<String> testEmployesToIds(Set<TestEmploye> testEmployes) {
-        if (testEmployes == null) {
+        if (testEmployes == null || !org.hibernate.Hibernate.isInitialized(testEmployes)) {
             return null;
         }
-        return testEmployes.stream().map(TestEmploye::getId).collect(Collectors.toSet());
+        return testEmployes.stream()
+                .filter(Objects::nonNull)
+                .map(TestEmploye::getId)
+                .collect(Collectors.toSet());
     }
 
     @Named("messagesToIds")
     static Set<String> messagesToIds(Set<Message> messages) {
-        if (messages == null) {
+        if (messages == null || !org.hibernate.Hibernate.isInitialized(messages)) {
             return null;
         }
-        return messages.stream().map(Message::getId).collect(Collectors.toSet());
+        return messages.stream()
+                .filter(Objects::nonNull)
+                .map(Message::getId)
+                .collect(Collectors.toSet());
     }
 
     @Named("projetsToIds")
     static Set<String> projetsToIds(Set<Projet> projets) {
-        if (projets == null) {
+        if (projets == null || !org.hibernate.Hibernate.isInitialized(projets)) {
             return null;
         }
-        return projets.stream().map(Projet::getId).collect(Collectors.toSet());
+        return projets.stream()
+                .filter(Objects::nonNull)
+                .map(Projet::getId)
+                .collect(Collectors.toSet());
     }
 
     @Named("inscriptionsToIds")
     static Set<String> inscriptionsToIds(Set<InscriptionFormation> inscriptions) {
-        if (inscriptions == null) {
+        if (inscriptions == null || !org.hibernate.Hibernate.isInitialized(inscriptions)) {
             return null;
         }
-        return inscriptions.stream().map(i -> i.getFormation().getId()).collect(Collectors.toSet());
+        return inscriptions.stream()
+                .filter(i -> i != null && i.getFormation() != null)
+                .map(i -> i.getFormation().getId())
+                .collect(Collectors.toSet());
     }
 }

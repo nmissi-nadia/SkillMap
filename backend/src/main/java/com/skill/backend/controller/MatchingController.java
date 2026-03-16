@@ -3,7 +3,7 @@ package com.skill.backend.controller;
 import com.skill.backend.dto.EmployeeMatchDTO;
 import com.skill.backend.dto.EmployeeMatchDetailDTO;
 import com.skill.backend.dto.MatchingAnalyticsDTO;
-import com.skill.backend.service.SkillMatchingService;
+import com.skill.backend.service.MatchingService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -19,9 +19,9 @@ import java.util.List;
 @RequiredArgsConstructor
 @Tag(name = "Skills Matching", description = "Matching automatique compétences ↔ projet")
 @SecurityRequirement(name = "bearerAuth")
-public class SkillMatchingController {
+public class MatchingController {
 
-    private final SkillMatchingService skillMatchingService;
+    private final MatchingService matchingService;
 
     /**
      * Trouver les meilleurs candidats pour un projet
@@ -33,7 +33,7 @@ public class SkillMatchingController {
     public ResponseEntity<List<EmployeeMatchDTO>> findBestMatches(
             @PathVariable String projetId,
             @RequestParam(required = false, defaultValue = "50") Integer minScore) {
-        return ResponseEntity.ok(skillMatchingService.findBestMatchesForProject(projetId, minScore));
+        return ResponseEntity.ok(matchingService.findBestMatchesForProject(projetId, minScore));
     }
 
     /**
@@ -46,7 +46,7 @@ public class SkillMatchingController {
     public ResponseEntity<EmployeeMatchDetailDTO> getMatchDetails(
             @PathVariable String projetId,
             @PathVariable String employeId) {
-        return ResponseEntity.ok(skillMatchingService.getMatchDetails(projetId, employeId));
+        return ResponseEntity.ok(matchingService.getMatchDetails(projetId, employeId));
     }
 
     /**
@@ -58,6 +58,6 @@ public class SkillMatchingController {
                description = "Statistiques et recommandations sur le matching")
     public ResponseEntity<MatchingAnalyticsDTO> getMatchingAnalytics(
             @PathVariable String projetId) {
-        return ResponseEntity.ok(skillMatchingService.getMatchingAnalytics(projetId));
+        return ResponseEntity.ok(matchingService.getMatchingAnalytics(projetId));
     }
 }

@@ -1,5 +1,6 @@
 package com.skill.backend.controller;
 
+import com.skill.backend.dto.CompetenceEmployeDTO;
 import com.skill.backend.dto.EmployeDTO;
 import com.skill.backend.dto.PendingEvaluationDTO;
 import com.skill.backend.dto.TeamStatsDTO;
@@ -8,7 +9,6 @@ import com.skill.backend.dto.TestTechniqueDTO;
 import com.skill.backend.entity.CompetenceEmploye;
 import com.skill.backend.service.ManagerService;
 import com.skill.backend.service.TestTechniqueService;
-import com.skill.backend.service.ProjetService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +27,6 @@ public class ManagerController {
 
     private final ManagerService managerService;
     private final TestTechniqueService testTechniqueService;
-    private final ProjetService projetService;
 
     @GetMapping("/me/team")
     @PreAuthorize("hasRole('MANAGER')")
@@ -78,12 +77,12 @@ public class ManagerController {
     @PreAuthorize("hasRole('MANAGER')")
     @Operation(summary = "Valider une évaluation",
                description = "Permet à un manager de valider ou ajuster une auto-évaluation")
-    public ResponseEntity<CompetenceEmploye> validateEvaluation(
+    public ResponseEntity<CompetenceEmployeDTO> validateEvaluation(
             Authentication authentication,
             @PathVariable String evaluationId,
             @RequestBody ValidationRequestDTO request) {
         System.out.println("🎯 ManagerController.validateEvaluation - Validating evaluation: " + evaluationId);
-        CompetenceEmploye result = managerService.validateEvaluation(authentication.getName(), evaluationId, request);
+        CompetenceEmployeDTO result = managerService.validateEvaluation(authentication.getName(), evaluationId, request);
         return ResponseEntity.ok(result);
     }
 
@@ -91,18 +90,18 @@ public class ManagerController {
     @PreAuthorize("hasRole('MANAGER')")
     @Operation(summary = "Récupérer l'historique des évaluations",
                description = "Permet à un manager de consulter l'historique des évaluations d'un employé")
-    public ResponseEntity<List<CompetenceEmploye>> getEvaluationHistory(
+    public ResponseEntity<List<CompetenceEmployeDTO>> getEvaluationHistory(
             Authentication authentication,
             @PathVariable String employeId) {
         System.out.println("🎯 ManagerController.getEvaluationHistory - Request for employee: " + employeId);
-        List<CompetenceEmploye> history = managerService.getEvaluationHistory(authentication.getName(), employeId);
+        List<CompetenceEmployeDTO> history = managerService.getEvaluationHistory(authentication.getName(), employeId);
         return ResponseEntity.ok(history);
     }
 
     @GetMapping("/me/tests/assigned")
-    @PreAuthorize("hasAnyRole('MANAGER', 'CHEF_PROJET')")
+    @PreAuthorize("hasRole('MANAGER')")
     @Operation(summary = "Récupérer les tests assignés",
-               description = "Permet à un manager ou chef de projet de récupérer la liste des tests qu'il a assignés")
+               description = "Permet à un manager de récupérer la liste des tests qu'il a assignés")
     public ResponseEntity<List<com.skill.backend.dto.TestEmployeDTO>> getAssignedTests(Authentication authentication) {
         System.out.println("🎯 ManagerController.getAssignedTests - Request received for: " + authentication.getName());
         List<com.skill.backend.dto.TestEmployeDTO> tests = managerService.getAssignedTests(authentication.getName());
@@ -110,15 +109,24 @@ public class ManagerController {
         return ResponseEntity.ok(tests);
     }
 
-    @GetMapping("/me/projects")
-    @PreAuthorize("hasAnyRole('MANAGER', 'CHEF_PROJET')")
-    @Operation(summary = "Récupérer mes projets",
-               description = "Permet à un manager ou chef de projet de récupérer ses projets")
-    public ResponseEntity<List<com.skill.backend.dto.ProjetDTO>> getMyProjects(Authentication authentication) {
-        System.out.println("🎯 ManagerController.getMyProjects - Request received for: " + authentication.getName());
-        List<com.skill.backend.dto.ProjetDTO> projects = managerService.getMyProjects(authentication.getName());
-        System.out.println("✅ Result: " + projects.size() + " projects found.");
-        return ResponseEntity.ok(projects);
+
+    @GetMapping("/me/available-employes")
+    @PreAuthorize("hasRole('MANAGER')")
+    @Operation(summary = "Récupérer les employés disponibles",
+               description = "Permet à un manager de récupérer la liste des employés sans manager")
+    public ResponseEntity<List<EmployeDTO>> getAvailableEmployes() {
+        return ResponseEntity.ok(managerService.getAvailableEmployes());
+    }
+
+    @PostMapping("/me/team/assign/{employeId}")
+    @PreAuthorize("hasRole('MANAGER')")
+    @Operation(summary = "Assigner un employé à son équipe",
+               description = "Permet à un manager d'ajouter un employé à son équipe")
+    public ResponseEntity<Void> assignEmployeToManager(
+            Authentication authentication,
+            @PathVariable String employeId) {
+        managerService.assignEmployeToManager(authentication.getName(), employeId);
+        return ResponseEntity.ok().build();
     }
 }
 

@@ -11,7 +11,7 @@ public interface ProjetMapper {
 
     ProjetMapper INSTANCE = Mappers.getMapper(ProjetMapper.class);
 
-    // On ignore les champs complexes gérés manuellement par ProjetService
+    // On ignore les champs complexes gérés manuellement par ProjectService
     @Mapping(source = "chefProjet.id", target = "chefProjetId")
     @Mapping(target = "chefProjetNom", ignore = true)
     @Mapping(target = "nombreMembres", ignore = true)

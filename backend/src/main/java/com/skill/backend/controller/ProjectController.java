@@ -2,7 +2,7 @@ package com.skill.backend.controller;
 
 import com.skill.backend.dto.AffectationProjetDTO;
 import com.skill.backend.dto.ProjetDTO;
-import com.skill.backend.service.ProjetService;
+import com.skill.backend.service.ProjectService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -19,9 +19,9 @@ import java.util.List;
 @RequiredArgsConstructor
 @Tag(name = "Projets", description = "Gestion des projets (Chef de Projet)")
 @SecurityRequirement(name = "bearerAuth")
-public class ProjetController {
+public class ProjectController {
 
-    private final ProjetService projetService;
+    private final ProjectService projectService;
 
     // =========================================================
     // PROJETS — endpoints chef de projet
@@ -34,29 +34,29 @@ public class ProjetController {
     @PreAuthorize("hasRole('CHEF_PROJET')")
     @Operation(summary = "Mes projets", description = "Retourne les projets gérés par le chef de projet connecté")
     public ResponseEntity<List<ProjetDTO>> getMesProjets() {
-        System.out.println("🎯 ProjetController.getMesProjets - Request received");
-        return ResponseEntity.ok(projetService.getMesProjets());
+        System.out.println("🎯 ProjectController.getMesProjets - Request received");
+        return ResponseEntity.ok(projectService.getMesProjets());
     }
 
     /**
-     * Récupérer tous les projets (RH + Chef de Projet)
+     * Récupérer tous les projets (RH)
      */
     @GetMapping
-    @PreAuthorize("hasAnyRole('CHEF_PROJET', 'RH', 'MANAGER')")
+    @PreAuthorize("hasAnyRole('CHEF_PROJET', 'RH')")
     @Operation(summary = "Tous les projets")
     public ResponseEntity<List<ProjetDTO>> getAllProjets() {
-        System.out.println("🎯 ProjetController.getAllProjets - Request received");
-        return ResponseEntity.ok(projetService.getAllProjets());
+        System.out.println("🎯 ProjectController.getAllProjets - Request received");
+        return ResponseEntity.ok(projectService.getAllProjets());
     }
 
     /**
      * Récupérer un projet par ID
      */
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('CHEF_PROJET', 'RH', 'MANAGER')")
+    @PreAuthorize("hasAnyRole('CHEF_PROJET', 'RH')")
     @Operation(summary = "Détails d'un projet")
     public ResponseEntity<ProjetDTO> getProjetById(@PathVariable String id) {
-        return ResponseEntity.ok(projetService.getProjetById(id));
+        return ResponseEntity.ok(projectService.getProjetById(id));
     }
 
     /**
@@ -67,7 +67,7 @@ public class ProjetController {
     @Operation(summary = "Créer un projet")
     public ResponseEntity<ProjetDTO> createProjet(@RequestBody ProjetDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(projetService.createProjet(dto));
+                .body(projectService.createProjet(dto));
     }
 
     /**
@@ -79,7 +79,7 @@ public class ProjetController {
     public ResponseEntity<ProjetDTO> updateProjet(
             @PathVariable String id,
             @RequestBody ProjetDTO dto) {
-        return ResponseEntity.ok(projetService.updateProjet(id, dto));
+        return ResponseEntity.ok(projectService.updateProjet(id, dto));
     }
 
     /**
@@ -89,7 +89,7 @@ public class ProjetController {
     @PreAuthorize("hasAnyRole('CHEF_PROJET', 'RH')")
     @Operation(summary = "Supprimer un projet")
     public ResponseEntity<Void> deleteProjet(@PathVariable String id) {
-        projetService.deleteProjet(id);
+        projectService.deleteProjet(id);
         return ResponseEntity.noContent().build();
     }
 
@@ -101,10 +101,10 @@ public class ProjetController {
      * Récupérer les membres de l'équipe d'un projet
      */
     @GetMapping("/{projetId}/equipe")
-    @PreAuthorize("hasAnyRole('CHEF_PROJET', 'RH', 'MANAGER')")
+    @PreAuthorize("hasAnyRole('CHEF_PROJET', 'RH')")
     @Operation(summary = "Équipe du projet", description = "Retourne les affectations actives pour un projet")
     public ResponseEntity<List<AffectationProjetDTO>> getEquipeProjet(@PathVariable String projetId) {
-        return ResponseEntity.ok(projetService.getEquipeProjet(projetId));
+        return ResponseEntity.ok(projectService.getEquipeProjet(projetId));
     }
 
     /**
@@ -117,7 +117,7 @@ public class ProjetController {
             @PathVariable String projetId,
             @RequestBody AffectationProjetDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(projetService.affecterMembre(projetId, dto));
+                .body(projectService.affecterMembre(projetId, dto));
     }
 
     /**
@@ -129,7 +129,7 @@ public class ProjetController {
     public ResponseEntity<Void> retirerMembre(
             @PathVariable String projetId,
             @PathVariable String employeId) {
-        projetService.retirerMembre(projetId, employeId);
+        projectService.retirerMembre(projetId, employeId);
         return ResponseEntity.noContent().build();
     }
 }

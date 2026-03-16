@@ -21,6 +21,8 @@ public class ManagerService {
     private final ManagerRepository managerRepository;
     private final EmployeRepository employeRepository;
     private final EmployeMapper employeMapper;
+    private final com.skill.backend.mapper.CompetenceEmployeMapper competenceEmployeMapper;
+    private final com.skill.backend.mapper.TestEmployeMapper testEmployeMapper;
     private final UtilisateurRepository utilisateurRepository;
     private final EvaluationRepository evaluationRepository;
     private final TestEmployeRepository testEmployeRepository;
@@ -110,20 +112,28 @@ public class ManagerService {
     public List<PendingEvaluationDTO> getPendingEvaluations(String managerEmail) {
         Manager manager = getManagerByEmail(managerEmail);
         return evaluationRepository.findByManagerAndStatut(manager, "EN_ATTENTE").stream()
+                .filter(eval -> eval.getEmploye() != null && eval.getCompetence() != null)
                 .map(eval -> new PendingEvaluationDTO(
                         eval.getId(),
-                        new PendingEvaluationDTO.EmployeSimpleDTO(eval.getEmploye().getId(), eval.getEmploye().getNom(), eval.getEmploye().getPrenom()),
-                        new PendingEvaluationDTO.CompetenceSimpleDTO(eval.getCompetence().getId(), eval.getCompetence().getNom()),
-                        eval.getNiveauAutoEvalue(),
+                        new PendingEvaluationDTO.EmployeSimpleDTO(
+                                eval.getEmploye().getId(), 
+                                eval.getEmploye().getNom() != null ? eval.getEmploye().getNom() : "Inconnu", 
+                                eval.getEmploye().getPrenom() != null ? eval.getEmploye().getPrenom() : ""
+                        ),
+                        new PendingEvaluationDTO.CompetenceSimpleDTO(
+                                eval.getCompetence().getId(), 
+                                eval.getCompetence().getNom() != null ? eval.getCompetence().getNom() : "Sans nom"
+                        ),
+                        eval.getNiveauAutoEvalue() != null ? eval.getNiveauAutoEvalue() : 0,
                         eval.getCommentaireEmploye(),
-                        eval.getDateEvaluation() != null ? eval.getDateEvaluation().toLocalDate() : null,
+                        eval.getDateEvaluation() != null ? eval.getDateEvaluation().toLocalDate() : null, // Utilisation de dateEvaluation par défaut
                         eval.getStatut()
                 ))
                 .collect(Collectors.toList());
     }
 
     @Transactional
-    public CompetenceEmploye validateEvaluation(String managerEmail, String evaluationId, ValidationRequestDTO request) {
+    public CompetenceEmployeDTO validateEvaluation(String managerEmail, String evaluationId, ValidationRequestDTO request) {
         Manager manager = getManagerByEmail(managerEmail);
         Evaluation evaluation = evaluationRepository.findById(evaluationId)
                 .orElseThrow(() -> new RuntimeException("Évaluation non trouvée"));
@@ -151,60 +161,45 @@ public class ManagerService {
         ce.setDateEvaluation(evaluation.getDateValidation().toLocalDate());
         ce.setCommentaire(request.getCommentaireManager());
         
-        return competenceEmployeRepository.save(ce);
+        return competenceEmployeMapper.toDto(competenceEmployeRepository.save(ce));
     }
 
-    public List<CompetenceEmploye> getEvaluationHistory(String managerEmail, String employeId) {
+    public List<CompetenceEmployeDTO> getEvaluationHistory(String managerEmail, String employeId) {
         Manager manager = getManagerByEmail(managerEmail);
         Employe employe = employeRepository.findById(employeId)
                 .orElseThrow(() -> new RuntimeException("Employé non trouvé"));
 
-        if (!employe.getManager().getId().equals(manager.getId())) {
+        if (!manager.getId().equals(employe.getManager() != null ? employe.getManager().getId() : null)) {
             throw new RuntimeException("Cet employé n'appartient pas à votre équipe");
         }
 
-        return competenceEmployeRepository.findByEmploye(employe);
+        return competenceEmployeRepository.findByEmploye(employe).stream()
+                .map(competenceEmployeMapper::toDto)
+                .collect(Collectors.toList());
     }
 
     public List<TestEmployeDTO> getAssignedTests(String managerEmail) {
         Manager manager = getManagerByEmail(managerEmail);
         return testEmployeRepository.findByManagerId(manager.getId()).stream()
-                .map(te -> {
-                    TestEmployeDTO dto = new TestEmployeDTO();
-                    dto.setId(te.getId());
-                    dto.setTestId(te.getTestTechnique().getId());
-                    dto.setTestTitre(te.getTestTechnique().getTitre());
-                    dto.setTechnologie(te.getTestTechnique().getTechnologie());
-                    dto.setEmployeId(te.getEmploye().getId());
-                    dto.setEmployeNom(te.getEmploye().getNom());
-                    dto.setEmployePrenom(te.getEmploye().getPrenom());
-                    dto.setManagerId(te.getManager().getId());
-                    dto.setStatut(te.getStatut());
-                    dto.setScore(te.getScore());
-                    dto.setDateAssignation(te.getDateAssignation());
-                    dto.setDateLimite(te.getDateLimite());
-                    return dto;
-                })
+                .map(testEmployeMapper::toDto)
                 .collect(Collectors.toList());
     }
 
-    public List<ProjetDTO> getMyProjects(String managerEmail) {
+
+    @Transactional
+    public void assignEmployeToManager(String managerEmail, String employeId) {
         Manager manager = getManagerByEmail(managerEmail);
-        return manager.getProjets().stream()
-                .map(p -> {
-                    ProjetDTO dto = new ProjetDTO();
-                    dto.setId(p.getId());
-                    dto.setNom(p.getNom());
-                    dto.setDescription(p.getDescription());
-                    dto.setDateDebut(p.getDateDebut());
-                    dto.setDateFin(p.getDateFin());
-                    dto.setStatut(p.getStatut());
-                    dto.setProgression(p.getProgression());
-                    dto.setNombreMembres(p.getAffectations() != null ? (int) p.getAffectations().stream()
-                            .filter(a -> "ACTIVE".equals(a.getStatut()))
-                            .count() : 0);
-                    return dto;
-                })
+        Employe employe = employeRepository.findById(employeId)
+                .orElseThrow(() -> new RuntimeException("Employé non trouvé"));
+        
+        employe.setManager(manager);
+        employeRepository.save(employe);
+    }
+
+    public List<EmployeDTO> getAvailableEmployes() {
+        return employeRepository.findAll().stream()
+                .filter(e -> e.getManager() == null)
+                .map(employeMapper::toDto)
                 .collect(Collectors.toList());
     }
 }
