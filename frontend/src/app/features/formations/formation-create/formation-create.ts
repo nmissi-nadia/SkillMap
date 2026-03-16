@@ -102,7 +102,7 @@ export class FormationCreate implements OnInit {
   }
 
   loadCompetences(): void {
-    this.http.get<any[]>('http://localhost:8080/api/competences').subscribe({
+    this.http.get<any[]>('http://localhost:8085/api/competences').subscribe({
       next: (data: any[]) => this.competences = data,
       error: (err: any) => console.error('Erreur chargement compétences', err)
     });

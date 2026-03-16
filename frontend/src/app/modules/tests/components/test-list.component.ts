@@ -145,7 +145,7 @@ import { TestTechnique } from '../models/test.model';
             </div>
 
             <div class="difficulty-track">
-              <div class="level-indicator" [style.width]="getLevelPercentage(test.niveau) + '%'" [class]="test.niveau ? test.niveau.toLowerCase() : ''"></div>
+              <div class="level-indicator" [style.width]="difficultyValue(test.niveau) + '%'" [class]="test.niveau ? test.niveau.toLowerCase() : ''"></div>
             </div>
           </div>
         </div>

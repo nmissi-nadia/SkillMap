@@ -1,34 +1,21 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DecimalPipe } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { FormationService } from '../../../core/services/formation.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { FormationDetailDTO } from '../../../core/models/formation.model';
 
-import { MatCardModule } from '@angular/material/card';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatChipsModule } from '@angular/material/chips';
-import { MatExpansionModule } from '@angular/material/expansion';
-
 @Component({
   selector: 'app-mes-formations',
   standalone: true,
-  imports: [
-    CommonModule,
-    MatCardModule,
-    MatButtonModule,
-    MatIconModule,
-    MatProgressBarModule,
-    MatChipsModule,
-    MatExpansionModule
-  ],
+  imports: [CommonModule, RouterLink, DecimalPipe],
   templateUrl: './mes-formations.html',
   styleUrl: './mes-formations.scss',
 })
 export class MesFormations implements OnInit {
   myFormations: FormationDetailDTO[] = [];
   currentUserId: string = '';
+  loading = true;
 
   constructor(
     private formationService: FormationService,
@@ -40,21 +27,88 @@ export class MesFormations implements OnInit {
     if (user) {
       this.currentUserId = user.id;
       this.loadMyFormations();
+    } else {
+      this.loading = false;
     }
   }
 
   loadMyFormations(): void {
+    this.loading = true;
     this.formationService.getEmployeeFormations(this.currentUserId).subscribe({
-      next: (data) => this.myFormations = data,
-      error: (err) => console.error('Erreur chargement mes formations', err)
+      next: (data) => {
+        this.myFormations = data;
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Erreur chargement mes formations', err);
+        this.loading = false;
+      }
     });
   }
 
   getInscription(formation: FormationDetailDTO) {
-    return formation.inscriptions.find(i => i.employeId === this.currentUserId);
+    return formation.inscriptions?.find((i: any) => i.employeId === this.currentUserId);
+  }
+
+  countCompleted(): number {
+    return this.myFormations.filter(f => this.getInscription(f)?.statut === 'TERMINE').length;
+  }
+
+  countInProgress(): number {
+    return this.myFormations.filter(f => {
+      const s = this.getInscription(f)?.statut;
+      return s === 'EN_COURS' || s === 'INSCRIT';
+    }).length;
+  }
+
+  getAverageScore(): number {
+    const withScore = this.myFormations
+      .map(f => this.getInscription(f)?.score)
+      .filter((s): s is number => s != null && s > 0);
+    if (withScore.length === 0) return 0;
+    return withScore.reduce((a, b) => a + b, 0) / withScore.length;
+  }
+
+  getInitials(): string {
+    const user = this.authService.getCurrentUser();
+    if (!user) return 'ME';
+    return `${(user.nom || 'M')[0]}${(user.prenom || 'E')[0]}`.toUpperCase();
+  }
+
+  getAccentClass(type: string): string {
+    const map: Record<string, string> = { PRESENTIEL: 'presentiel', LIEN: 'lien', PDF: 'pdf' };
+    return map[type] || 'default';
+  }
+
+  getTypeLabel(type: string): string {
+    const map: Record<string, string> = { PRESENTIEL: 'Présentiel', LIEN: 'En ligne', PDF: 'Document PDF' };
+    return map[type] || type;
+  }
+
+  getTypeEmoji(type: string): string {
+    const map: Record<string, string> = { PRESENTIEL: '🏫', LIEN: '🌐', PDF: '📄' };
+    return map[type] || '🎓';
+  }
+
+  getStatusClass(statut?: string): string {
+    const map: Record<string, string> = {
+      'EN_COURS': 'en-cours',
+      'TERMINE': 'termine',
+      'INSCRIT': 'inscrit'
+    };
+    return statut ? (map[statut] || 'default-s') : 'default-s';
+  }
+
+  getStatusLabel(statut?: string): string {
+    const map: Record<string, string> = {
+      'EN_COURS': '▶ En cours',
+      'TERMINE': '✅ Terminé',
+      'INSCRIT': '⏳ Inscrit'
+    };
+    return statut ? (map[statut] || statut) : '';
   }
 
   openResource(url: string): void {
-    window.open(url, '_blank');
+    window.open(url, '_blank', 'noopener,noreferrer');
   }
 }

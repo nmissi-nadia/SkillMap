@@ -1,6 +1,12 @@
 package com.skill.backend.service;
 
 import com.skill.backend.entity.Evaluation;
+import com.skill.backend.entity.TestEmploye;
+import com.skill.backend.entity.Employe;
+import com.skill.backend.entity.Competence;
+import com.skill.backend.entity.CompetenceEmploye;
+import com.skill.backend.entity.ReponseEmploye;
+import com.skill.backend.dto.ResultatTestDTO;
 import com.skill.backend.repository.EvaluationRepository;
 import com.skill.backend.repository.CompetenceEmployeRepository;
 import com.skill.backend.repository.CompetenceRepository;

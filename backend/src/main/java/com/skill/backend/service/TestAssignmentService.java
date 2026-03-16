@@ -1,6 +1,10 @@
 package com.skill.backend.service;
 
 import com.skill.backend.entity.Manager;
+import com.skill.backend.entity.TestEmploye;
+import com.skill.backend.entity.Employe;
+import com.skill.backend.entity.TestTechnique;
+import com.skill.backend.dto.TestEmployeDTO;
 import com.skill.backend.repository.ManagerRepository;
 import com.skill.backend.exception.BadRequestException;
 import com.skill.backend.exception.ResourceNotFoundException;
@@ -29,18 +33,18 @@ public class TestAssignmentService {
      * Affecter un test à un employé. Crée un TestEmploye avec statut ASSIGNED.
      */
     @Transactional
-    public TestEmployeDTO assignTest(String testId, String employeId, String managerId) {
+    public TestEmployeDTO assignTest(String testId, String employeId, String managerEmail) {
         TestTechnique test = testTechniqueRepository.findById(testId)
                 .orElseThrow(() -> new ResourceNotFoundException("TestTechnique", "id", testId));
 
         Employe employe = employeRepository.findById(employeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Employe", "id", employeId));
 
-        Manager manager = managerRepository.findById(managerId)
-                .orElseThrow(() -> new ResourceNotFoundException("Manager", "id", managerId));
+        Manager manager = managerRepository.findByEmail(managerEmail)
+                .orElseThrow(() -> new ResourceNotFoundException("Manager", "email", managerEmail));
 
         // Vérifier que l'employé appartient bien au manager
-        if (employe.getManager() == null || !employe.getManager().getId().equals(managerId)) {
+        if (employe.getManager() == null || !employe.getManager().getId().equals(manager.getId())) {
             throw new BadRequestException("Vous ne pouvez assigner des tests qu'aux employés qui relèvent de vous.");
         }
 

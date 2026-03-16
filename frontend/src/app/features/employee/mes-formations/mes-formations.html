@@ -1,62 +1,149 @@
-<div class="mes-formations-container">
-    <div class="header-section">
-        <h2>Mes Formations en cours</h2>
-        <p>Suivez votre progression et accédez à vos ressources d'apprentissage.</p>
+<div class="mf-shell">
+
+    <!-- ── HEADER ── -->
+    <div class="mf-header">
+        <div class="header-left">
+            <div class="header-avatar">{{ getInitials() }}</div>
+            <div>
+                <p class="header-eyebrow">Mon espace formation</p>
+                <h1 class="header-title">Mes Formations</h1>
+            </div>
+        </div>
+        <a class="btn-catalogue" routerLink="/formations/catalogue">
+            Voir le catalogue
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <path d="M3 7h8M8 4l3 3-3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" />
+            </svg>
+        </a>
     </div>
 
-    <div class="formations-list">
-        <mat-card class="formation-card" *ngFor="let formation of myFormations">
-            <mat-card-header>
-                <div class="title-area">
-                    <mat-card-title>{{formation.titre}}</mat-card-title>
-                    <mat-card-subtitle>{{formation.technologie || formation.typeFormation}}</mat-card-subtitle>
-                </div>
-                <div class="status-badge" *ngIf="getInscription(formation) as ins">
-                    <mat-chip [color]="ins.statut === 'TERMINE' ? 'primary' : 'accent'" selected>
-                        {{ins.statut}}
-                    </mat-chip>
-                </div>
-            </mat-card-header>
+    <!-- ── LOADING ── -->
+    <div class="mf-loading" *ngIf="loading">
+        <div class="progress-track">
+            <div class="progress-active"></div>
+        </div>
+        <p>Chargement de vos formations…</p>
+    </div>
 
-            <mat-card-content>
-                <div class="progress-section" *ngIf="getInscription(formation) as ins">
-                    <div class="progress-header">
-                        <span>Progression globale</span>
-                        <span>{{ins.progress}}%</span>
-                    </div>
-                    <mat-progress-bar mode="determinate" [value]="ins.progress"
-                        [color]="ins.progress === 100 ? 'primary' : 'accent'"></mat-progress-bar>
-                    <p class="score" *ngIf="ins.score">Score d'évaluation : <strong>{{ins.score}}/100</strong></p>
-                </div>
-
-                <mat-accordion class="resources-accordion">
-                    <mat-expansion-panel>
-                        <mat-expansion-panel-header>
-                            <mat-panel-title>
-                                <mat-icon>library_books</mat-icon> Ressources d'apprentissage
-                                ({{formation.ressources.length}})
-                            </mat-panel-title>
-                        </mat-expansion-panel-header>
-
-                        <div class="resource-item" *ngFor="let res of formation.ressources">
-                            <mat-icon *ngIf="res.typeRessource === 'PDF'" color="warn">picture_as_pdf</mat-icon>
-                            <mat-icon *ngIf="res.typeRessource === 'LIEN'" color="primary">link</mat-icon>
-                            <span class="res-title">{{res.titre}}</span>
-                            <button mat-icon-button color="primary" (click)="openResource(res.url)">
-                                <mat-icon>open_in_new</mat-icon>
-                            </button>
-                        </div>
-
-                        <p *ngIf="formation.ressources.length === 0" class="no-res">Aucune ressource disponible pour
-                            l'instant.</p>
-                    </mat-expansion-panel>
-                </mat-accordion>
-            </mat-card-content>
-        </mat-card>
-
-        <div *ngIf="myFormations.length === 0" class="empty-state">
-            <mat-icon>school</mat-icon>
-            <p>Vous n'êtes inscrit(e) à aucune formation. Visitez le catalogue pour en découvrir de nouvelles !</p>
+    <!-- ── SUMMARY BAR ── -->
+    <div class="summary-bar" *ngIf="!loading && myFormations.length > 0">
+        <div class="sum-item">
+            <span class="sum-num">{{ myFormations.length }}</span>
+            <span class="sum-lbl">Formation(s)</span>
+        </div>
+        <div class="sum-item">
+            <span class="sum-num completed">{{ countCompleted() }}</span>
+            <span class="sum-lbl">Terminée(s)</span>
+        </div>
+        <div class="sum-item">
+            <span class="sum-num ongoing">{{ countInProgress() }}</span>
+            <span class="sum-lbl">En cours</span>
+        </div>
+        <div class="sum-item">
+            <span class="sum-num score-avg" *ngIf="getAverageScore() > 0">{{ getAverageScore() | number:'1.0-0'
+                }}%</span>
+            <span class="sum-num score-avg" *ngIf="getAverageScore() === 0">—</span>
+            <span class="sum-lbl">Score moyen</span>
         </div>
     </div>
+
+    <!-- ── FORMATIONS LIST ── -->
+    <div class="mf-list" *ngIf="!loading && myFormations.length > 0">
+        <div class="mf-card" *ngFor="let f of myFormations; let i = index" [style.animation-delay]="(i * 0.08) + 's'">
+
+            <!-- Left accent -->
+            <div class="card-accent" [class]="getAccentClass(f.typeFormation)"></div>
+
+            <!-- Card content -->
+            <div class="card-content">
+                <!-- Row 1 : title + badge -->
+                <div class="card-top">
+                    <div class="card-title-area">
+                        <span class="card-type-badge" [class]="getAccentClass(f.typeFormation)">
+                            {{ getTypeEmoji(f.typeFormation) }} {{ getTypeLabel(f.typeFormation) }}
+                        </span>
+                        <h3 class="card-title">{{ f.titre }}</h3>
+                    </div>
+                    <div class="status-badge" [class]="getStatusClass(getInscription(f)?.statut)"
+                        *ngIf="getInscription(f) as ins">
+                        {{ getStatusLabel(ins.statut) }}
+                    </div>
+                </div>
+
+                <!-- Row 2 : progress bar -->
+                <div class="progress-section" *ngIf="getInscription(f) as ins">
+                    <div class="progress-row">
+                        <span class="progress-label">Progression</span>
+                        <span class="progress-value">{{ ins.progress || 0 }}%</span>
+                    </div>
+                    <div class="progress-track">
+                        <div class="progress-fill" [class]="getAccentClass(f.typeFormation)"
+                            [style.width]="(ins.progress || 0) + '%'"></div>
+                    </div>
+                    <div class="score-line" *ngIf="ins.score && ins.score > 0">
+                        <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+                            <path d="M6.5 1.5l1.5 3h3.3L9 6.5l1 3.3-3-1.8-3 1.8 1-3.3-2.3-2 3.3-.3z"
+                                stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" />
+                        </svg>
+                        Score obtenu : <strong>{{ ins.score | number:'1.0-1' }}/100</strong>
+                    </div>
+                </div>
+
+                <!-- Row 3 : resources -->
+                <div class="resources-section" *ngIf="f.ressources && f.ressources.length > 0">
+                    <p class="res-heading">
+                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                            <rect x="2" y="2" width="10" height="10" rx="2" stroke="currentColor" stroke-width="1.4" />
+                            <path d="M5 7h4M5 5h4M5 9h2" stroke="currentColor" stroke-width="1.2"
+                                stroke-linecap="round" />
+                        </svg>
+                        Ressources ({{ f.ressources.length }})
+                    </p>
+                    <div class="res-list">
+                        <a class="res-item" *ngFor="let res of f.ressources" [href]="res.url" target="_blank"
+                            rel="noopener noreferrer">
+                            <span class="res-icon" [class]="res.typeRessource === 'PDF' ? 'pdf' : 'link'">
+                                {{ res.typeRessource === 'PDF' ? '📄' : '🔗' }}
+                            </span>
+                            <span class="res-name">{{ res.titre || res.url }}</span>
+                            <svg class="res-arrow" width="12" height="12" viewBox="0 0 12 12" fill="none">
+                                <path d="M2 6h8M7 3l3 3-3 3" stroke="currentColor" stroke-width="1.4"
+                                    stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Row 4 : meta -->
+                <div class="card-meta">
+                    <span class="meta-item" *ngIf="f.dateDebut">
+                        📅 {{ f.dateDebut | date:'dd/MM/yyyy' }}
+                    </span>
+                    <span class="meta-item" *ngIf="f.lieu">
+                        📍 {{ f.lieu }}
+                    </span>
+                    <span class="meta-item" *ngIf="getInscription(f)?.dateInscription">
+                        🗓 Inscrit le {{ getInscription(f)?.dateInscription | date:'dd/MM/yyyy' }}
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── EMPTY STATE ── -->
+    <div class="mf-empty" *ngIf="!loading && myFormations.length === 0">
+        <div class="empty-art">
+            <div class="empty-ring ring-1"></div>
+            <div class="empty-ring ring-2"></div>
+            <div class="empty-ring ring-3"></div>
+            <div class="empty-center">🎓</div>
+        </div>
+        <h3>Aucune formation en cours</h3>
+        <p>Explorez le catalogue et inscrivez-vous à votre première formation pour développer vos compétences.</p>
+        <a class="btn-catalogue empty-cta" routerLink="/formations/catalogue">
+            Découvrir le catalogue
+        </a>
+    </div>
+
 </div>

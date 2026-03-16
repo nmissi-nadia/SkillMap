@@ -24,7 +24,7 @@ public class CorsConfig {
             "http://localhost:4200",      // Angular dev server (port par défaut)
             "http://localhost:58640",     // Angular dev server (port personnalisé)
             "http://localhost:3000",      // React/autres frameworks
-            "http://localhost:8080"       // Backend (si nécessaire)
+            "http://localhost:8085"       // Backend (si nécessaire)
         ));
         
         // Méthodes HTTP autorisées

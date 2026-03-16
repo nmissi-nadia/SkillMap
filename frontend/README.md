@@ -14,7 +14,7 @@ Application frontend Angular pour le système de gestion des compétences SkillM
 
 - Node.js (version 18 ou supérieure)
 - npm (version 9 ou supérieure)
-- Backend SkillMap en cours d'exécution sur `http://localhost:8080`
+- Backend SkillMap en cours d'exécution sur `http://localhost:8085`
 
 ## 🛠️ Installation
 
@@ -80,7 +80,7 @@ frontend/
 
 Le projet utilise deux fichiers d'environnement :
 
-- **environment.ts** : Configuration pour le développement (API: `http://localhost:8080/api`)
+- **environment.ts** : Configuration pour le développement (API: `http://localhost:8088/api`)
 - **environment.prod.ts** : Configuration pour la production (API: `/api`)
 
 ### Proxy

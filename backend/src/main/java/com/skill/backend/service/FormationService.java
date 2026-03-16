@@ -63,12 +63,14 @@ public class FormationService {
         return getFormationById(formation.getId());
     }
 
+    @Transactional(readOnly = true)
     public List<FormationDetailDTO> getAllFormations() {
         return formationRepository.findAll().stream()
                 .map(this::toDetailDTO)
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public FormationDetailDTO getFormationById(String id) {
         Formation formation = formationRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Formation non trouvée"));

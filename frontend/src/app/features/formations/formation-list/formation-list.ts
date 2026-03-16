@@ -1,37 +1,92 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { FormationService } from '../../../core/services/formation.service';
 import { FormationDetailDTO } from '../../../core/models/formation.model';
-import { MatCardModule } from '@angular/material/card';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatTableModule } from '@angular/material/table';
-import { MatChipsModule } from '@angular/material/chips';
 
 @Component({
   selector: 'app-formation-list',
   standalone: true,
-  imports: [CommonModule, RouterLink, MatCardModule, MatButtonModule, MatIconModule, MatTableModule, MatChipsModule],
+  imports: [CommonModule, RouterLink, FormsModule],
   templateUrl: './formation-list.html',
   styleUrl: './formation-list.scss',
 })
 export class FormationList implements OnInit {
   formations: FormationDetailDTO[] = [];
-  displayedColumns: string[] = ['titre', 'type', 'competence', 'dates', 'participants', 'actions'];
+  filteredFormations: FormationDetailDTO[] = [];
+  searchTerm = '';
+  activeFilter = '';
+  loading = true;
 
-  constructor(private formationService: FormationService) { }
+  constructor(private formationService: FormationService, private router: Router) { }
 
   ngOnInit(): void {
     this.loadFormations();
   }
 
   loadFormations(): void {
+    this.loading = true;
     this.formationService.getAllFormations().subscribe({
       next: (data) => {
         this.formations = data;
+        this.filteredFormations = data;
+        this.loading = false;
       },
-      error: (err) => console.error('Erreur chargement formations', err)
+      error: (err) => {
+        console.error('Erreur chargement formations', err);
+        this.loading = false;
+      }
     });
+  }
+
+  applyFilter(): void {
+    this.filteredFormations = this.formations.filter(f => {
+      const matchesSearch = !this.searchTerm ||
+        f.titre.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        (f.description || '').toLowerCase().includes(this.searchTerm.toLowerCase());
+      const matchesType = !this.activeFilter || f.typeFormation === this.activeFilter;
+      return matchesSearch && matchesType;
+    });
+  }
+
+  filterByType(type: string): void {
+    this.activeFilter = type;
+    this.applyFilter();
+  }
+
+  countByType(type: string): number {
+    return this.formations.filter(f => f.typeFormation === type).length;
+  }
+
+  getBannerClass(type: string): string {
+    const map: Record<string, string> = {
+      PRESENTIEL: 'presentiel',
+      LIEN: 'lien',
+      PDF: 'pdf'
+    };
+    return map[type] || 'default';
+  }
+
+  getTypeLabel(type: string): string {
+    const map: Record<string, string> = {
+      PRESENTIEL: 'Présentiel',
+      LIEN: 'En ligne',
+      PDF: 'Document PDF'
+    };
+    return map[type] || type;
+  }
+
+  getTypeEmoji(type: string): string {
+    const map: Record<string, string> = {
+      PRESENTIEL: '🏫',
+      LIEN: '🌐',
+      PDF: '📄'
+    };
+    return map[type] || '🎓';
+  }
+
+  goToDetail(id: string): void {
+    this.router.navigate(['/formations', id]);
   }
 }

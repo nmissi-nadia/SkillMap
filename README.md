@@ -81,7 +81,7 @@ La conception de la base de données et des composants est disponible dans le do
     ```bash
     mvn spring-boot:run
     ```
-    L'application démarrera par défaut sur `http://localhost:8080`.
+    L'application démarrera par défaut sur `http://localhost:8085`.
 
 ## Endpoints de l'API
 

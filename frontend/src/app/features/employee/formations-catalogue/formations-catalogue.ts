@@ -1,32 +1,26 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { FormationService } from '../../../core/services/formation.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { FormationDetailDTO } from '../../../core/models/formation.model';
-
-import { MatCardModule } from '@angular/material/card';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatChipsModule } from '@angular/material/chips';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-formations-catalogue',
   standalone: true,
-  imports: [
-    CommonModule,
-    MatCardModule,
-    MatButtonModule,
-    MatIconModule,
-    MatChipsModule,
-    MatSnackBarModule
-  ],
+  imports: [CommonModule, FormsModule, MatSnackBarModule],
   templateUrl: './formations-catalogue.html',
   styleUrl: './formations-catalogue.scss',
 })
 export class FormationsCatalogue implements OnInit {
   formations: FormationDetailDTO[] = [];
+  filteredFormations: FormationDetailDTO[] = [];
   currentUserId: string = '';
+  searchTerm = '';
+  activeFilter = '';
+  loading = true;
+  enrolling: Record<string, boolean> = {};
 
   constructor(
     private formationService: FormationService,
@@ -36,35 +30,76 @@ export class FormationsCatalogue implements OnInit {
 
   ngOnInit(): void {
     const user = this.authService.getCurrentUser();
-    if (user) {
-      this.currentUserId = user.id;
-    }
+    if (user) this.currentUserId = user.id;
     this.loadCatalogue();
   }
 
   loadCatalogue(): void {
+    this.loading = true;
     this.formationService.getAllFormations().subscribe({
       next: (data) => {
-        // Filtrer les formations où l'employé n'est pas encore inscrit
+        // Formations où l'employé n'est pas encore inscrit
         this.formations = data.filter(f =>
-          !f.inscriptions.some(i => i.employeId === this.currentUserId)
+          !f.inscriptions?.some((i: any) => i.employeId === this.currentUserId)
         );
+        this.filteredFormations = [...this.formations];
+        this.loading = false;
       },
-      error: (err) => console.error('Erreur chargement catalogue', err)
+      error: (err) => {
+        console.error('Erreur chargement catalogue', err);
+        this.loading = false;
+      }
     });
+  }
+
+  applyFilter(): void {
+    this.filteredFormations = this.formations.filter(f => {
+      const matchSearch = !this.searchTerm ||
+        f.titre.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        (f.description || '').toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        (f.competenceNom || '').toLowerCase().includes(this.searchTerm.toLowerCase());
+      const matchType = !this.activeFilter || f.typeFormation === this.activeFilter;
+      return matchSearch && matchType;
+    });
+  }
+
+  filterByType(type: string): void {
+    this.activeFilter = type;
+    this.applyFilter();
+  }
+
+  countByType(type: string): number {
+    return this.formations.filter(f => f.typeFormation === type).length;
+  }
+
+  getAccentClass(type: string): string {
+    const map: Record<string, string> = { PRESENTIEL: 'presentiel', LIEN: 'lien', PDF: 'pdf' };
+    return map[type] || 'default';
+  }
+
+  getTypeLabel(type: string): string {
+    const map: Record<string, string> = { PRESENTIEL: 'Présentiel', LIEN: 'En ligne', PDF: 'Document PDF' };
+    return map[type] || type;
+  }
+
+  getTypeEmoji(type: string): string {
+    const map: Record<string, string> = { PRESENTIEL: '🏫', LIEN: '🌐', PDF: '📄' };
+    return map[type] || '🎓';
   }
 
   sinscrire(formationId: string): void {
     if (!this.currentUserId) return;
+    this.enrolling[formationId] = true;
 
     this.formationService.assignFormationToEmployee(formationId, this.currentUserId).subscribe({
       next: () => {
-        this.snackBar.open('Inscription réussie ! Vous la retrouverez dans Mes Formations', 'Fermer', { duration: 4000 });
-        this.loadCatalogue(); // Rafraichir le catalogue
+        this.snackBar.open('✨ Inscription réussie ! Retrouvez la formation dans Mes Formations.', 'OK', { duration: 4000 });
+        this.loadCatalogue();
       },
       error: (err) => {
         console.error(err);
-        this.snackBar.open('Erreur lors de l\'inscription', 'Fermer', { duration: 3000 });
+        this.snackBar.open('Erreur lors de l\'inscription.', 'Fermer', { duration: 3000 });
+        this.enrolling[formationId] = false;
       }
     });
   }

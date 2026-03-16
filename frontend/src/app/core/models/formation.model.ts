@@ -1,6 +1,7 @@
 export enum TypeFormation {
     PDF = 'PDF',
     ONLINE = 'ONLINE',
+    LIEN = 'LIEN',
     PRESENTIEL = 'PRESENTIEL'
 }
 

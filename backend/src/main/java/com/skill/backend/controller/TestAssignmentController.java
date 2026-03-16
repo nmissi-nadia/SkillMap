@@ -8,11 +8,13 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
+@RequestMapping("/api/tests")
 @RequiredArgsConstructor
 @Tag(name = "Tests Techniques - Affectation", description = "Affectation des tests aux employés")
 @SecurityRequirement(name = "bearerAuth")
@@ -23,7 +25,7 @@ public class TestAssignmentController {
     /**
      * POST /api/tests/{testId}/assign/{employeId} — Affecter un test à un employé
      */
-    @PostMapping("/api/tests/{testId}/assign/{employeId}")
+    @PostMapping("/{testId}/assign/{employeId}")
     @PreAuthorize("hasAnyAuthority('ROLE_MANAGER', 'ROLE_RH')")
     @Operation(summary = "Affecter un test technique à un employé")
     public ResponseEntity<TestEmployeDTO> assignTest(
