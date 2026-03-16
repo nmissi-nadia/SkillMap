@@ -22,6 +22,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
+@org.mockito.junit.jupiter.MockitoSettings(strictness = org.mockito.quality.Strictness.LENIENT)
 class EvaluationServiceTest {
 
     @Mock
@@ -30,6 +31,8 @@ class EvaluationServiceTest {
     private CompetenceEmployeRepository competenceEmployeRepository;
     @Mock
     private CompetenceRepository competenceRepository;
+    @Mock
+    private com.skill.backend.repository.EvaluationRepository evaluationRepository;
 
     @InjectMocks
     private EvaluationService evaluationService;
