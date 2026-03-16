@@ -9,4 +9,8 @@ import java.util.List;
 @Repository
 public interface EmployeRepository extends JpaRepository<Employe, String> {
     List<Employe> findByManagerId(String managerId);
+
+    @org.springframework.data.jpa.repository.EntityGraph(attributePaths = {"competenceEmployes", "competenceEmployes.competence"})
+    @org.springframework.data.jpa.repository.Query("SELECT DISTINCT e FROM Employe e")
+    List<Employe> findAllWithDetails();
 }

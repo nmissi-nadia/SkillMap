@@ -11,4 +11,5 @@ public interface AffectationProjetRepository extends JpaRepository<AffectationPr
     List<AffectationProjet> findByEmployeId(String employeId);
     List<AffectationProjet> findByProjetId(String projetId);
     List<AffectationProjet> findByEmployeIdAndStatut(String employeId, String statut);
+    List<AffectationProjet> findByStatut(String statut);
 }

@@ -42,12 +42,20 @@ public class SkillMatchingService {
             throw new RuntimeException("Aucune compétence requise définie pour ce projet");
         }
 
-        // Récupérer tous les employés
-        List<Employe> employes = employeRepository.findAll();
+        // Récupérer tous les employés avec leurs compétences (EntityGraph) pour éviter N+1
+        List<Employe> employes = employeRepository.findAllWithDetails();
+
+        // Récupérer toutes les affectations actives en une seule requête (Optimisation O(1))
+        List<AffectationProjet> affectationsActives = affectationProjetRepository.findByStatut("ACTIVE");
+        java.util.Map<String, Integer> mapAllocation = affectationsActives.stream()
+            .collect(Collectors.groupingBy(
+                a -> a.getEmploye().getId(),
+                Collectors.summingInt(a -> a.getTauxAllocation() != null ? a.getTauxAllocation() : 0)
+            ));
 
         // Calculer le score de matching pour chaque employé
         List<EmployeeMatchDTO> matches = employes.stream()
-                .map(employe -> calculateMatch(employe, competencesRequises))
+                .map(employe -> calculateMatch(employe, competencesRequises, mapAllocation.getOrDefault(employe.getId(), 0)))
                 .filter(match -> match.getMatchScore() >= (minScore != null ? minScore : 0))
                 .sorted(Comparator.comparing(EmployeeMatchDTO::getMatchScore).reversed())
                 .collect(Collectors.toList());
@@ -111,14 +119,15 @@ public class SkillMatchingService {
      * Calculer le score de matching pour un employé selon la nouvelle formule
      * score = Σ (min(niveauEmploye / niveauRequis, 1) * poids) / Σ poids
      */
-    private EmployeeMatchDTO calculateMatch(Employe employe, List<CompetenceRequiseProjet> competencesRequises) {
+    private EmployeeMatchDTO calculateMatch(Employe employe, List<CompetenceRequiseProjet> competencesRequises, int tauxAllocation) {
         EmployeeMatchDTO match = new EmployeeMatchDTO();
         match.setEmployeId(employe.getId());
         match.setEmployeNom(employe.getNom());
         match.setEmployePrenom(employe.getPrenom());
         match.setPoste(employe.getPoste());
 
-        List<CompetenceEmploye> competencesEmploye = competenceEmployeRepository.findByEmploye(employe);
+        // Plus de requête SQL ici: la liste est déjà chargée via EntityGraph
+        java.util.Set<CompetenceEmploye> competencesEmploye = employe.getCompetenceEmployes();
 
         double scoreTotal = 0.0;
         double poidsTotal = 0.0;
@@ -155,7 +164,6 @@ public class SkillMatchingService {
         match.setCompetencesRequired(competencesRequises.size());
 
         // Disponibilité
-        int tauxAllocation = calculateCurrentAllocation(employe.getId());
         match.setTauxAllocationActuel(tauxAllocation);
         if (tauxAllocation <= 50) match.setDisponibilite("DISPONIBLE");
         else if (tauxAllocation <= 80) match.setDisponibilite("PARTIELLEMENT");
@@ -218,7 +226,7 @@ public class SkillMatchingService {
         detail.setPoste(employe.getPoste());
         detail.setDepartement(employe.getDepartement()); // Keep existing field
 
-        List<CompetenceEmploye> competencesEmploye = competenceEmployeRepository.findByEmploye(employe);
+        java.util.Set<CompetenceEmploye> competencesEmploye = employe.getCompetenceEmployes();
         List<CompetenceMatchDTO> matched = new ArrayList<>();
         List<CompetenceMatchDTO> missing = new ArrayList<>();
         
