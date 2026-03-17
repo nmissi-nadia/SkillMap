@@ -471,6 +471,7 @@ public class RHService {
             formation.setTypeFormation(com.skill.backend.enums.TypeFormation.ONLINE);
         }
         
+        formation.setStatut(dto.getStatut() != null ? dto.getStatut() : "PLANIFIEE");
         formation.setDateDebut(dto.getDateDebut());
         formation.setDateFin(dto.getDateFin());
         
@@ -500,6 +501,7 @@ public class RHService {
             }
         }
         
+        if (dto.getStatut() != null) formation.setStatut(dto.getStatut());
         if (dto.getDateDebut() != null) formation.setDateDebut(dto.getDateDebut());
         if (dto.getDateFin() != null) formation.setDateFin(dto.getDateFin());
         // if (dto.getCout() != null) formation.setCout(dto.getCout());
@@ -693,7 +695,7 @@ public class RHService {
         dto.setTitre(formation.getTitre());
         // dto.setOrganisme(formation.getOrganisme());
         dto.setType(formation.getTypeFormation() != null ? formation.getTypeFormation().name() : null);
-        // dto.setStatut(formation.getStatut());
+        dto.setStatut(formation.getStatut());
         dto.setDescription(formation.getDescription());
         dto.setDateDebut(formation.getDateDebut());
         dto.setDateFin(formation.getDateFin());

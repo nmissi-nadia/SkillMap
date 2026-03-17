@@ -100,14 +100,14 @@ import { TestTechnique } from '../models/test.model';
         <div class="main-content">
           <div class="section-header">
             <h2>Structure de l'Évaluation</h2>
-            <span class="count-badge">{{t.questions?.length || 0}} Questions</span>
+            <span class="count-badge">{{t.questions.length || 0}} Questions</span>
           </div>
 
           <div class="questions-list">
             <mat-card class="question-item" *ngFor="let q of t.questions; let i = index">
               <div class="q-header">
                 <span class="inner-idx">{{i + 1}}</span>
-                <span class="q-type" [class]="q.typeQuestion?.toLowerCase()">{{q.typeQuestion}}</span>
+                <span class="q-type" [class]="q.typeQuestion.toLowerCase()">{{q.typeQuestion}}</span>
                 <div class="spacer"></div>
                 <span class="points-badge">{{q.points}} pts</span>
               </div>

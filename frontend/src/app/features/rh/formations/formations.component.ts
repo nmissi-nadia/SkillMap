@@ -130,7 +130,8 @@ export class FormationsComponent implements OnInit {
     }
 
     getStatutColor(statut: string): string {
-        switch (statut.toUpperCase()) {
+        const s = (statut || '').toUpperCase();
+        switch (s) {
             case 'PLANIFIÉE':
             case 'PLANIFIEE':
                 return '#3b82f6';
@@ -148,7 +149,8 @@ export class FormationsComponent implements OnInit {
     }
 
     getStatutLabel(statut: string): string {
-        switch (statut.toUpperCase()) {
+        const s = (statut || '').toUpperCase();
+        switch (s) {
             case 'PLANIFIÉE':
             case 'PLANIFIEE':
                 return 'Planifiée';
@@ -161,7 +163,7 @@ export class FormationsComponent implements OnInit {
             case 'ANNULEE':
                 return 'Annulée';
             default:
-                return statut;
+                return statut || 'Non défini';
         }
     }
 

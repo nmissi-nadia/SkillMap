@@ -31,6 +31,9 @@ public class Formation {
     @Enumerated(EnumType.STRING)
     private TypeFormation typeFormation; // PDF, ONLINE, PRESENTIEL
 
+    @Column(length = 20)
+    private String statut = "PLANIFIEE"; // PLANIFIEE, EN_COURS, TERMINEE, ANNULEE
+
     private String technologie;
 
     private LocalDate dateDebut;

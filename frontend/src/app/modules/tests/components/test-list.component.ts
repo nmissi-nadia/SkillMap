@@ -113,7 +113,7 @@ import { TestTechnique } from '../models/test.model';
             [routerLink]="['/tests', test.id]"
           >
             <div class="card-top">
-              <span class="level-badge" [class]="test.niveau?.toLowerCase() || 'default'">
+              <span class="level-badge" [class]="test.niveau.toLowerCase() || 'default'">
                 {{test.niveau || 'Standard'}}
               </span>
               <span class="tech-tag">{{test.technologie || 'Générique'}}</span>
@@ -146,7 +146,7 @@ import { TestTechnique } from '../models/test.model';
             </div>
 
             <div class="difficulty-bar">
-              <div class="progress" [style.width]="difficultyValue(test.niveau) + '%'" [class]="test.niveau?.toLowerCase() || 'default'"></div>
+              <div class="progress" [style.width]="difficultyValue(test.niveau) + '%'" [class]="test.niveau.toLowerCase() || 'default'"></div>
             </div>
           </div>
         </div>

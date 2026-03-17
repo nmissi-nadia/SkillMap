@@ -8,7 +8,7 @@ import { Projet, MembreEquipe, AffectationRequest } from '../../../core/models/c
 @Component({
     selector: 'app-equipe',
     standalone: true,
-    imports: [CommonModule, RouterLink, FormsModule],
+    imports: [CommonModule, FormsModule],
     templateUrl: './equipe.component.html',
     styleUrls: ['./equipe.component.scss']
 })
