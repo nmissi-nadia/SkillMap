@@ -35,13 +35,4 @@ public class TestAssignmentController {
         String managerId = authentication.getName();
         return ResponseEntity.ok(testAssignmentService.assignTest(testId, employeId, managerId));
     }
-
-    /**
-     * GET /api/employes/{id}/tests — Récupérer tous les tests affectés à un employé
-     */
-    @GetMapping("/employes/{id}")
-    @Operation(summary = "Récupérer les tests d'un employé")
-    public ResponseEntity<List<TestEmployeDTO>> getTestsForEmployee(@PathVariable String id) {
-        return ResponseEntity.ok(testAssignmentService.getTestsForEmployee(id));
-    }
 }

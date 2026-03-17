@@ -58,7 +58,7 @@ public class EmployeService {
         
         // Sinon, chercher dans EmployeRepository ou recréer la référence
         Employe employe = employeRepository.findById(user.getId())
-            .orElseThrow(() -> new RuntimeException("Employé non trouvé avec l'ID: " + user.getId()));
+            .orElseThrow(() -> new com.skill.backend.exception.ResourceNotFoundException("Employe", "id", user.getId()));
         return employeMapper.toDto(employe);
     }
 
@@ -78,7 +78,7 @@ public class EmployeService {
     @PreAuthorize("hasAnyAuthority('ROLE_RH', 'ROLE_MANAGER', 'ROLE_CHEF_PROJET', 'ROLE_EMPLOYE')")
     public EmployeDTO getEmployeById(String employeId) {
         Employe employe = employeRepository.findById(employeId)
-            .orElseThrow(() -> new RuntimeException("Employé non trouvé avec l'ID: " + employeId));
+            .orElseThrow(() -> new com.skill.backend.exception.ResourceNotFoundException("Employe", "id", employeId));
         return employeMapper.toDto(employe);
     }
 

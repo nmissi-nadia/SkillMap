@@ -9,6 +9,8 @@ public class TestEmployeDTO {
     private String id;
     private String testId;
     private String testTitre;
+    private String testDescription;
+    private Integer testDuree;
     private String employeId;
     private String employeNom;
     private String employePrenom;

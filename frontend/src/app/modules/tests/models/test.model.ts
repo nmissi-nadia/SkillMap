@@ -21,10 +21,14 @@ export interface Question {
 export interface TestEmploye {
     id?: string;
     testId: string;
-    test?: TestTechnique;
+    testTitre?: string;
+    testDescription?: string;
+    testDuree?: number;
+    test?: TestTechnique; // Optionnel si on veut garder la compatibilité
     employeId: string;
     statut: string;
     score?: number;
+    technologie?: string;
     dateAssignation?: Date;
     dateSoumission?: Date;
 }

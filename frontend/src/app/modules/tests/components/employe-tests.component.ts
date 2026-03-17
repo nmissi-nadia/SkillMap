@@ -11,104 +11,267 @@ import { AuthService } from '../../../core/services/auth.service';
 import { TestEmploye } from '../models/test.model';
 
 @Component({
-    selector: 'app-employe-tests',
-    standalone: true,
-    imports: [
-        CommonModule,
-        RouterLink,
-        MatTableModule,
-        MatButtonModule,
-        MatIconModule,
-        MatCardModule,
-        MatChipsModule
-    ],
-    template: `
-    <div class="employe-tests-container">
-      <div class="header">
-        <h1>Mes Tests Techniques</h1>
-      </div>
+  selector: 'app-employe-tests',
+  standalone: true,
+  imports: [
+    CommonModule,
+    RouterLink,
+    MatTableModule,
+    MatButtonModule,
+    MatIconModule,
+    MatCardModule,
+    MatChipsModule
+  ],
+  template: `
+    <div class="page-layout">
+      <!-- HEADER -->
+      <header class="dashboard-header">
+        <div class="title-group">
+          <div class="accent-pill"></div>
+          <div>
+            <h1>Mes Évaluations</h1>
+            <p>Retrouvez ici vos tests techniques en attente ou terminés.</p>
+          </div>
+        </div>
+      </header>
 
-      <mat-card>
-        <table mat-table [dataSource]="assignedTests()" class="mat-elevation-z0">
-          <ng-container matColumnDef="titre">
-            <th mat-header-cell *matHeaderCellDef> Test </th>
-            <td mat-cell *matCellDef="let te"> {{te.test?.titre}} </td>
-          </ng-container>
+      <!-- ANALYTICS/STATS QUICK VIEW -->
+      <section class="overview-stats">
+        <div class="stat-card">
+          <div class="stat-icon-wrap pending">
+            <mat-icon>hourglass_empty</mat-icon>
+          </div>
+          <div class="stat-content">
+            <span class="stat-num">{{getPendingCount()}}</span>
+            <span class="stat-desc">À Passer</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon-wrap completed">
+            <mat-icon>task_alt</mat-icon>
+          </div>
+          <div class="stat-content">
+            <span class="stat-num">{{getCompletedCount()}}</span>
+            <span class="stat-desc">Terminés</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon-wrap avg">
+            <mat-icon>analytics</mat-icon>
+          </div>
+          <div class="stat-content">
+            <span class="stat-num">{{getAverageScore()}}%</span>
+            <span class="stat-desc">Score Moyen</span>
+          </div>
+        </div>
+      </section>
 
-          <ng-container matColumnDef="statut">
-            <th mat-header-cell *matHeaderCellDef> Statut </th>
-            <td mat-cell *matCellDef="let te"> 
-              <span class="status-badge" [ngClass]="te.statut.toLowerCase()">
-                {{te.statut}}
+      <!-- MAIN CONTENT -->
+      <main class="main-content">
+        <div *ngIf="assignedTests().length > 0" class="test-grid">
+          <div *ngFor="let te of assignedTests()" class="test-card" [class.completed]="te.statut === 'COMPLETED'">
+            <div class="card-top">
+              <span class="status-badge" [class]="te.statut.toLowerCase()">
+                {{te.statut === 'ASSIGNED' ? 'À démarrer' : te.statut === 'IN_PROGRESS' ? 'En cours' : 'Terminé'}}
               </span>
-            </td>
-          </ng-container>
+              <span class="tech-tag">{{te.test?.technologie || 'Générique'}}</span>
+            </div>
 
-          <ng-container matColumnDef="score">
-            <th mat-header-cell *matHeaderCellDef> Score </th>
-            <td mat-cell *matCellDef="let te"> 
-              {{te.score !== null ? te.score + '%' : '-'}}
-            </td>
-          </ng-container>
+            <h3 class="test-title">{{te.testTitre}}</h3>
+            <p class="test-desc">{{te.testDescription}}</p>
 
-          <ng-container matColumnDef="actions">
-            <th mat-header-cell *matHeaderCellDef> Actions </th>
-            <td mat-cell *matCellDef="let te">
-              <button mat-flat-button color="primary" *ngIf="te.statut !== 'COMPLETED'" [routerLink]="['/employe/tests', te.id, 'pass']">
-                {{ te.statut === 'ASSIGNED' ? 'Démarrer' : 'Continuer' }}
-              </button>
-              <button mat-stroked-button color="accent" *ngIf="te.statut === 'COMPLETED'" [routerLink]="['/employe/tests', te.id, 'result']">
-                Résultat
-              </button>
-            </td>
-          </ng-container>
+            <div class="card-footer">
+              <div class="meta-info">
+                <div class="meta-item">
+                  <mat-icon>timer</mat-icon>
+                  <span>{{te.testDuree}} min</span>
+                </div>
+                <div class="meta-item" *ngIf="te.score !== null && te.statut === 'COMPLETED'">
+                  <mat-icon>emoji_events</mat-icon>
+                  <span class="score-text">{{te.score}}%</span>
+                </div>
+              </div>
 
-          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-        </table>
+              <div class="actions">
+                <button class="btn-primary" *ngIf="te.statut !== 'COMPLETED'" [routerLink]="['/employe/tests', te.id, 'pass']">
+                  <mat-icon>{{ te.statut === 'ASSIGNED' ? 'play_arrow' : 'forward' }}</mat-icon>
+                  <span>{{ te.statut === 'ASSIGNED' ? 'Démarrer' : 'Reprendre' }}</span>
+                </button>
+                <button class="btn-outline" *ngIf="te.statut === 'COMPLETED'" [routerLink]="['/employe/tests', te.id, 'result']">
+                  <mat-icon>visibility</mat-icon>
+                  <span>Résultat</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- PROGRESS INDICATOR FOR SCORE (ONLY IF COMPLETED) -->
+            <div class="score-bar" *ngIf="te.statut === 'COMPLETED'">
+              <div class="progress" [style.width]="te.score + '%'" [class.low]="(te.score || 0) < 50" [class.mid]="(te.score || 0) >= 50 && (te.score || 0) < 80" [class.high]="(te.score || 0) >= 80"></div>
+            </div>
+          </div>
+        </div>
 
         <div *ngIf="assignedTests().length === 0" class="empty-state">
-           <p>Vous n'avez aucun test technique assigné pour le moment.</p>
+          <div class="empty-icon">
+            <mat-icon>assignment_late</mat-icon>
+          </div>
+          <h2>Aucun test assigné</h2>
+          <p>Vous n'avez pas d'évaluations techniques prévues pour le moment.</p>
         </div>
-      </mat-card>
+      </main>
     </div>
   `,
-    styles: [`
-    .employe-tests-container {
-      padding: 2rem;
-      max-width: 1000px;
+  styles: [`
+    :host {
+      --primary: #0f172a;
+      --accent: #6366f1;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #1e293b;
+      --muted: #64748b;
+      --border: #e2e8f0;
+    }
+
+    .page-layout {
+      padding: 2.5rem 3rem;
+      max-width: 1400px;
       margin: 0 auto;
+      background: var(--bg);
+      min-height: 100vh;
+      font-family: 'Inter', sans-serif;
     }
-    .header {
-      margin-bottom: 2rem;
+
+    /* HEADER */
+    .dashboard-header {
+      margin-bottom: 3rem;
     }
-    .header h1 {
-      color: var(--primary);
+    .title-group { display: flex; align-items: center; gap: 1.25rem; }
+    .accent-pill { width: 5px; height: 50px; background: var(--accent); border-radius: 10px; }
+    .title-group h1 { font-family: 'Sora', sans-serif; font-size: 2.25rem; font-weight: 800; color: var(--primary); margin: 0; letter-spacing: -0.03em; }
+    .title-group p { color: var(--muted); font-size: 1rem; margin: 0; }
+
+    /* OVERVIEW STATS */
+    .overview-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 3rem;
     }
-    table { width: 100%; }
-    .status-badge {
-      padding: 4px 8px;
-      border-radius: 4px;
-      font-size: 0.8rem;
-      font-weight: bold;
+    .stat-card {
+      background: var(--card-bg);
+      padding: 1.5rem;
+      border-radius: 24px;
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      border: 1px solid var(--border);
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
     }
-    .assigned { background: #E3F2FD; color: #1976D2; }
-    .in_progress { background: #FEF3C7; color: #D97706; }
-    .completed { background: #D1FAE5; color: #059669; }
-    .empty-state { padding: 3rem; text-align: center; color: var(--text-secondary); }
+    .stat-icon-wrap { 
+      width: 54px; height: 54px; border-radius: 16px; 
+      display: flex; align-items: center; justify-content: center; 
+    }
+    .stat-icon-wrap.pending { background: #fee2e2; color: #ef4444; }
+    .stat-icon-wrap.completed { background: #dcfce7; color: #10b981; }
+    .stat-icon-wrap.avg { background: #e0e7ff; color: #6366f1; }
+    
+    .stat-num { display: block; font-family: 'Sora', sans-serif; font-size: 1.75rem; font-weight: 800; color: var(--primary); line-height: 1; }
+    .stat-desc { font-size: 0.8rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+
+    /* GRID & CARDS */
+    .test-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 2rem;
+    }
+    .test-card {
+      background: white;
+      border-radius: 28px;
+      padding: 2rem;
+      border: 1px solid var(--border);
+      position: relative;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .test-card:hover { transform: translateY(-8px); border-color: var(--accent); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.05); }
+
+    .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+    .status-badge { 
+      font-size: 0.65rem; font-weight: 800; padding: 0.3rem 0.8rem; border-radius: 8px; text-transform: uppercase; 
+      letter-spacing: 0.05em;
+    }
+    .status-badge.assigned { background: #f1f5f9; color: #475569; }
+    .status-badge.in_progress { background: #fff7ed; color: #c2410c; }
+    .status-badge.completed { background: #ecfdf5; color: #059669; }
+    
+    .tech-tag { font-size: 0.7rem; font-weight: 700; color: var(--muted); background: #f8fafc; padding: 0.3rem 0.7rem; border-radius: 6px; }
+
+    .test-title { font-family: 'Sora', sans-serif; font-size: 1.35rem; font-weight: 800; color: var(--primary); margin: 0 0 0.75rem; line-height: 1.3; }
+    .test-desc { color: var(--muted); font-size: 0.95rem; line-height: 1.6; margin-bottom: 2rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; height: 3.1em; }
+
+    .card-footer { display: flex; justify-content: space-between; align-items: center; margin-top: auto; }
+    .meta-info { display: flex; flex-direction: column; gap: 0.4rem; }
+    .meta-item { display: flex; align-items: center; gap: 0.5rem; color: var(--muted); font-size: 0.85rem; font-weight: 600; }
+    .meta-item mat-icon { font-size: 1.1rem; width: 1.1rem; height: 1.1rem; }
+    .score-text { color: var(--accent); font-weight: 800; font-size: 1rem; }
+
+    .btn-primary {
+      background: var(--primary); color: white; border: none; padding: 0.6rem 1.25rem; border-radius: 12px;
+      font-weight: 700; display: flex; align-items: center; gap: 0.5rem; cursor: pointer; transition: 0.2s;
+    }
+    .btn-primary:hover { background: var(--accent); transform: scale(1.05); }
+    
+    .btn-outline {
+      background: transparent; color: var(--primary); border: 2px solid var(--primary); padding: 0.5rem 1.1rem; border-radius: 12px;
+      font-weight: 700; display: flex; align-items: center; gap: 0.5rem; cursor: pointer; transition: 0.2s;
+    }
+    .btn-outline:hover { background: var(--primary); color: white; }
+
+    .score-bar { position: absolute; bottom: 0; left: 0; right: 0; height: 5px; background: #f1f5f9; }
+    .progress { height: 100%; transition: width 1s ease-out; }
+    .progress.low { background: #ef4444; }
+    .progress.mid { background: #f59e0b; }
+    .progress.high { background: #10b981; }
+
+    .empty-state { padding: 8rem 0; text-align: center; display: flex; flex-direction: column; align-items: center; color: var(--muted); }
+    .empty-icon { font-size: 4rem; width: 4rem; height: 4rem; opacity: 0.2; margin-bottom: 1.5rem; }
+    .empty-state h2 { font-family: 'Sora', sans-serif; color: var(--primary); margin: 0 0 0.5rem; font-weight: 800; }
+
+    @media (max-width: 768px) {
+      .page-layout { padding: 1.5rem; }
+      .overview-stats { grid-template-columns: 1fr; }
+      .test-grid { grid-template-columns: 1fr; }
+    }
   `]
 })
 export class EmployeTestsComponent implements OnInit {
-    private executionService = inject(TestExecutionService);
-    private authService = inject(AuthService);
+  private executionService = inject(TestExecutionService);
+  private authService = inject(AuthService);
 
-    assignedTests = signal<TestEmploye[]>([]);
-    displayedColumns: string[] = ['titre', 'statut', 'score', 'actions'];
+  assignedTests = signal<TestEmploye[]>([]);
+  displayedColumns: string[] = ['titre', 'statut', 'score', 'actions'];
 
-    ngOnInit(): void {
-        const user = this.authService.currentUser();
-        if (user?.id) {
-            this.executionService.getEmployeTests(user.id).subscribe(data => this.assignedTests.set(data));
-        }
+  ngOnInit(): void {
+    const user = this.authService.currentUser();
+    if (user?.id) {
+      this.executionService.getEmployeTests(user.id).subscribe(data => this.assignedTests.set(data));
     }
+  }
+
+  getPendingCount(): number {
+    return this.assignedTests().filter(t => t.statut !== 'COMPLETED').length;
+  }
+
+  getCompletedCount(): number {
+    return this.assignedTests().filter(t => t.statut === 'COMPLETED').length;
+  }
+
+  getAverageScore(): number {
+    const completed = this.assignedTests().filter(t => t.statut === 'COMPLETED' && t.score !== null);
+    if (completed.length === 0) return 0;
+    const sum = completed.reduce((acc, current) => acc + (current.score || 0), 0);
+    return Math.round(sum / completed.length);
+  }
 }

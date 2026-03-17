@@ -4,6 +4,9 @@ import com.skill.backend.dto.EmployeDTO;
 import com.skill.backend.dto.UpdateEmployeRequest;
 import com.skill.backend.entity.Employe;
 import com.skill.backend.service.EmployeService;
+import com.skill.backend.service.TestAssignmentService;
+import com.skill.backend.dto.TestEmployeDTO;
+import com.skill.backend.dto.CompetenceEmployeDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -25,6 +28,7 @@ import java.util.HashMap;
 public class EmployeController {
 
     private final EmployeService employeService;
+    private final TestAssignmentService testAssignmentService;
 
     @GetMapping
     @PreAuthorize("hasAnyAuthority('ROLE_RH', 'ROLE_MANAGER', 'ROLE_CHEF_PROJET', 'ROLE_EMPLOYE')")
@@ -59,7 +63,7 @@ public class EmployeController {
     @PreAuthorize("hasAuthority('ROLE_EMPLOYE')")
     @Operation(summary = "Récupérer ses compétences",
                description = "Permet à un employé de récupérer la liste de ses compétences")
-    public ResponseEntity<List<com.skill.backend.dto.CompetenceEmployeDTO>> getMyCompetencies(Authentication authentication) {
+    public ResponseEntity<List<CompetenceEmployeDTO>> getMyCompetencies(Authentication authentication) {
         return ResponseEntity.ok(employeService.getMyCompetencies(authentication.getName()));
     }
 
@@ -96,5 +100,21 @@ public class EmployeController {
         String deletedBy = authentication.getName();
         employeService.deleteEmploye(employeId, deletedBy);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{id}/tests")
+    @PreAuthorize("hasAnyAuthority('ROLE_EMPLOYE', 'ROLE_MANAGER', 'ROLE_RH')")
+    @Operation(summary = "Récupérer les tests d'un employé")
+    public ResponseEntity<List<TestEmployeDTO>> getTestsForEmployee(@PathVariable String id) {
+        System.out.println("🚀 [EmployeController] getTestsForEmployee called for ID: " + id);
+        try {
+            List<TestEmployeDTO> tests = testAssignmentService.getTestsForEmployee(id);
+            System.out.println("✅ [EmployeController] tests found: " + tests.size());
+            return ResponseEntity.ok(tests);
+        } catch (Exception e) {
+            System.err.println("❌ [EmployeController] Error in getTestsForEmployee: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
     }
 }
