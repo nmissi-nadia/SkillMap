@@ -22,6 +22,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
 
   loading = signal(true);
   sending = signal(false);
+  conversation = signal<ConversationDTO | null>(null);
 
   constructor(
     private messagingService: MessagingService,
@@ -50,11 +51,18 @@ export class ChatComponent implements OnInit, AfterViewChecked {
 
   loadMessages(id: string) {
     this.loading.set(true);
+
+    // Charger la conversation pour le header
+    this.messagingService.getUserConversations(this.currentUserId()).subscribe(convs => {
+      const c = convs.find(x => x.id === id);
+      if (c) this.conversation.set(c);
+    });
+
     this.messagingService.getMessages(id).subscribe({
       next: (data) => {
-        // En vrai, on pourrait trier data par date
         this.messages.set(data);
         this.loading.set(false);
+        this.scrollToBottom();
       },
       error: (err) => {
         console.error('Erreur de chargement des messages', err);
