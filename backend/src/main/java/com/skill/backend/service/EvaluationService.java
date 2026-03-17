@@ -59,8 +59,8 @@ public class EvaluationService {
         TestEmploye saved = testEmployeRepository.save(testEmploye);
 
         // Mettre à jour la compétence de l'employé
-        String competenceId = testEmploye.getTestTechnique().getCompetenceId();
-        if (competenceId != null && !competenceId.isBlank()) {
+        String competenceId = testEmploye.getTestTechnique() != null ? testEmploye.getTestTechnique().getCompetenceId() : null;
+        if (competenceId != null && !competenceId.isEmpty()) {
             updateCompetenceEmploye(testEmploye.getEmploye(), competenceId, niveauCompetence);
         }
 
@@ -129,7 +129,11 @@ public class EvaluationService {
         evaluation.setCommentaire("Évaluation automatique suite au test technique: " + testEmploye.getTestTechnique().getTitre());
         evaluation.setEmploye(testEmploye.getEmploye());
         evaluation.setManager(testEmploye.getManager());
-        evaluation.setCompetence(competenceRepository.findById(testEmploye.getTestTechnique().getCompetenceId()).orElse(null));
+        
+        String compId = testEmploye.getTestTechnique() != null ? testEmploye.getTestTechnique().getCompetenceId() : null;
+        if (compId != null && !compId.isEmpty()) {
+            evaluation.setCompetence(competenceRepository.findById(compId).orElse(null));
+        }
         evaluation.setNiveauAutoEvalue(niveauCompetence);
         evaluation.setNiveauValide(niveauCompetence); // Auto-validé pour les tests
         evaluation.setCommentaireEmploye("Test passé automatiquement");

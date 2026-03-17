@@ -85,9 +85,9 @@ export class MesFormations implements OnInit {
     return map[type] || type;
   }
 
-  getTypeEmoji(type: string): string {
-    const map: Record<string, string> = { PRESENTIEL: '🏫', LIEN: '🌐', PDF: '📄' };
-    return map[type] || '🎓';
+  getIconForType(type: string): string {
+    const map: Record<string, string> = { PRESENTIEL: 'school', LIEN: 'laptop_mac', PDF: 'description' };
+    return map[type] || 'menu_book';
   }
 
   getStatusClass(statut?: string): string {
@@ -101,9 +101,9 @@ export class MesFormations implements OnInit {
 
   getStatusLabel(statut?: string): string {
     const map: Record<string, string> = {
-      'EN_COURS': '▶ En cours',
-      'TERMINE': '✅ Terminé',
-      'INSCRIT': '⏳ Inscrit'
+      'EN_COURS': 'En cours',
+      'TERMINE': 'Terminé',
+      'INSCRIT': 'Inscrit'
     };
     return statut ? (map[statut] || statut) : '';
   }

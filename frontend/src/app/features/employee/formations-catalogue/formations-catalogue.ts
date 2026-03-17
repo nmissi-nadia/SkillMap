@@ -18,7 +18,7 @@ export class FormationsCatalogue implements OnInit {
   filteredFormations: FormationDetailDTO[] = [];
   currentUserId: string = '';
   searchTerm = '';
-  activeFilter = '';
+  activeType: string = 'ALL';
   loading = true;
   enrolling: Record<string, boolean> = {};
 
@@ -52,20 +52,20 @@ export class FormationsCatalogue implements OnInit {
     });
   }
 
-  applyFilter(): void {
+  filterFormations(): void {
     this.filteredFormations = this.formations.filter(f => {
       const matchSearch = !this.searchTerm ||
         f.titre.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
         (f.description || '').toLowerCase().includes(this.searchTerm.toLowerCase()) ||
         (f.competenceNom || '').toLowerCase().includes(this.searchTerm.toLowerCase());
-      const matchType = !this.activeFilter || f.typeFormation === this.activeFilter;
+      const matchType = this.activeType === 'ALL' || f.typeFormation === this.activeType;
       return matchSearch && matchType;
     });
   }
 
-  filterByType(type: string): void {
-    this.activeFilter = type;
-    this.applyFilter();
+  setTypeFilter(type: string): void {
+    this.activeType = type;
+    this.filterFormations();
   }
 
   countByType(type: string): number {
@@ -82,9 +82,23 @@ export class FormationsCatalogue implements OnInit {
     return map[type] || type;
   }
 
-  getTypeEmoji(type: string): string {
-    const map: Record<string, string> = { PRESENTIEL: '🏫', LIEN: '🌐', PDF: '📄' };
-    return map[type] || '🎓';
+  getIconForType(type: string): string {
+    const map: Record<string, string> = { PRESENTIEL: 'school', LIEN: 'laptop_mac', PDF: 'description' };
+    return map[type] || 'menu_book';
+  }
+
+  inscrire(formation: FormationDetailDTO): void {
+    this.sinscrire(formation.id);
+  }
+
+  isInscrit(formationId: string): boolean {
+    return this.enrolling[formationId] || false;
+  }
+
+  findCompetenceName(id: string | undefined): string {
+    if (!id) return 'Compétence';
+    const f = this.formations.find(x => x.competenceId === id);
+    return f ? (f.competenceNom || 'Compétence') : 'Compétence';
   }
 
   sinscrire(formationId: string): void {

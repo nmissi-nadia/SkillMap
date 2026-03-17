@@ -109,13 +109,31 @@ export const routes: Routes = [
     },
     {
         path: 'employee/tests',
-        loadComponent: () => import('./features/employee/tests/tests.component').then(m => m.EmployeeTestsComponent),
+        redirectTo: '/employe/tests',
+        pathMatch: 'full'
+    },
+    {
+        path: 'employe/formations',
         canActivate: [authGuard, roleGuard],
-        data: { roles: ['EMPLOYE'] }
+        data: { roles: ['EMPLOYE'] },
+        children: [
+            { path: '', loadComponent: () => import('./features/employee/mes-formations/mes-formations').then(m => m.MesFormations) },
+            { path: 'catalogue', loadComponent: () => import('./features/employee/formations-catalogue/formations-catalogue').then(m => m.FormationsCatalogue) }
+        ]
     },
     {
         path: 'employee/formations',
-        redirectTo: '/mes-formations',
+        redirectTo: '/employe/formations',
+        pathMatch: 'full'
+    },
+    {
+        path: 'mes-formations',
+        redirectTo: '/employe/formations',
+        pathMatch: 'full'
+    },
+    {
+        path: 'formations/catalogue',
+        redirectTo: '/employe/formations/catalogue',
         pathMatch: 'full'
     },
     // Chef de Projet routes
@@ -175,12 +193,6 @@ export const routes: Routes = [
             { path: 'catalogue', loadComponent: () => import('./features/employee/formations-catalogue/formations-catalogue').then(m => m.FormationsCatalogue) },
             { path: ':id', loadComponent: () => import('./features/formations/formation-detail/formation-detail').then(m => m.FormationDetail) }
         ]
-    },
-    {
-        path: 'mes-formations',
-        loadComponent: () => import('./features/employee/mes-formations/mes-formations').then(m => m.MesFormations),
-        canActivate: [authGuard, roleGuard],
-        data: { roles: ['EMPLOYE'] }
     },
     {
         path: 'employe/tests',

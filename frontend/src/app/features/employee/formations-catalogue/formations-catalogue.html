@@ -1,127 +1,106 @@
-<div class="catalogue-shell">
+<div class="cat-shell">
+    <div class="cat-container">
+        <!-- ── HERO SECTION ── -->
+        <header class="cat-hero">
+            <div class="hero-badge">Apprentissage continu</div>
+            <h1 class="hero-title">Développez vos Skills</h1>
+            <p class="hero-subtitle">Explorez notre catalogue de formations certifiantes et montez en compétences à
+                votre rythme.</p>
 
-    <!-- ── HERO ── -->
-    <div class="cat-hero">
-        <div class="hero-glow"></div>
-        <div class="hero-content">
-            <div class="hero-badge">📚 Catalogue</div>
-            <h1 class="hero-title">Développez vos compétences</h1>
-            <p class="hero-sub">Inscrivez-vous aux formations disponibles et boostez votre expertise.</p>
-        </div>
-        <!-- Search -->
-        <div class="hero-search">
-            <div class="search-box">
-                <svg width="18" height="18" viewBox="0 0 18 18" fill="none" class="s-icon">
-                    <circle cx="8" cy="8" r="6" stroke="rgba(255,255,255,0.5)" stroke-width="1.8" />
-                    <path d="M13 13l3 3" stroke="rgba(255,255,255,0.5)" stroke-width="1.8" stroke-linecap="round" />
-                </svg>
-                <input class="s-input" [(ngModel)]="searchTerm" (input)="applyFilter()"
-                    placeholder="Titre, compétence ou type…" />
+            <div class="search-wrapper">
+                <div class="search-box">
+                    <span class="material-icons search-icon">search</span>
+                    <input type="text" placeholder="Rechercher une formation, une technologie..."
+                        [(ngModel)]="searchTerm" (input)="filterFormations()" class="search-input">
+                </div>
+            </div>
+
+            <div class="hero-stats">
+                <div class="stat-pill">
+                    <span class="pill-value">{{ formations.length }}</span>
+                    <span class="pill-label">Formations disponibles</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- ── FILTERS ── -->
+        <nav class="cat-filters">
+            <button class="filter-tab" [class.active]="activeType === 'ALL'" (click)="setTypeFilter('ALL')">
+                <span class="material-icons">apps</span>
+                Toutes
+            </button>
+            <button class="filter-tab" [class.active]="activeType === 'PRESENTIEL'"
+                (click)="setTypeFilter('PRESENTIEL')">
+                <span class="material-icons">groups</span>
+                Présentiel
+            </button>
+            <button class="filter-tab" [class.active]="activeType === 'LIEN'" (click)="setTypeFilter('LIEN')">
+                <span class="material-icons">laptop_mac</span>
+                E-learning
+            </button>
+            <button class="filter-tab" [class.active]="activeType === 'PDF'" (click)="setTypeFilter('PDF')">
+                <span class="material-icons">description</span>
+                Documents
+            </button>
+        </nav>
+
+        <!-- ── GRID ── -->
+        <div class="cat-grid" *ngIf="filteredFormations.length > 0">
+            <div class="cat-card" *ngFor="let f of filteredFormations">
+                <div class="card-inner">
+                    <div class="card-header">
+                        <div class="type-indicator" [class]="f.typeFormation.toLowerCase()">
+                            <span class="material-icons">{{ getIconForType(f.typeFormation) }}</span>
+                            {{ getTypeLabel(f.typeFormation) }}
+                        </div>
+                    </div>
+
+                    <h3 class="card-title">{{ f.titre }}</h3>
+                    <p class="card-desc">{{ f.description }}</p>
+
+                    <div class="card-tags">
+                        <div class="tag competence">
+                            <span class="material-icons">extension</span>
+                            {{ findCompetenceName(f.competenceId) }}
+                        </div>
+                        <div class="tag level" *ngIf="f.niveauCible">
+                            <span class="material-icons">bar_chart</span>
+                            Niveau {{ f.niveauCible }}
+                        </div>
+                    </div>
+
+                    <div class="card-meta">
+                        <div class="meta-item" *ngIf="f.dateDebut">
+                            <span class="material-icons">schedule</span>
+                            Débute le {{ f.dateDebut | date:'dd MMM yyyy':'':'fr' }}
+                        </div>
+                        <div class="meta-item" *ngIf="f.lieu">
+                            <span class="material-icons">location_on</span>
+                            {{ f.lieu }}
+                        </div>
+                    </div>
+
+                    <div class="card-actions">
+                        <button class="btn-enroll" (click)="inscrire(f)" [disabled]="isInscrit(f.id)"
+                            [class.enrolled]="isInscrit(f.id)">
+                            <span class="material-icons">{{ isInscrit(f.id) ? 'check' : 'add_circle_outline' }}</span>
+                            {{ isInscrit(f.id) ? 'Déjà inscrit' : 'S\'inscrire' }}
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
-        <!-- Stats pills -->
-        <div class="hero-stats">
-            <span class="stat-pill">🎓 {{ formations.length }} formation(s) disponible(s)</span>
-            <span class="stat-pill" *ngIf="countByType('PRESENTIEL') > 0">🏫 {{ countByType('PRESENTIEL') }}
-                présentiel(s)</span>
-            <span class="stat-pill" *ngIf="countByType('LIEN') > 0">🌐 {{ countByType('LIEN') }} en ligne</span>
-        </div>
-    </div>
 
-    <!-- ── TYPE FILTERS ── -->
-    <div class="cat-filters">
-        <button class="filter-btn" [class.active]="activeFilter === ''" (click)="filterByType('')">
-            <span>Tout voir</span>
-        </button>
-        <button class="filter-btn presentiel" [class.active]="activeFilter === 'PRESENTIEL'"
-            (click)="filterByType('PRESENTIEL')">
-            🏫 Présentiel
-        </button>
-        <button class="filter-btn online" [class.active]="activeFilter === 'LIEN'" (click)="filterByType('LIEN')">
-            🌐 En ligne
-        </button>
-        <button class="filter-btn pdf" [class.active]="activeFilter === 'PDF'" (click)="filterByType('PDF')">
-            📄 Documents PDF
-        </button>
-    </div>
-
-    <!-- ── LOADING ── -->
-    <div class="cat-loading" *ngIf="loading">
-        <div class="dot-spinner">
-            <span></span><span></span><span></span>
-        </div>
-        <p>Chargement du catalogue…</p>
-    </div>
-
-    <!-- ── GRID ── -->
-    <div class="cat-grid" *ngIf="!loading && filteredFormations.length > 0">
-        <div class="formation-card" *ngFor="let f of filteredFormations; let i = index"
-            [style.animation-delay]="(i * 0.06) + 's'">
-
-            <!-- Top accent bar -->
-            <div class="accent-bar" [class]="getAccentClass(f.typeFormation)"></div>
-
-            <!-- Card content -->
-            <div class="card-inner">
-                <!-- Header -->
-                <div class="card-header">
-                    <div class="type-pill" [class]="getAccentClass(f.typeFormation)">
-                        {{ getTypeEmoji(f.typeFormation) }} {{ getTypeLabel(f.typeFormation) }}
-                    </div>
-                    <div class="card-icon">{{ getTypeEmoji(f.typeFormation) }}</div>
-                </div>
-
-                <!-- Title -->
-                <h3 class="f-title">{{ f.titre }}</h3>
-                <p class="f-desc">{{ (f.description | slice:0:120) }}{{ (f.description?.length ?? 0) > 120 ? '…' : '' }}
-                </p>
-
-                <!-- Tags -->
-                <div class="tags-row">
-                    <span class="tag competence" *ngIf="f.competenceNom">
-                        🎯 {{ f.competenceNom }}
-                    </span>
-                    <span class="tag niveau" *ngIf="f.niveauCible">
-                        Niv. {{ f.niveauCible }}
-                    </span>
-                </div>
-
-                <!-- Meta infos -->
-                <div class="meta-row" *ngIf="f.typeFormation === 'PRESENTIEL'">
-                    <div class="meta-item" *ngIf="f.dateDebut">
-                        📅 {{ f.dateDebut | date:'dd/MM/yyyy' }}
-                        <span *ngIf="f.dateFin"> → {{ f.dateFin | date:'dd/MM/yyyy' }}</span>
-                    </div>
-                    <div class="meta-item" *ngIf="f.lieu">
-                        📍 {{ f.lieu }}
-                    </div>
-                </div>
-
-                <div class="meta-row" *ngIf="f.typeFormation === 'LIEN'">
-                    <div class="meta-item">
-                        🔗 {{ f.ressources?.length || 0 }} ressource(s) disponible(s)
-                    </div>
-                </div>
-
-                <!-- CTA -->
-                <button class="btn-inscrire" [class]="getAccentClass(f.typeFormation)" (click)="sinscrire(f.id)"
-                    [disabled]="enrolling[f.id]">
-                    <span *ngIf="!enrolling[f.id]">✨ S'inscrire à cette formation</span>
-                    <span *ngIf="enrolling[f.id]">Inscription en cours…</span>
-                </button>
+        <!-- ── EMPTY ── -->
+        <div class="cat-empty" *ngIf="filteredFormations.length === 0">
+            <div class="empty-visual">
+                <span class="material-icons">search_off</span>
             </div>
+            <h3>Aucun résultat trouvé</h3>
+            <p>Essayez de modifier vos critères de recherche ou vos filtres.</p>
+            <button class="btn-clear" (click)="searchTerm = ''; activeType = 'ALL'; filterFormations()">
+                Réinitialiser
+            </button>
         </div>
     </div>
-
-    <!-- ── EMPTY STATE ── -->
-    <div class="cat-empty" *ngIf="!loading && filteredFormations.length === 0">
-        <div class="empty-visual">
-            <div class="empty-circle">🎓</div>
-        </div>
-        <h3>Aucune formation disponible</h3>
-        <p *ngIf="searchTerm || activeFilter">Modifiez vos critères de recherche pour voir plus de résultats.</p>
-        <p *ngIf="!searchTerm && !activeFilter">Vous êtes déjà inscrit(e) à toutes les formations ! Rendez-vous dans
-            <strong>Mes Formations</strong> pour suivre votre progression.</p>
-    </div>
-
 </div>

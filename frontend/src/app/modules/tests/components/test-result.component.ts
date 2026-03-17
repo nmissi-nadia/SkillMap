@@ -20,114 +20,169 @@ import { AuthService } from '../../../core/services/auth.service';
     MatDividerModule
   ],
   template: `
-    <div class="result-container" *ngIf="result() as r">
-      <mat-card class="result-card">
-        <mat-card-header>
-          <mat-card-title>Résultat du Test</mat-card-title>
-          <mat-card-subtitle>{{ r.test?.titre }}</mat-card-subtitle>
-        </mat-card-header>
+    <div class="result-layout" *ngIf="result() as r">
+      <div class="result-container">
+        <!-- HEADER -->
+        <header class="result-header">
+           <div class="accent-line"></div>
+           <div>
+             <h1>Résultat de l'Évaluation</h1>
+             <p>{{ r.testTitre }}</p>
+           </div>
+        </header>
 
-        <mat-card-content class="content">
-          <div class="score-display">
-            <div class="score-circle" [class.pass]="r.score >= 60" [class.fail]="r.score < 40">
-              <span class="score-value">{{ r.score }}%</span>
-              <span class="score-label">Score Final</span>
-            </div>
-          </div>
-
-          <div class="feedback-section">
-            <div class="feedback-item">
-              <mat-icon [color]="r.score >= 60 ? 'primary' : 'warn'">
-                {{ r.score >= 60 ? 'check_circle' : 'info' }}
-              </mat-icon>
-              <div class="feedback-text">
-                <h3>{{ getStatusTitle(r.score) }}</h3>
-                <p>{{ getStatusMessage(r.score) }}</p>
+        <!-- SCORE CARD -->
+        <mat-card class="main-card">
+          <div class="score-section">
+            <div class="gauge-container">
+              <div class="gauge-bg"></div>
+              <div class="gauge-fill" [style.transform]="'rotate(' + (r.score * 1.8 - 90) + 'deg)'" [class.success]="r.score >= 60" [class.warning]="r.score >= 40 && r.score < 60" [class.error]="r.score < 40"></div>
+              <div class="score-inner">
+                <span class="score-value">{{ r.score }}%</span>
+                <span class="score-label">Score Global</span>
               </div>
             </div>
           </div>
 
-          <mat-divider></mat-divider>
-
-          <div class="stats-grid">
-            <div class="stat-card">
-              <span class="stat-label">Statut</span>
-              <span class="stat-value">{{ r.statut }}</span>
+          <div class="feedback-box" [class.success]="r.score >= 60" [class.error]="r.score < 40">
+            <div class="feedback-icon">
+              <mat-icon>{{ r.score >= 60 ? 'verified_user' : 'error_outline' }}</mat-icon>
             </div>
-            <div class="stat-card">
-              <span class="stat-label">Niveau Attribué</span>
-              <span class="stat-value">Lvl {{ r.score >= 80 ? 4 : r.score >= 60 ? 3 : r.score >= 40 ? 2 : 1 }}</span>
+            <div class="feedback-content">
+              <h3>{{ getStatusTitle(r.score) }}</h3>
+              <p>{{ getStatusMessage(r.score) }}</p>
             </div>
           </div>
-        </mat-card-content>
 
-        <mat-card-actions align="end">
-          <button mat-raised-button color="primary" routerLink="/employe/tests">Retour à mes tests</button>
-        </mat-card-actions>
-      </mat-card>
+          <div class="details-grid">
+            <div class="detail-item">
+              <span class="label">Statut Final</span>
+              <span class="value">{{ r.statut === 'COMPLETED' ? 'Validé' : r.statut }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="label">Recommandation</span>
+              <span class="value">{{ r.score >= 60 ? 'Éligible aux projets' : 'Formation conseillée' }}</span>
+            </div>
+          </div>
+
+          <footer class="card-footer">
+            <button class="btn-return" routerLink="/employe/tests">
+              <mat-icon>arrow_back</mat-icon>
+              <span>Retour à mon espace</span>
+            </button>
+          </footer>
+        </mat-card>
+      </div>
     </div>
   `,
   styles: [`
+    :host {
+      --primary: #0f172a;
+      --accent: #6366f1;
+      --bg: #f8fafc;
+      --card-bg: rgba(255, 255, 255, 0.9);
+      --text: #1e293b;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --error: #ef4444;
+      --success: #10b981;
+      --warning: #f59e0b;
+    }
+
+    .result-layout {
+      min-height: 100vh;
+      background: var(--bg);
+      padding: 4rem 1rem;
+      font-family: 'Inter', sans-serif;
+    }
+
     .result-container {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* HEADER */
+    .result-header { display: flex; gap: 1rem; align-items: center; margin-bottom: 2.5rem; }
+    .accent-line { width: 4px; height: 50px; background: var(--accent); border-radius: 10px; }
+    .result-header h1 { font-family: 'Sora', sans-serif; font-size: 1.75rem; font-weight: 800; color: var(--primary); margin: 0; }
+    .result-header p { color: var(--muted); font-size: 1.1rem; margin: 0.25rem 0 0; font-weight: 600; }
+
+    /* CARD */
+    .main-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(10px);
+      border: 1px solid white;
+      border-radius: 32px;
       padding: 3rem;
-      display: flex;
-      justify-content: center;
-      background: var(--background);
-      min-height: calc(100vh - 64px);
-    }
-    .result-card {
-      max-width: 500px;
-      width: 100%;
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.05);
       text-align: center;
-      border-radius: 16px;
-      box-shadow: var(--shadow-xl);
     }
-    .content { padding: 2rem; }
-    .score-display {
-      display: flex;
-      justify-content: center;
-      margin: 2rem 0;
+
+    /* SCORE GAUGE */
+    .score-section { display: flex; justify-content: center; margin-bottom: 3rem; }
+    .gauge-container {
+      position: relative; width: 220px; height: 220px;
+      display: flex; align-items: center; justify-content: center;
     }
-    .score-circle {
-      width: 180px;
-      height: 180px;
-      border-radius: 50%;
-      border: 10px solid #E5E7EB;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      background: white;
+    .gauge-bg {
+      position: absolute; width: 100%; height: 100%;
+      border-radius: 50%; border: 12px solid #f1f5f9;
     }
-    .score-circle.pass { border-color: var(--success); color: var(--success); }
-    .score-circle.fail { border-color: var(--error); color: var(--error); }
-    .score-value { font-size: 3rem; font-weight: 800; line-height: 1; }
-    .score-label { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; }
-    .feedback-section {
-      margin-bottom: 2rem;
-      text-align: left;
-      padding: 1rem;
-      background: #F9FAFB;
-      border-radius: 8px;
+    .gauge-fill {
+      position: absolute; width: 100%; height: 100%;
+      border-radius: 50%; border: 12px solid transparent;
+      border-top-color: var(--accent);
+      transition: transform 1.5s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
-    .feedback-item { display: flex; gap: 1rem; align-items: flex-start; }
-    .feedback-text h3 { margin: 0 0 0.25rem 0; font-size: 1.1rem; }
-    .feedback-text p { margin: 0; color: var(--text-secondary); font-size: 0.9rem; }
-    .stats-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1rem;
-      margin-top: 2rem;
+    .gauge-fill.success { border-top-color: var(--success); }
+    .gauge-fill.warning { border-top-color: var(--warning); }
+    .gauge-fill.error { border-top-color: var(--error); }
+
+    .score-inner { display: flex; flex-direction: column; align-items: center; }
+    .score-value { font-family: 'Sora', sans-serif; font-size: 3.5rem; font-weight: 800; color: var(--primary); line-height: 1; }
+    .score-label { font-size: 0.8rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+
+    /* FEEDBACK BOX */
+    .feedback-box {
+      display: flex; gap: 1.5rem; align-items: center; text-align: left;
+      padding: 1.5rem; border-radius: 20px; margin-bottom: 2.5rem;
+      border: 1px solid var(--border);
     }
-    .stat-card {
-      display: flex;
-      flex-direction: column;
-      padding: 1rem;
-      background: #F3F4F6;
-      border-radius: 8px;
+    .feedback-box.success { background: #f0fdf4; border-color: #dcfce7; }
+    .feedback-box.error { background: #fef2f2; border-color: #fee2e2; }
+
+    .feedback-icon mat-icon { font-size: 2.5rem; width: 2.5rem; height: 2.5rem; }
+    .feedback-box.success .feedback-icon { color: var(--success); }
+    .feedback-box.error .feedback-icon { color: var(--error); }
+
+    .feedback-content h3 { font-family: 'Sora', sans-serif; font-size: 1.1rem; font-weight: 800; margin: 0 0 0.25rem; }
+    .feedback-content p { color: var(--muted); font-size: 0.9rem; margin: 0; line-height: 1.5; font-weight: 500; }
+
+    /* DETAILS */
+    .details-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;
+      margin-bottom: 3rem;
     }
-    .stat-label { font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; }
-    .stat-value { font-weight: bold; font-size: 1.1rem; }
+    .detail-item {
+      display: flex; flex-direction: column; gap: 0.4rem; padding: 1.25rem;
+      background: #f8fafc; border-radius: 16px; border: 1px solid var(--border);
+    }
+    .detail-item .label { font-size: 0.75rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+    .detail-item .value { font-weight: 800; color: var(--primary); font-size: 1rem; }
+
+    /* FOOTER */
+    .card-footer { border-top: 1px solid var(--border); padding-top: 2rem; }
+    .btn-return {
+      width: 100%; padding: 1rem; border-radius: 16px; background: var(--primary); color: white;
+      border: none; font-weight: 700; display: flex; align-items: center; justify-content: center;
+      gap: 0.75rem; cursor: pointer; transition: 0.3s;
+    }
+    .btn-return:hover { background: var(--accent); transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.3); }
+
+    @media (max-width: 640px) {
+      .details-grid { grid-template-columns: 1fr; }
+      .main-card { padding: 1.5rem; }
+    }
   `]
 })
 export class TestResultComponent implements OnInit {

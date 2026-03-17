@@ -74,7 +74,7 @@ import { TestEmploye } from '../models/test.model';
               <span class="status-badge" [class]="te.statut.toLowerCase()">
                 {{te.statut === 'ASSIGNED' ? 'À démarrer' : te.statut === 'IN_PROGRESS' ? 'En cours' : 'Terminé'}}
               </span>
-              <span class="tech-tag">{{te.test?.technologie || 'Générique'}}</span>
+              <span class="tech-tag">{{te.technologie || 'Générique'}}</span>
             </div>
 
             <h3 class="test-title">{{te.testTitre}}</h3>

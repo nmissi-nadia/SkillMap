@@ -32,6 +32,15 @@ public class TestExecutionService {
     public TestEmployeDTO startTest(String testEmployeId) {
         TestEmploye testEmploye = getTestEmploye(testEmployeId);
 
+        if ("COMPLETED".equals(testEmploye.getStatut())) {
+            throw new BadRequestException("Ce test est déjà terminé et ne peut plus être démarré.");
+        }
+        
+        // Si déjà en cours, on ne fait rien et on retourne le DTO (Idempotence)
+        if ("IN_PROGRESS".equals(testEmploye.getStatut())) {
+            return testEmployeMapper.toDto(testEmploye);
+        }
+
         if (!"ASSIGNED".equals(testEmploye.getStatut())) {
             throw new BadRequestException(
                 "Le test ne peut être démarré que depuis le statut ASSIGNED. Statut actuel : " + testEmploye.getStatut()
