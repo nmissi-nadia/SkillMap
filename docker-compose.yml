@@ -1,0 +1,58 @@
+services:
+  # Database
+  db:
+    image: postgres:15-alpine
+    container_name: skillmap-db
+    environment:
+      POSTGRES_DB: skilldb
+      POSTGRES_USER: ${DB_USERNAME:-skillmap}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-skillmap123}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-skillmap} -d skilldb"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - skillmap-network
+
+  # Backend
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: skillmap-backend
+    ports:
+      - "8085:8085"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/skilldb
+      SPRING_DATASOURCE_USERNAME: ${DB_USERNAME:-skillmap}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:-skillmap123}
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      APPLICATION_SECURITY_JWT_SECRET_KEY: ${JWT_SECRET:-404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970}
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - skillmap-network
+
+  # Frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: skillmap-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - skillmap-network
+
+networks:
+  skillmap-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
