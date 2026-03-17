@@ -16,7 +16,7 @@ export class AuthService {
     private tokenService = inject(TokenService);
     private router = inject(Router);
 
-    private apiUrl = 'http://localhost:8085/api/auth';
+    private apiUrl = '/api/auth';
 
     // Signal pour l'utilisateur actuel
     currentUser = signal<User | null>(null);

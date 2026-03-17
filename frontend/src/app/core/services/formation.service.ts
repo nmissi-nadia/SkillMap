@@ -13,7 +13,7 @@ import {
     providedIn: 'root'
 })
 export class FormationService {
-    private apiUrl = 'http://localhost:8085/api';
+    private apiUrl = '/api';
 
     constructor(private http: HttpClient) { }
 
