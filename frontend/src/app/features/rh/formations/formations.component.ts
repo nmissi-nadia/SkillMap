@@ -34,7 +34,8 @@ export class FormationsComponent implements OnInit {
     editForm: any = {
         titre: '',
         organisme: '',
-        type: 'Interne',
+        type: 'PRESENTIEL',
+        statut: 'PLANIFIEE',
         description: '',
         dateDebut: '',
         dateFin: '',
@@ -184,7 +185,8 @@ export class FormationsComponent implements OnInit {
         this.editForm = {
             titre: '',
             organisme: '',
-            type: 'Interne',
+            type: 'PRESENTIEL',
+            statut: 'PLANIFIEE',
             description: '',
             dateDebut: '',
             dateFin: '',
@@ -200,7 +202,8 @@ export class FormationsComponent implements OnInit {
         this.editForm = {
             titre: formation.titre,
             organisme: formation.organisme || '',
-            type: formation.type || 'Interne',
+            type: formation.type || 'PRESENTIEL',
+            statut: formation.statut || 'PLANIFIEE',
             description: formation.description || '',
             dateDebut: formation.dateDebut ? formation.dateDebut.substring(0, 10) : '',
             dateFin: formation.dateFin ? formation.dateFin.substring(0, 10) : '',
