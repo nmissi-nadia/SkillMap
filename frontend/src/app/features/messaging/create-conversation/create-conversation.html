@@ -1,0 +1,99 @@
+<div
+    class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
+    <div
+        class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden border border-gray-100 dark:border-gray-700 animate-in zoom-in-95 duration-200">
+
+        <!-- Header -->
+        <div class="p-6 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center">
+            <h2 class="text-2xl font-extrabold text-gray-900 dark:text-white font-sora tracking-tight">Nouvelle
+                Conversation</h2>
+            <button (click)="close()"
+                class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors text-gray-400">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <div class="p-6 space-y-6 max-h-[70vh] overflow-y-auto">
+
+            <!-- Type Toggle -->
+            <div class="flex p-1 bg-gray-100 dark:bg-gray-900 rounded-2xl">
+                <button [class.bg-white]="type() === 'PRIVE'" [class.shadow-sm]="type() === 'PRIVE'"
+                    (click)="type.set('PRIVE')"
+                    class="flex-1 py-3 text-sm font-bold rounded-xl transition-all font-sora">
+                    Message Privé
+                </button>
+                <button [class.bg-white]="type() === 'GROUPE'" [class.shadow-sm]="type() === 'GROUPE'"
+                    (click)="type.set('GROUPE')"
+                    class="flex-1 py-3 text-sm font-bold rounded-xl transition-all font-sora">
+                    Discussion de Groupe
+                </button>
+            </div>
+
+            <!-- Title (shown for group) -->
+            <div *ngIf="type() === 'GROUPE'" class="space-y-2 animate-in slide-in-from-top-2 duration-300">
+                <label class="text-xs font-bold text-gray-400 uppercase tracking-widest px-1">Titre du groupe</label>
+                <input [ngModel]="title()" (ngModelChange)="title.set($event)" placeholder="Nommez votre discussion..."
+                    class="w-full px-5 py-4 bg-gray-50 dark:bg-gray-900 border-none rounded-2xl focus:ring-2 focus:ring-indigo-500 transition-all font-medium">
+            </div>
+
+            <!-- Participant Search -->
+            <div class="space-y-2">
+                <label class="text-xs font-bold text-gray-400 uppercase tracking-widest px-1">Ajouter des
+                    participants</label>
+                <div class="relative">
+                    <input (input)="onSearch($event)" placeholder="Rechercher un collègue..."
+                        class="w-full pl-12 pr-5 py-4 bg-gray-50 dark:bg-gray-900 border-none rounded-2xl focus:ring-2 focus:ring-indigo-500 transition-all font-medium">
+                    <svg class="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </div>
+
+                <!-- Selected Badges -->
+                <div class="flex flex-wrap gap-2 pt-2">
+                    <span *ngFor="let p of selectedParticipants()"
+                        class="flex items-center gap-2 px-3 py-1.5 bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300 rounded-full text-xs font-bold border border-indigo-100 dark:border-indigo-800">
+                        {{ p.prenom }} {{ p.nom }}
+                        <button (click)="removeParticipant(p.id)" class="hover:text-indigo-900"><svg class="w-3 h-3"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12" />
+                            </svg></button>
+                    </span>
+                </div>
+
+                <!-- Search Results Area -->
+                <div *ngIf="searchResults().length > 0"
+                    class="mt-2 bg-white dark:bg-gray-900 rounded-2xl shadow-lg border border-gray-50 dark:border-gray-800 overflow-hidden divide-y divide-gray-50 dark:divide-gray-800 animate-in slide-in-from-top-2">
+                    <div *ngFor="let p of searchResults()" (click)="addParticipant(p)"
+                        class="p-4 hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer flex items-center gap-3 transition-colors">
+                        <div
+                            class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center font-bold text-gray-500">
+                            {{ p.prenom[0] }}{{ p.nom[0] }}
+                        </div>
+                        <div>
+                            <div class="text-sm font-bold text-gray-900 dark:text-white">{{ p.prenom }} {{ p.nom }}
+                            </div>
+                            <div class="text-xs text-gray-500 uppercase font-bold tracking-tighter">{{ p.role }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="p-6 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 flex gap-3">
+            <button (click)="close()"
+                class="flex-1 py-4 text-sm font-bold text-gray-500 hover:text-gray-700 transition-colors">
+                Annuler
+            </button>
+            <button (click)="create()" [disabled]="selectedParticipants().length === 0 || creating()"
+                class="flex-1 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white py-4 rounded-2xl text-sm font-bold shadow-xl shadow-indigo-200 dark:shadow-none transition-all font-sora transform active:scale-95">
+                {{ creating() ? 'Création...' : 'Créer la discussion' }}
+            </button>
+        </div>
+    </div>
+</div>

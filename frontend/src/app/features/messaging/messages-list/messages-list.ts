@@ -15,8 +15,7 @@ export class MessagesList implements OnInit {
 
   conversations = signal<ConversationDTO[]>([]);
   loading = signal(true);
-
-  // Ex: filter based on title
+  activeConversationId = signal<string | null>(null);
   searchQuery = signal('');
 
   filteredConversations = computed(() => {
@@ -37,6 +36,12 @@ export class MessagesList implements OnInit {
     } else {
       this.loading.set(false);
     }
+
+    // Follow active route
+    this.router.events.subscribe(() => {
+      const id = this.router.url.split('/').pop();
+      if (id && id !== 'messages') this.activeConversationId.set(id);
+    });
   }
 
   loadConversations(userId: string) {

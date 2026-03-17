@@ -31,7 +31,7 @@ public class ConversationService {
         Utilisateur user = getConnectedUser();
         return conversationRepository.findByParticipantIdOrderByDateCreationDesc(user.getId())
                 .stream()
-                .map(this::toDTO)
+                .map(c -> this.toDTO(c, user.getId()))
                 .collect(Collectors.toList());
     }
 
@@ -41,6 +41,7 @@ public class ConversationService {
         
         Conversation conversation = new Conversation();
         conversation.setTitre(dto.getTitre());
+        conversation.setType(dto.getType() != null ? ConversationType.valueOf(dto.getType()) : ConversationType.PRIVE);
         conversation.setDateCreation(LocalDateTime.now());
         
         conversation.getParticipants().add(creator);
@@ -55,7 +56,7 @@ public class ConversationService {
             }
         }
         
-        return toDTO(conversationRepository.save(conversation));
+        return toDTO(conversationRepository.save(conversation), creator.getId());
     }
 
     @Transactional(readOnly = true)
@@ -91,11 +92,14 @@ public class ConversationService {
         return toMessageDTO(messageRepository.save(message));
     }
 
-    private ConversationDTO toDTO(Conversation c) {
+    private ConversationDTO toDTO(Conversation c, String userId) {
         ConversationDTO dto = new ConversationDTO();
         dto.setId(c.getId());
         dto.setTitre(c.getTitre());
+        dto.setType(c.getType().name());
         dto.setDateCreation(c.getDateCreation());
+        
+        dto.setMessagesNonLus((int) messageRepository.countByConversationIdAndExpediteurIdNotAndLuFalse(c.getId(), userId));
         
         dto.setParticipants(c.getParticipants().stream().map(p -> {
             UtilisateurDTO u = new UtilisateurDTO();

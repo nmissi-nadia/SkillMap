@@ -8,7 +8,9 @@ import java.util.List;
 public class ConversationDTO {
     private String id;
     private String titre;
+    private String type;
     private LocalDateTime dateCreation;
     private List<UtilisateurDTO> participants;
     private MessageDTO dernierMessage;
+    private int messagesNonLus;
 }

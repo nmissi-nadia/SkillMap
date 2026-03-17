@@ -22,13 +22,16 @@ export interface MessageDTO {
 export interface ConversationDTO {
     id: string;
     titre: string;
+    type: string;
     dateCreation: string;
     participants: Participant[];
     dernierMessage: MessageDTO;
+    messagesNonLus: number;
 }
 
 export interface CreateConversationDTO {
     titre: string;
+    type: 'PRIVE' | 'GROUPE';
     participantIds: string[];
 }
 
@@ -55,5 +58,9 @@ export class MessagingService {
 
     sendMessage(conversationId: string, contenu: string): Observable<MessageDTO> {
         return this.http.post<MessageDTO>(`${this.API_URL}/${conversationId}/messages`, { contenu });
+    }
+
+    searchUsers(query: string): Observable<Participant[]> {
+        return this.http.get<Participant[]>(`${environment.apiUrl}/api/utilisateurs/search?q=${query}`);
     }
 }

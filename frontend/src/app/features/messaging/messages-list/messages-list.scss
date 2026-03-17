@@ -1,0 +1,14 @@
+.active-conv {
+    background: white;
+    border-color: rgba(99, 102, 241, 0.1) !important;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+}
+
+:host-context(.dark) .active-conv {
+    background: #1f2937;
+    border-color: rgba(99, 102, 241, 0.2) !important;
+}
+
+.font-sora {
+    font-family: 'Sora', sans-serif;
+}

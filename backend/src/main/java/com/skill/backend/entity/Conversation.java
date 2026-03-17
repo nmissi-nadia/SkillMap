@@ -23,6 +23,9 @@ public class Conversation {
 
     private String titre;
 
+    @Enumerated(EnumType.STRING)
+    private ConversationType type = ConversationType.PRIVE;
+
     private LocalDateTime dateCreation;
 
     @ManyToMany

@@ -80,8 +80,8 @@ export const routes: Routes = [
     },
     {
         path: 'rh/formations',
-        loadComponent:() => import('./features/rh/formations/formations.component').then(m =>m.FormationsComponent),
-        canActivate: [authGuard ,roleGuard],
+        loadComponent: () => import('./features/rh/formations/formations.component').then(m => m.FormationsComponent),
+        canActivate: [authGuard, roleGuard],
         data: { roles: ['RH'] }
     },
     {
@@ -207,9 +207,9 @@ export const routes: Routes = [
     },
     {
         path: 'messages',
+        loadComponent: () => import('./features/messaging/messaging.component').then(m => m.MessagingComponent),
         canActivate: [authGuard],
         children: [
-            { path: '', loadComponent: () => import('./features/messaging/messages-list/messages-list').then(m => m.MessagesList) },
             { path: ':id', loadComponent: () => import('./features/messaging/chat/chat').then(m => m.ChatComponent) }
         ]
     },
