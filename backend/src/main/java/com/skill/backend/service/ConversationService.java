@@ -119,7 +119,12 @@ public class ConversationService {
         dto.setContenu(m.getContenu());
         dto.setDateEnvoi(m.getDateEnvoi());
         dto.setLu(m.isLu());
-        if (m.getExpediteur() != null) dto.setExpediteurId(m.getExpediteur().getId());
+        if (m.getExpediteur() != null) {
+            dto.setExpediteurId(m.getExpediteur().getId());
+            dto.setExpediteurNom(m.getExpediteur().getNom());
+            dto.setExpediteurPrenom(m.getExpediteur().getPrenom());
+            dto.setExpediteurRole(m.getExpediteur().getRole().name());
+        }
         if (m.getDestinataire() != null) dto.setDestinataireId(m.getDestinataire().getId());
         if (m.getProjet() != null) dto.setProjetId(m.getProjet().getId());
         if (m.getConversation() != null) dto.setConversationId(m.getConversation().getId());

@@ -25,7 +25,7 @@ public class CompetenceEvaluationController {
     @PreAuthorize("hasAuthority('ROLE_EMPLOYE')")
     @Operation(summary = "Auto-évaluation d'une compétence", 
                description = "Permet à un employé de s'auto-évaluer sur une compétence (niveau 1-5)")
-    public ResponseEntity<CompetenceEmploye> autoEvaluer(
+    public ResponseEntity<com.skill.backend.dto.CompetenceEmployeDTO> autoEvaluer(
             @PathVariable String employeId,
             @RequestBody CompetenceEmployeRequestDTO request) {
         return ResponseEntity.ok(competenceEvaluationService.autoEvaluer(employeId, request));
@@ -35,7 +35,7 @@ public class CompetenceEvaluationController {
     @PreAuthorize("hasAuthority('ROLE_MANAGER')")
     @Operation(summary = "Validation manager d'une évaluation",
                description = "Permet au manager de valider et noter l'auto-évaluation d'un employé")
-    public ResponseEntity<CompetenceEmploye> validerEvaluation(
+    public ResponseEntity<com.skill.backend.dto.CompetenceEmployeDTO> validerEvaluation(
             @PathVariable String competenceEmployeId,
             @RequestBody ValidationEvaluationDTO request) {
         return ResponseEntity.ok(competenceEvaluationService.validerEvaluation(

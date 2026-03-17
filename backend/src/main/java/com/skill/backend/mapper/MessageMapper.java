@@ -12,6 +12,9 @@ public interface MessageMapper {
     MessageMapper INSTANCE = Mappers.getMapper(MessageMapper.class);
 
     @Mapping(source = "expediteur.id", target = "expediteurId")
+    @Mapping(source = "expediteur.nom", target = "expediteurNom")
+    @Mapping(source = "expediteur.prenom", target = "expediteurPrenom")
+    @Mapping(source = "expediteur.role", target = "expediteurRole")
     @Mapping(source = "destinataire.id", target = "destinataireId")
     @Mapping(source = "projet.id", target = "projetId")
     MessageDTO toDto(Message message);

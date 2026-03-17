@@ -458,13 +458,21 @@ public class RHService {
         Formation formation = new Formation();
         formation.setId(UUID.randomUUID().toString());
         formation.setTitre(dto.getTitre());
-        // formation.setOrganisme(dto.getOrganisme());
-        // formation.setType(dto.getType());
-        // formation.setStatut(dto.getStatut() != null ? dto.getStatut() : "Recommandée");
+        formation.setDescription(dto.getDescription());
+        
+        // Gérer le type de formation (obligatoire)
+        if (dto.getType() != null) {
+            try {
+                formation.setTypeFormation(com.skill.backend.enums.TypeFormation.valueOf(dto.getType().toUpperCase()));
+            } catch (Exception e) {
+                formation.setTypeFormation(com.skill.backend.enums.TypeFormation.ONLINE);
+            }
+        } else {
+            formation.setTypeFormation(com.skill.backend.enums.TypeFormation.ONLINE);
+        }
+        
         formation.setDateDebut(dto.getDateDebut());
         formation.setDateFin(dto.getDateFin());
-        // formation.setCout(dto.getCout());
-        // formation.setCertification(dto.getCertification());
         
         formation = formationRepository.save(formation);
         
@@ -482,9 +490,16 @@ public class RHService {
                 .orElseThrow(() -> new RuntimeException("Formation non trouvée"));
         
         if (dto.getTitre() != null) formation.setTitre(dto.getTitre());
-        // if (dto.getOrganisme() != null) formation.setOrganisme(dto.getOrganisme());
-        // if (dto.getType() != null) formation.setType(dto.getType());
-        // if (dto.getStatut() != null) formation.setStatut(dto.getStatut());
+        if (dto.getDescription() != null) formation.setDescription(dto.getDescription());
+        
+        if (dto.getType() != null) {
+            try {
+                formation.setTypeFormation(com.skill.backend.enums.TypeFormation.valueOf(dto.getType().toUpperCase()));
+            } catch (Exception e) {
+                // Garder l'ancien type ou mettre par défaut si invalide
+            }
+        }
+        
         if (dto.getDateDebut() != null) formation.setDateDebut(dto.getDateDebut());
         if (dto.getDateFin() != null) formation.setDateFin(dto.getDateFin());
         // if (dto.getCout() != null) formation.setCout(dto.getCout());
@@ -658,17 +673,16 @@ public class RHService {
      * Récupérer toutes les formations
      */
     public Page<FormationDTO> getAllFormations(String rhEmail, Pageable pageable) {
-        validateRH(rhEmail); // Vérifier les droits
-
-        // Utiliser PageRequest sans sort pour éviter PropertyReferenceException (ex: sort=string depuis Swagger)
-        org.springframework.data.domain.PageRequest safePageable =
-            org.springframework.data.domain.PageRequest.of(
-                pageable.getPageNumber(),
-                pageable.getPageSize()
-            );
-
-        Page<Formation> formations = formationRepository.findAll(safePageable);
-        return formations.map(this::toFormationDTO);
+        validateRH(rhEmail);
+        
+        try {
+            Page<Formation> formations = formationRepository.findAll(pageable);
+            return formations.map(this::toFormationDTO);
+        } catch (Exception e) {
+            System.err.println("❌ Erreur dans getAllFormations: " + e.getMessage());
+            // Fallback: une page vide si erreur de pagination/tri
+            return Page.empty(pageable);
+        }
     }
 
     // ========== Méthodes Helper Phase 3 ==========

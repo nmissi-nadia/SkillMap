@@ -10,6 +10,9 @@ public class MessageDTO {
     private LocalDateTime dateEnvoi;
     private boolean lu;
     private String expediteurId;
+    private String expediteurNom;
+    private String expediteurPrenom;
+    private String expediteurRole;
     private String destinataireId;
     private String projetId;
     private String conversationId;

@@ -11,6 +11,8 @@ public class CreateFormationDTO {
     @NotBlank(message = "Le titre est obligatoire")
     private String titre;
     
+    private String description;
+    
     @NotBlank(message = "L'organisme est obligatoire")
     private String organisme;
     

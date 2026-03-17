@@ -27,7 +27,7 @@ public class CompetenceEvaluationService {
      * Auto-évaluation d'une compétence par un employé
      */
     @PreAuthorize("hasAuthority('ROLE_EMPLOYE')")
-    public CompetenceEmploye autoEvaluer(String employeId, CompetenceEmployeRequestDTO request) {
+    public com.skill.backend.dto.CompetenceEmployeDTO autoEvaluer(String employeId, CompetenceEmployeRequestDTO request) {
         Employe employe = employeRepository.findById(employeId)
                 .orElseThrow(() -> new RuntimeException("Employé non trouvé"));
         
@@ -62,14 +62,15 @@ public class CompetenceEvaluationService {
             );
         }
 
-        return saved;
+
+        return toDTO(saved);
     }
 
     /**
      * Validation d'une évaluation par le manager
      */
     @PreAuthorize("hasRole('MANAGER')")
-    public CompetenceEmploye validerEvaluation(String competenceEmployeId, int niveauManager, String commentaireManager) {
+    public com.skill.backend.dto.CompetenceEmployeDTO validerEvaluation(String competenceEmployeId, int niveauManager, String commentaireManager) {
         CompetenceEmploye competenceEmploye = competenceEmployeRepository.findById(competenceEmployeId)
                 .orElseThrow(() -> new RuntimeException("Évaluation non trouvée"));
 
@@ -91,6 +92,30 @@ public class CompetenceEvaluationService {
             true
         );
 
-        return updated;
+        return toDTO(updated);
+    }
+
+    private com.skill.backend.dto.CompetenceEmployeDTO toDTO(CompetenceEmploye entity) {
+        com.skill.backend.dto.CompetenceEmployeDTO dto = new com.skill.backend.dto.CompetenceEmployeDTO();
+        dto.setId(entity.getId());
+        dto.setNiveauAuto(entity.getNiveauAuto());
+        dto.setNiveauManager(entity.getNiveauManager());
+        dto.setDateEvaluation(entity.getDateEvaluation());
+        dto.setCommentaire(entity.getCommentaire());
+        dto.setEmployeId(entity.getEmploye() != null ? entity.getEmploye().getId() : null);
+        
+        if (entity.getCompetence() != null) {
+            dto.setCompetenceId(entity.getCompetence().getId());
+            dto.setCompetenceNom(entity.getCompetence().getNom());
+            
+            com.skill.backend.dto.CompetenceDTO compDto = new com.skill.backend.dto.CompetenceDTO();
+            compDto.setId(entity.getCompetence().getId());
+            compDto.setNom(entity.getCompetence().getNom());
+            compDto.setType(entity.getCompetence().getType());
+            compDto.setDescription(entity.getCompetence().getDescription());
+            dto.setCompetence(compDto);
+        }
+        
+        return dto;
     }
 }

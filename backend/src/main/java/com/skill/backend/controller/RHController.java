@@ -150,5 +150,97 @@ public class RHController {
         return ResponseEntity.ok(criticalSkills);
     }
 
+    // ========== PHASE 3: GESTION DES FORMATIONS ==========
 
+    @GetMapping("/formations")
+    @Operation(summary = "Récupérer toutes les formations",
+               description = "Liste paginée de toutes les formations disponibles")
+    public ResponseEntity<Page<FormationDTO>> getAllFormations(
+            Pageable pageable,
+            Authentication authentication) {
+        
+        System.out.println("🎯 RHController.getAllFormations - Request received");
+        Page<FormationDTO> formations = rhService.getAllFormations(authentication.getName(), pageable);
+        return ResponseEntity.ok(formations);
+    }
+
+    @PostMapping("/formations")
+    @Operation(summary = "Créer une formation",
+               description = "Permet au RH de créer une nouvelle session de formation")
+    public ResponseEntity<FormationDTO> createFormation(
+            @RequestBody CreateFormationDTO dto,
+            Authentication authentication) {
+        
+        System.out.println("🎯 RHController.createFormation - Creating: " + dto.getTitre());
+        FormationDTO created = rhService.createFormation(authentication.getName(), dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
+    }
+
+    @PutMapping("/formations/{formationId}")
+    @Operation(summary = "Modifier une formation",
+               description = "Permet au RH de modifier les détails d'une formation existante")
+    public ResponseEntity<FormationDTO> updateFormation(
+            @PathVariable String formationId,
+            @RequestBody CreateFormationDTO dto,
+            Authentication authentication) {
+        
+        System.out.println("🎯 RHController.updateFormation - Updating: " + formationId);
+        FormationDTO updated = rhService.updateFormation(authentication.getName(), formationId, dto);
+        return ResponseEntity.ok(updated);
+    }
+
+    @DeleteMapping("/formations/{formationId}")
+    @Operation(summary = "Supprimer une formation",
+               description = "Permet au RH de supprimer une formation")
+    public ResponseEntity<Void> deleteFormation(
+            @PathVariable String formationId,
+            Authentication authentication) {
+        
+        System.out.println("🎯 RHController.deleteFormation - Deleting: " + formationId);
+        rhService.deleteFormation(authentication.getName(), formationId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/formations/assign")
+    @Operation(summary = "Assigner une formation",
+               description = "Permet au RH d'assigner une formation à un ou plusieurs employés")
+    public ResponseEntity<Void> assignFormation(
+            @RequestBody AssignFormationDTO dto,
+            Authentication authentication) {
+        
+        System.out.println("🎯 RHController.assignFormation - Assigning formation " + dto.getFormationId());
+        rhService.assignFormation(authentication.getName(), dto);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/formations/{formationId}/budget")
+    @Operation(summary = "Suivi budget d'une formation",
+               description = "Récupérer les détails financiers d'une formation")
+    public ResponseEntity<FormationBudgetDTO> getFormationBudget(
+            @PathVariable String formationId,
+            Authentication authentication) {
+        
+        return ResponseEntity.ok(rhService.getFormationBudget(authentication.getName(), formationId));
+    }
+
+    @GetMapping("/formations/{formationId}/roi")
+    @Operation(summary = "ROI d'une formation",
+               description = "Récupérer le retour sur investissement calculé d'une formation")
+    public ResponseEntity<Double> getFormationROI(
+            @PathVariable String formationId,
+            Authentication authentication) {
+        
+        return ResponseEntity.ok(rhService.calculateFormationROI(authentication.getName(), formationId));
+    }
+
+    @PostMapping("/certifications/validate")
+    @Operation(summary = "Valider une certification",
+               description = "Permet au RH de valider ou rejeter l'obtention d'une certification")
+    public ResponseEntity<Void> validateCertification(
+            @RequestBody CertificationValidationDTO dto,
+            Authentication authentication) {
+        
+        rhService.validateCertification(authentication.getName(), dto);
+        return ResponseEntity.ok().build();
+    }
 }

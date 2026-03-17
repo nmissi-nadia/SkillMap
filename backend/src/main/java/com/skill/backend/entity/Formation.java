@@ -29,7 +29,6 @@ public class Formation {
     private String description;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private TypeFormation typeFormation; // PDF, ONLINE, PRESENTIEL
 
     private String technologie;
