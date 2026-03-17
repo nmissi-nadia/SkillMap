@@ -40,12 +40,12 @@ public class EvaluationService {
 
         // Calcul du score (pondéré par les points de chaque question)
         int totalPoints = reponses.stream()
-                .mapToInt(r -> r.getQuestion().getPoints() != null ? r.getQuestion().getPoints() : 0)
+                .mapToInt(r -> (r.getQuestion() != null && r.getQuestion().getPoints() != null) ? r.getQuestion().getPoints() : 0)
                 .sum();
 
         int pointsObtenus = reponses.stream()
                 .filter(r -> Boolean.TRUE.equals(r.getEstCorrect()))
-                .mapToInt(r -> r.getQuestion().getPoints() != null ? r.getQuestion().getPoints() : 0)
+                .mapToInt(r -> (r.getQuestion() != null && r.getQuestion().getPoints() != null) ? r.getQuestion().getPoints() : 0)
                 .sum();
 
         double scorePercent = (totalPoints > 0) ? ((double) pointsObtenus / totalPoints) * 100.0 : 0.0;
@@ -59,7 +59,7 @@ public class EvaluationService {
         TestEmploye saved = testEmployeRepository.save(testEmploye);
 
         // Mettre à jour la compétence de l'employé
-        String competenceId = testEmploye.getTestTechnique() != null ? testEmploye.getTestTechnique().getCompetenceId() : null;
+        String competenceId = (testEmploye.getTestTechnique() != null) ? testEmploye.getTestTechnique().getCompetenceId() : null;
         if (competenceId != null && !competenceId.isEmpty()) {
             updateCompetenceEmploye(testEmploye.getEmploye(), competenceId, niveauCompetence);
         }
@@ -70,9 +70,13 @@ public class EvaluationService {
         // Construire le résultat
         ResultatTestDTO resultat = new ResultatTestDTO();
         resultat.setTestEmployeId(saved.getId());
-        resultat.setEmployeId(testEmploye.getEmploye().getId());
-        resultat.setTestId(testEmploye.getTestTechnique().getId());
-        resultat.setTestTitre(testEmploye.getTestTechnique().getTitre());
+        resultat.setEmployeId(testEmploye.getEmploye() != null ? testEmploye.getEmploye().getId() : null);
+        
+        if (testEmploye.getTestTechnique() != null) {
+            resultat.setTestId(testEmploye.getTestTechnique().getId());
+            resultat.setTestTitre(testEmploye.getTestTechnique().getTitre());
+        }
+        
         resultat.setScore(scorePercent);
         resultat.setStatut("COMPLETED");
         resultat.setNiveauCompetenceAttribue(niveauCompetence);
@@ -99,14 +103,16 @@ public class EvaluationService {
      * le niveau obtenu au test.
      */
     private void updateCompetenceEmploye(Employe employe, String competenceId, int niveauAuto) {
+        if (employe == null || competenceId == null) return;
+        
         Competence competence = competenceRepository.findById(competenceId).orElse(null);
         if (competence == null) return;
 
         List<CompetenceEmploye> existants = competenceEmployeRepository.findByEmploye(employe);
-        CompetenceEmploye ce = existants.stream()
-                .filter(c -> c.getCompetence().getId().equals(competenceId))
+        CompetenceEmploye ce = (existants != null) ? existants.stream()
+                .filter(c -> c.getCompetence() != null && competenceId.equals(c.getCompetence().getId()))
                 .findFirst()
-                .orElse(new CompetenceEmploye());
+                .orElse(new CompetenceEmploye()) : new CompetenceEmploye();
 
         if (ce.getId() == null) {
             ce.setEmploye(employe);
@@ -126,14 +132,18 @@ public class EvaluationService {
         Evaluation evaluation = new Evaluation();
         evaluation.setType("test");
         evaluation.setScore(scorePercent);
-        evaluation.setCommentaire("Évaluation automatique suite au test technique: " + testEmploye.getTestTechnique().getTitre());
+        
+        String titreTest = (testEmploye.getTestTechnique() != null) ? testEmploye.getTestTechnique().getTitre() : "Inconnu";
+        evaluation.setCommentaire("Évaluation automatique suite au test technique: " + titreTest);
+        
         evaluation.setEmploye(testEmploye.getEmploye());
         evaluation.setManager(testEmploye.getManager());
         
-        String compId = testEmploye.getTestTechnique() != null ? testEmploye.getTestTechnique().getCompetenceId() : null;
+        String compId = (testEmploye.getTestTechnique() != null) ? testEmploye.getTestTechnique().getCompetenceId() : null;
         if (compId != null && !compId.isEmpty()) {
             evaluation.setCompetence(competenceRepository.findById(compId).orElse(null));
         }
+        
         evaluation.setNiveauAutoEvalue(niveauCompetence);
         evaluation.setNiveauValide(niveauCompetence); // Auto-validé pour les tests
         evaluation.setCommentaireEmploye("Test passé automatiquement");

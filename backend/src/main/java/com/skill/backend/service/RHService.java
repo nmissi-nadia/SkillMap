@@ -691,6 +691,7 @@ public class RHService {
 
         if (formation.getInscriptions() != null) {
             Set<String> ids = formation.getInscriptions().stream()
+                    .filter(i -> i != null && i.getEmploye() != null)
                     .map(i -> i.getEmploye().getId())
                     .collect(Collectors.toSet());
             dto.setEmployeIds(ids);

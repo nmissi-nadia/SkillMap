@@ -1,219 +1,151 @@
 <div class="rh-formations">
 
     <!-- Header -->
-    <div class="page-header">
+    <header class="page-header">
         <div class="header-left">
-            <div class="page-icon">
-                <svg viewBox="0 0 24 24" fill="none">
-                    <path
-                        d="M22 10V6C22 5.46957 21.7893 4.96086 21.4142 4.58579C21.0391 4.21071 20.5304 4 20 4H4C3.46957 4 2.96086 4.21071 2.58579 4.58579C2.21071 4.96086 2 5.46957 2 6V10"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                    <path
-                        d="M12 20H2V14C2 13.4696 2.21071 12.9609 2.58579 12.5858C2.96086 12.2107 3.46957 12 4 12H20C20.5304 12 21.0391 12.2107 21.4142 12.5858C21.7893 12.9609 22 13.4696 22 14V20H12Z"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                </svg>
-            </div>
-            <div>
-                <h1>Gestion des Formations</h1>
-                <p class="page-subtitle">{{ totalElements() }} formation(s) au total</p>
-            </div>
+            <h1>Gestion des Formations</h1>
+            <p class="page-subtitle">{{ totalElements() }} formation(s) disponibles pour vos équipes</p>
         </div>
         <button class="btn-primary" (click)="openCreateModal()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
-                <line x1="12" y1="5" x2="12" y2="19"></line>
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-            </svg>
+            <mat-icon>add</mat-icon>
             Nouvelle Formation
         </button>
+    </header>
+
+    <!-- Loading & Error States -->
+    <div class="loading-state" *ngIf="isLoading()">
+        <div class="spinner"></div>
+        <p>Récupération du catalogue de formations...</p>
     </div>
 
-    <!-- Loading -->
-    <div class="loading-row" *ngIf="isLoading()">
-        <div class="loading-spinner"></div>
-        <span>Chargement des formations...</span>
+    <div class="alert alert-error animate-fade-in" *ngIf="error() && !isLoading()">
+        <mat-icon>error_outline</mat-icon>
+        <span>{{ error() }}</span>
     </div>
 
-    <!-- Error -->
-    <div class="error-banner" *ngIf="error() && !isLoading()">
-        <svg viewBox="0 0 24 24" fill="none">
-            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" />
-            <line x1="12" y1="8" x2="12" y2="12" stroke="currentColor" stroke-width="2" />
-            <line x1="12" y1="16" x2="12.01" y2="16" stroke="currentColor" stroke-width="2" />
-        </svg>
-        {{ error() }}
-    </div>
-
-    <!-- Formations Cards Grid -->
+    <!-- Main Grid -->
     <div class="formations-grid" *ngIf="!isLoading() && formations().length > 0">
-        <div class="formation-card" *ngFor="let formation of formations()">
+        @for (formation of formations(); track formation.id) {
+        <div class="formation-card">
             <div class="card-top">
                 <div class="card-left">
-                    <div class="formation-icon">
-                        <svg viewBox="0 0 24 24" fill="none">
-                            <path
-                                d="M2 3H8C9.06087 3 10.0783 3.42143 10.8284 4.17157C11.5786 4.92172 12 5.93913 12 7V21C12 20.2044 11.6839 19.4413 11.1213 18.8787C10.5587 18.3161 9.79565 18 9 18H2V3Z"
-                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                            <path
-                                d="M22 3H16C14.9391 3 13.9217 3.42143 13.1716 4.17157C12.4214 4.92172 12 5.93913 12 7V21C12 20.2044 12.3161 19.4413 12.8787 18.8787C13.4413 18.3161 14.2044 18 15 18H22V3Z"
-                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                        </svg>
+                    <div class="icon-wrapper">
+                        <mat-icon>school</mat-icon>
                     </div>
-                    <div class="formation-info">
-                        <h3 class="formation-title">{{ formation.titre }}</h3>
-                        <p class="formation-organisme" *ngIf="formation.organisme">{{ formation.organisme }}</p>
+                    <div class="info">
+                        <h3>{{ formation.titre }}</h3>
+                        <p class="organisme">{{ formation.organisme || 'Interne' }}</p>
                     </div>
                 </div>
-                <span class="statut-badge" [style.background-color]="getStatutColor(formation.statut) + '18'"
-                    [style.color]="getStatutColor(formation.statut)"
-                    [style.border]="'1px solid ' + getStatutColor(formation.statut) + '35'">
-                    <span class="statut-dot" [style.background-color]="getStatutColor(formation.statut)"></span>
+                <div class="statut-badge" [style.background]="getStatutColor(formation.statut) + '15'"
+                    [style.color]="getStatutColor(formation.statut)">
                     {{ getStatutLabel(formation.statut) }}
-                </span>
-                <div class="card-actions">
-                    <button class="action-btn edit" (click)="openEditModal(formation)" title="Modifier">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                        </svg>
-                    </button>
-                    <button class="action-btn delete" (click)="confirmDelete(formation)" title="Supprimer">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="3 6 5 6 21 6"></polyline>
-                            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
-                            <path d="M10 11v6"></path>
-                            <path d="M14 11v6"></path>
-                        </svg>
-                    </button>
                 </div>
             </div>
 
-            <p class="formation-desc" *ngIf="formation.description">{{ formation.description }}</p>
+            <p class="formation-desc">{{ formation.description || 'Apprenez de nouvelles compétences avec ce programme
+                dédié.' }}</p>
 
             <div class="formation-meta">
-                <div class="meta-item" *ngIf="formation.dateDebut">
-                    <svg viewBox="0 0 24 24" fill="none">
-                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke="currentColor" stroke-width="2" />
-                        <line x1="16" y1="2" x2="16" y2="6" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round" />
-                        <line x1="8" y1="2" x2="8" y2="6" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round" />
-                        <line x1="3" y1="10" x2="21" y2="10" stroke="currentColor" stroke-width="2" />
-                    </svg>
+                <div class="meta-item">
+                    <mat-icon>calendar_today</mat-icon>
                     {{ formatDate(formation.dateDebut) }}
                 </div>
-                <div class="meta-item" *ngIf="formation.dureeHeures">
-                    <svg viewBox="0 0 24 24" fill="none">
-                        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" />
-                        <polyline points="12 6 12 12 16 14" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round" stroke-linejoin="round" />
-                    </svg>
+                <div class="meta-item">
+                    <mat-icon>timer</mat-icon>
                     {{ formation.dureeHeures }}h
                 </div>
-                <div class="meta-item" *ngIf="formation.cout">
-                    <svg viewBox="0 0 24 24" fill="none">
-                        <line x1="12" y1="1" x2="12" y2="23" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round" />
-                        <path
-                            d="M17 5H9.5C8.57174 5 7.6815 5.36875 7.02513 6.02513C6.36875 6.6815 6 7.57174 6 8.5C6 9.42826 6.36875 10.3185 7.02513 10.9749C7.6815 11.6313 8.57174 12 9.5 12H14.5C15.4283 12 16.3185 12.3687 16.9749 13.0251C17.6313 13.6815 18 14.5717 18 15.5C18 16.4283 17.6313 17.3185 16.9749 17.9749C16.3185 18.6313 15.4283 19 14.5 19H6"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                    </svg>
+                <div class="meta-item">
+                    <mat-icon>payments</mat-icon>
                     {{ formation.cout | currency:'EUR':'symbol':'1.0-0' }}
                 </div>
-                <div class="meta-item" *ngIf="formation.niveauRequis">
-                    <svg viewBox="0 0 24 24" fill="none">
-                        <polygon
-                            points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                    </svg>
-                    Niveau {{ formation.niveauRequis }}
+                <div class="meta-item">
+                    <mat-icon>trending_up</mat-icon>
+                    Niveau {{ formation.niveauRequis || 'Standard' }}
                 </div>
             </div>
 
             <div class="card-footer">
-                <div class="participants-info" *ngIf="formation.maxParticipants">
-                    <div class="participants-bar">
-                        <div class="participants-fill"
-                            [style.width.%]="((formation.nombreInscrits ?? 0) / formation.maxParticipants) * 100">
+                <div class="participants-container">
+                    <div class="bar-bg">
+                        <div class="bar-fill"
+                            [style.width.%]="((formation.nombreInscrits ?? 0) / (formation.maxParticipants || 1)) * 100">
                         </div>
                     </div>
-                    <span class="participants-text">{{ formation.nombreInscrits ?? 0 }}/{{ formation.maxParticipants }}
-                        inscrits</span>
+                    <span class="bar-label">{{ formation.nombreInscrits ?? 0 }}/{{ formation.maxParticipants }} places
+                        réservées</span>
                 </div>
-                <button class="btn-budget" (click)="viewBudgetDetails(formation)">
-                    <svg viewBox="0 0 24 24" fill="none">
-                        <path d="M1 12S5 4 12 4s11 8 11 8-4 8-11 8S1 12 1 12Z" stroke="currentColor" stroke-width="2" />
-                        <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" />
-                    </svg>
-                    Budget
-                </button>
+
+                <div class="actions">
+                    <button class="action-btn budget" (click)="viewBudgetDetails(formation)" title="Voir Budget">
+                        <mat-icon>account_balance_wallet</mat-icon>
+                    </button>
+                    <button class="action-btn edit" (click)="openEditModal(formation)" title="Modifier">
+                        <mat-icon>edit</mat-icon>
+                    </button>
+                    <button class="action-btn delete" (click)="confirmDelete(formation)" title="Supprimer">
+                        <mat-icon>delete_outline</mat-icon>
+                    </button>
+                </div>
             </div>
         </div>
+        }
     </div>
 
-    <!-- Empty state -->
-    <div class="empty-state" *ngIf="!isLoading() && formations().length === 0 && !error()">
-        <svg viewBox="0 0 24 24" fill="none">
-            <path
-                d="M2 3H8C9.06087 3 10.0783 3.42143 10.8284 4.17157C11.5786 4.92172 12 5.93913 12 7V21C12 20.2044 11.6839 19.4413 11.1213 18.8787C10.5587 18.3161 9.79565 18 9 18H2V3Z"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-            <path
-                d="M22 3H16C14.9391 3 13.9217 3.42143 13.1716 4.17157C12.4214 4.92172 12 5.93913 12 7V21C12 20.2044 12.3161 19.4413 12.8787 18.8787C13.4413 18.3161 14.2044 18 15 18H22V3Z"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-        </svg>
-        <h3>Aucune formation disponible</h3>
-        <p>Les formations seront affichées ici une fois créées.</p>
+    <!-- Empty State -->
+    <div class="empty-state animate-fade-in" *ngIf="!isLoading() && formations().length === 0 && !error()">
+        <div class="illustration-wrapper">
+            <mat-icon style="font-size: 80px; width: 80px; height: 80px; color: #cbd5e1;">auto_stories</mat-icon>
+        </div>
+        <h3>Aucune formation au catalogue</h3>
+        <p>Commencez par créer votre première formation pour vos employés.</p>
+        <button class="btn-primary" (click)="openCreateModal()" style="margin-top: 1.5rem">
+            Créer une formation
+        </button>
     </div>
 
     <!-- Pagination -->
     <div class="pagination" *ngIf="!isLoading() && totalPages() > 1">
         <button class="page-btn" (click)="previousPage()" [disabled]="currentPage() === 0">
-            <svg viewBox="0 0 24 24" fill="none">
-                <polyline points="15 18 9 12 15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round" />
-            </svg>
+            <mat-icon>chevron_left</mat-icon>
         </button>
-        <button class="page-btn" [class.active]="currentPage() === p" *ngFor="let p of getPageNumbers()"
-            (click)="goToPage(p)">
+        @for (p of getPageNumbers(); track p) {
+        <button class="page-btn" [class.active]="currentPage() === p" (click)="goToPage(p)">
             {{ p + 1 }}
         </button>
+        }
         <button class="page-btn" (click)="nextPage()" [disabled]="currentPage() >= totalPages() - 1">
-            <svg viewBox="0 0 24 24" fill="none">
-                <polyline points="9 18 15 12 9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round" />
-            </svg>
+            <mat-icon>chevron_right</mat-icon>
         </button>
     </div>
 
-    <!-- =========================================================
-       MODAL — Création / Édition
-       ========================================================= -->
+    <!-- FORM MODAL -->
     <div class="modal-overlay" *ngIf="showFormModal()" (click)="closeFormModal()">
         <div class="modal" (click)="$event.stopPropagation()">
-            <div class="modal-header">
+            <header class="modal-header">
                 <div>
-                    <h2>{{ isEditing() ? 'Modifier la Formation' : 'Nouvelle Formation' }}</h2>
-                    <p class="modal-subtitle">Remplissez les détails ci-dessous</p>
+                    <h2>{{ isEditing() ? 'Modifier formation' : 'Nouvelle formation' }}</h2>
+                    <p class="modal-subtitle">Définissez les paramètres du programme</p>
                 </div>
                 <button class="modal-close" (click)="closeFormModal()">
-                    <svg viewBox="0 0 24 24" fill="none">
-                        <line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
-                        <line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
-                    </svg>
+                    <mat-icon>close</mat-icon>
                 </button>
-            </div>
+            </header>
             <div class="modal-body">
                 <form class="formation-form">
                     <div class="form-group">
-                        <label>Titre de la formation *</label>
-                        <input type="text" [(ngModel)]="editForm.titre" name="titre" placeholder="Ex: Angular Avancé">
+                        <label>Titre de la formation</label>
+                        <input type="text" [(ngModel)]="editForm.titre" name="titre"
+                            placeholder="ex: Leadership Masterclass">
                     </div>
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Organisme *</label>
-                            <input type="text" [(ngModel)]="editForm.organisme" name="organisme" placeholder="Ex: Udemy">
+                            <label>Organisme</label>
+                            <input type="text" [(ngModel)]="editForm.organisme" name="organisme"
+                                placeholder="ex: CCI Lyon">
                         </div>
                         <div class="form-group">
-                            <label>Type *</label>
+                            <label>Type</label>
                             <select [(ngModel)]="editForm.type" name="type">
                                 <option value="Interne">Interne</option>
                                 <option value="Externe">Externe</option>
@@ -221,94 +153,71 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label>Description</label>
-                        <textarea [(ngModel)]="editForm.description" name="description" rows="3" placeholder="Objectifs et contenu..."></textarea>
+                        <label>Description des objectifs</label>
+                        <textarea [(ngModel)]="editForm.description" name="description" rows="3"></textarea>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Date Début *</label>
+                            <label>Date Début</label>
                             <input type="date" [(ngModel)]="editForm.dateDebut" name="dateDebut">
                         </div>
                         <div class="form-group">
-                            <label>Date Fin</label>
-                            <input type="date" [(ngModel)]="editForm.dateFin" name="dateFin">
+                            <label>Nombre max places</label>
+                            <input type="number" [(ngModel)]="editForm.maxParticipants" name="maxParticipants">
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Coût (€)</label>
+                            <label>Budget total (€)</label>
                             <input type="number" [(ngModel)]="editForm.cout" name="cout">
-                        </div>
-                        <div class="form-group">
-                            <label>Max Inscrits</label>
-                            <input type="number" [(ngModel)]="editForm.maxParticipants" name="maxParticipants">
                         </div>
                     </div>
                 </form>
             </div>
-            <div class="modal-footer">
+            <footer class="modal-footer">
                 <button class="btn-secondary" (click)="closeFormModal()">Annuler</button>
                 <button class="btn-primary" (click)="saveFormation()" [disabled]="isSaving()">
-                    {{ isSaving() ? 'Enregistrement...' : 'Enregistrer' }}
+                    {{ isSaving() ? 'Synchronisation...' : 'Valider' }}
                 </button>
-            </div>
+            </footer>
         </div>
     </div>
 
-    <!-- =========================================================
-       MODAL — Budget Détail
-       ========================================================= -->
+    <!-- BUDGET MODAL -->
     <div class="modal-overlay" *ngIf="showBudgetModal()" (click)="closeBudgetModal()">
         <div class="modal" (click)="$event.stopPropagation()">
-            <div class="modal-header">
+            <header class="modal-header">
                 <div>
-                    <h2>Détail Budget</h2>
+                    <h2>Analyse Budgétaire</h2>
                     <p class="modal-subtitle">{{ selectedFormation()?.titre }}</p>
                 </div>
                 <button class="modal-close" (click)="closeBudgetModal()">
-                    <svg viewBox="0 0 24 24" fill="none">
-                        <line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round" />
-                        <line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round" />
-                    </svg>
+                    <mat-icon>close</mat-icon>
                 </button>
-            </div>
+            </header>
             <div class="modal-body">
-                <div class="loading-row" *ngIf="isLoadingBudget()">
-                    <div class="loading-spinner"></div>
-                    <span>Chargement du budget...</span>
+                <div class="loading-state" *ngIf="isLoadingBudget()">
+                    <div class="spinner"></div>
                 </div>
                 <div class="budget-details" *ngIf="!isLoadingBudget() && formationBudget()">
                     <div class="budget-item">
-                        <span class="budget-label">Coût unitaire</span>
-                        <span class="budget-value">{{ formationBudget()!.coutUnitaire | currency:'EUR':'symbol':'1.2-2'
-                            }}</span>
+                        <span class="budget-label">Coût par participant</span>
+                        <span class="budget-value">{{ (formationBudget()?.coutUnitaire || 0) | currency:'EUR' }}</span>
                     </div>
                     <div class="budget-item">
-                        <span class="budget-label">Nombre d'inscrits</span>
-                        <span class="budget-value">{{ formationBudget()!.nombreInscrits }}</span>
+                        <span class="budget-label">Inscriptions confirmées</span>
+                        <span class="budget-value">{{ formationBudget()?.nombreInscrits }}</span>
                     </div>
                     <div class="budget-item budget-total">
-                        <span class="budget-label">Coût total</span>
-                        <span class="budget-value total-val">{{ formationBudget()!.coutTotal |
-                            currency:'EUR':'symbol':'1.2-2' }}</span>
-                    </div>
-                    <div class="budget-item" *ngIf="formationBudget()!.budgetRestant !== undefined">
-                        <span class="budget-label">Budget restant</span>
-                        <span class="budget-value" [class.negative]="formationBudget()!.budgetRestant! < 0">
-                            {{ formationBudget()!.budgetRestant | currency:'EUR':'symbol':'1.2-2' }}
-                        </span>
+                        <span class="budget-label">Consommation totale</span>
+                        <span class="budget-value total-val">{{ (formationBudget()?.coutTotal || 0) | currency:'EUR'
+                            }}</span>
                     </div>
                 </div>
-                <div class="empty-state-sm" *ngIf="!isLoadingBudget() && !formationBudget()">
-                    <p>Aucune information budgétaire disponible</p>
-                </div>
             </div>
-            <div class="modal-footer">
-                <button class="btn-secondary" (click)="closeBudgetModal()">Fermer</button>
-            </div>
+            <footer class="modal-footer">
+                <button class="btn-primary" (click)="closeBudgetModal()">Terminer</button>
+            </footer>
         </div>
     </div>
-
 </div>

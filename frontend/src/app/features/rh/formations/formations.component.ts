@@ -3,13 +3,13 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { RhService, FormationDTO, FormationBudgetDTO, PageResponse } from '../../../core/services/rh.service';
-
+import { MatIconModule } from '@angular/material/icon';
 @Component({
     selector: 'app-formations',
     standalone: true,
-    imports: [CommonModule, FormsModule, RouterModule],
+    imports: [CommonModule, FormsModule, RouterModule, MatIconModule],
     templateUrl: './formations.component.html',
-    styleUrls: ['./formations.component.css']
+    styleUrls: ['./formations.component.scss']
 })
 export class FormationsComponent implements OnInit {
     formations = signal<FormationDTO[]>([]);

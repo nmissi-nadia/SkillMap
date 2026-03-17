@@ -7,7 +7,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -88,35 +90,47 @@ public class FormationService {
         dto.setDateFin(formation.getDateFin());
         dto.setLieu(formation.getLieu());
 
-        if (!formation.getFormationCompetences().isEmpty()) {
-            FormationCompetence fc = formation.getFormationCompetences().iterator().next(); // On prend la première (ou modifier DTO pour array)
-            dto.setCompetenceId(fc.getCompetence().getId());
-            dto.setCompetenceNom(fc.getCompetence().getNom());
-            dto.setNiveauCible(fc.getNiveauCible());
+        if (formation.getFormationCompetences() != null && !formation.getFormationCompetences().isEmpty()) {
+            FormationCompetence fc = formation.getFormationCompetences().iterator().next();
+            if (fc != null && fc.getCompetence() != null) {
+                dto.setCompetenceId(fc.getCompetence().getId());
+                dto.setCompetenceNom(fc.getCompetence().getNom());
+                dto.setNiveauCible(fc.getNiveauCible());
+            }
         }
 
-        List<RessourceFormationDTO> ressources = formation.getRessources().stream().map(r -> {
-            RessourceFormationDTO rDto = new RessourceFormationDTO();
-            rDto.setId(r.getId());
-            rDto.setTitre(r.getTitre());
-            rDto.setUrl(r.getUrl());
-            rDto.setTypeRessource(r.getTypeRessource());
-            return rDto;
-        }).collect(Collectors.toList());
+        List<RessourceFormationDTO> ressources = new ArrayList<>();
+        if (formation.getRessources() != null) {
+            ressources = formation.getRessources().stream()
+                .filter(Objects::nonNull)
+                .map(r -> {
+                    RessourceFormationDTO rDto = new RessourceFormationDTO();
+                    rDto.setId(r.getId());
+                    rDto.setTitre(r.getTitre());
+                    rDto.setUrl(r.getUrl());
+                    rDto.setTypeRessource(r.getTypeRessource());
+                    return rDto;
+                }).collect(Collectors.toList());
+        }
         dto.setRessources(ressources);
 
-        List<InscriptionDTO> inscriptions = formation.getInscriptions().stream().map(i -> {
-            InscriptionDTO idx = new InscriptionDTO();
-            idx.setId(i.getId());
-            idx.setEmployeId(i.getEmploye().getId());
-            idx.setEmployeNom(i.getEmploye().getNom());
-            idx.setEmployePrenom(i.getEmploye().getPrenom());
-            idx.setStatut(i.getStatut());
-            idx.setProgress(i.getProgress());
-            idx.setScore(i.getScore());
-            idx.setDateInscription(i.getDateInscription());
-            return idx;
-        }).collect(Collectors.toList());
+        List<InscriptionDTO> inscriptions = new ArrayList<>();
+        if (formation.getInscriptions() != null) {
+            inscriptions = formation.getInscriptions().stream()
+                .filter(i -> i != null && i.getEmploye() != null)
+                .map(i -> {
+                    InscriptionDTO idx = new InscriptionDTO();
+                    idx.setId(i.getId());
+                    idx.setEmployeId(i.getEmploye().getId());
+                    idx.setEmployeNom(i.getEmploye().getNom());
+                    idx.setEmployePrenom(i.getEmploye().getPrenom());
+                    idx.setStatut(i.getStatut());
+                    idx.setProgress(i.getProgress());
+                    idx.setScore(i.getScore());
+                    idx.setDateInscription(i.getDateInscription());
+                    return idx;
+                }).collect(Collectors.toList());
+        }
         dto.setInscriptions(inscriptions);
 
         return dto;

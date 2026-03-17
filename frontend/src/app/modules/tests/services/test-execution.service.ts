@@ -20,6 +20,6 @@ export class TestExecutionService {
     }
 
     submitTest(testEmployeId: string, responses: any): Observable<any> {
-        return this.http.post<any>(`${this.apiUrl}/tests/${testEmployeId}/submit`, { answers: responses });
+        return this.http.post<any>(`${this.apiUrl}/tests/${testEmployeId}/submit`, responses);
     }
 }

@@ -80,8 +80,9 @@ export const routes: Routes = [
     },
     {
         path: 'rh/formations',
-        redirectTo: '/formations',
-        pathMatch: 'full'
+        loadComponent:() => import('./features/rh/formations/formations.component').then(m =>m.FormationsComponent),
+        canActivate: [authGuard ,roleGuard],
+        data: { roles: ['RH'] }
     },
     {
         path: 'rh',
