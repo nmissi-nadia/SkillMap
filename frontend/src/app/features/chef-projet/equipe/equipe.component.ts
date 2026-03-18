@@ -197,10 +197,10 @@ export class EquipeComponent implements OnInit {
 
     getAvatarColor(nom: string): string {
         const colors = [
-            'linear-gradient(135deg, #6366f1, #8b5cf6)',
-            'linear-gradient(135deg, #10b981, #059669)',
-            'linear-gradient(135deg, #f59e0b, #d97706)',
-            'linear-gradient(135deg, #3b82f6, #2563eb)',
+            'linear-gradient(135deg, var(--primary), var(--accent))',
+            'linear-gradient(135deg, var(--success), #34d399)',
+            'linear-gradient(135deg, var(--warning), #fbbf24)',
+            'linear-gradient(135deg, var(--info), #60a5fa)',
             'linear-gradient(135deg, #ec4899, #db2777)'
         ];
         const idx = (nom?.charCodeAt(0) ?? 0) % colors.length;

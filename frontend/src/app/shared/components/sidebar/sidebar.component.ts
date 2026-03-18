@@ -249,8 +249,8 @@ import { RhService } from '../../../core/services/rh.service';
     .sidebar {
       width: 280px;
       height: 100vh;
-      background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
-      border-right: 1px solid #e2e8f0;
+      background: var(--bg-primary);
+      border-right: 1px solid var(--border-light);
       display: flex;
       flex-direction: column;
       position: sticky;
@@ -262,7 +262,7 @@ import { RhService } from '../../../core/services/rh.service';
 
     .sidebar-header {
       padding: 2rem 1.5rem;
-      border-bottom: 1px solid #e2e8f0;
+      border-bottom: 1px solid var(--border-light);
     }
 
     .logo {
@@ -274,14 +274,14 @@ import { RhService } from '../../../core/services/rh.service';
     .logo-icon {
       width: 32px;
       height: 32px;
-      color: #3b82f6;
+      color: var(--primary);
       filter: drop-shadow(0 2px 4px rgba(59, 130, 246, 0.2));
     }
 
     .logo-text {
       font-size: 1.375rem;
       font-weight: 700;
-      background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+      background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       letter-spacing: -0.03em;
@@ -324,7 +324,7 @@ import { RhService } from '../../../core/services/rh.service';
       padding: 0.625rem 1rem;
       font-size: 0.6875rem;
       font-weight: 700;
-      color: #64748b;
+      color: var(--text-secondary);
       letter-spacing: 0.08em;
       text-transform: uppercase;
       margin-bottom: 0.25rem;
@@ -336,7 +336,7 @@ import { RhService } from '../../../core/services/rh.service';
       gap: 0.875rem;
       padding: 0.875rem 1rem;
       text-decoration: none;
-      color: #475569;
+      color: var(--text-secondary);
       border-radius: 0.625rem;
       font-weight: 500;
       font-size: 0.9375rem;
@@ -352,20 +352,20 @@ import { RhService } from '../../../core/services/rh.service';
       top: 0;
       height: 100%;
       width: 3px;
-      background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+      background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
       transform: scaleY(0);
       transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .sidebar-nav a:hover {
-      background: linear-gradient(135deg, rgba(59, 130, 246, 0.08) 0%, rgba(139, 92, 246, 0.08) 100%);
-      color: #1e293b;
+      background: var(--bg-light);
+      color: var(--text-primary);
       transform: translateX(2px);
     }
 
     .sidebar-nav a.active {
-      background: linear-gradient(135deg, rgba(59, 130, 246, 0.12) 0%, rgba(139, 92, 246, 0.12) 100%);
-      color: #3b82f6;
+      background: var(--bg-light);
+      color: var(--primary);
       font-weight: 600;
     }
 
@@ -382,7 +382,7 @@ import { RhService } from '../../../core/services/rh.service';
 
     .sidebar-footer {
       padding: 1rem 0.875rem 1.5rem;
-      border-top: 1px solid #e2e8f0;
+      border-top: 1px solid var(--border-light);
       display: flex;
       flex-direction: column;
       gap: 0.875rem;
@@ -394,9 +394,9 @@ import { RhService } from '../../../core/services/rh.service';
       align-items: center;
       gap: 0.875rem;
       padding: 0.625rem 0.875rem;
-      background: white;
+      background: var(--bg-primary);
       border-radius: 0.75rem;
-      border: 1px solid #e2e8f0;
+      border: 1px solid var(--border-light);
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
     }
 
@@ -404,7 +404,7 @@ import { RhService } from '../../../core/services/rh.service';
       width: 42px;
       height: 42px;
       border-radius: 50%;
-      background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+      background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
       color: white;
       display: flex;
       align-items: center;
@@ -425,7 +425,7 @@ import { RhService } from '../../../core/services/rh.service';
     .user-name {
       font-size: 0.9375rem;
       font-weight: 600;
-      color: #1e293b;
+      color: var(--text-primary);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -433,7 +433,7 @@ import { RhService } from '../../../core/services/rh.service';
 
     .user-role {
       font-size: 0.75rem;
-      color: #64748b;
+      color: var(--text-secondary);
       font-weight: 500;
     }
 
@@ -444,8 +444,8 @@ import { RhService } from '../../../core/services/rh.service';
       gap: 0.875rem;
       padding: 0.875rem 1rem;
       background: transparent;
-      border: 1px solid #fee2e2;
-      color: #dc2626;
+      border: 1px solid var(--error);
+      color: var(--error);
       cursor: pointer;
       font-family: inherit;
       font-size: 0.9375rem;
@@ -473,7 +473,7 @@ import { RhService } from '../../../core/services/rh.service';
       position: absolute;
       top: 0.625rem;
       right: 0.625rem;
-      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      background: var(--error);
       color: white;
       font-size: 0.6875rem;
       font-weight: 700;
@@ -483,7 +483,7 @@ import { RhService } from '../../../core/services/rh.service';
       text-align: center;
       box-shadow: 0 2px 12px rgba(239, 68, 68, 0.5);
       animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-      border: 2px solid white;
+      border: 2px solid var(--bg-primary);
     }
 
     @keyframes pulse {

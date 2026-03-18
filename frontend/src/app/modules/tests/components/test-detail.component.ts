@@ -135,11 +135,11 @@ import { TestTechnique } from '../models/test.model';
   `,
   styles: [`
     :host {
-      --primary: #6366f1;
+      --primary: var(--primary);
       --primary-dark: #4f46e5;
       --glass: rgba(255, 255, 255, 0.9);
       --glass-border: rgba(255, 255, 255, 0.3);
-      --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+      --bg-gradient: linear-gradient(135deg, #f8fafc 0%, var(--bg-light) 100%);
       display: block;
       min-height: 100vh;
       background: var(--bg-gradient);
@@ -170,14 +170,14 @@ import { TestTechnique } from '../models/test.model';
 
     .back-btn {
       color: #64748b;
-      background: #f1f5f9;
+      background: var(--bg-light);
     }
 
     .title-group h1 {
       margin: 0;
       font-size: 1.5rem;
       font-weight: 700;
-      color: #0f172a;
+      color: var(--bg-dark);
     }
 
     .tech-label {
@@ -227,7 +227,7 @@ import { TestTechnique } from '../models/test.model';
     }
 
     .metric-item:not(:last-child) {
-      border-bottom: 1px solid #f1f5f9;
+      border-bottom: 1px solid var(--bg-light);
     }
 
     .icon-box {
@@ -241,18 +241,18 @@ import { TestTechnique } from '../models/test.model';
 
     .icon-box mat-icon { font-size: 24px; }
 
-    .icon-box.level { background: #e0e7ff; color: #4338ca; }
+    .icon-box.level { background: rgba(15,98,254,0.1); color: var(--primary); }
     .icon-box.duration { background: #fef3c7; color: #b45309; }
-    .icon-box.points { background: #dcfce7; color: #15803d; }
+    .icon-box.points { background: rgba(36,161,72,0.1); color: #15803d; }
 
     .metric-val { display: flex; flex-direction: column; }
     .metric-val .label { font-size: 0.8rem; color: #64748b; font-weight: 500; }
-    .metric-val .value { font-size: 1.1rem; color: #0f172a; font-weight: 700; }
+    .metric-val .value { font-size: 1.1rem; color: var(--bg-dark); font-weight: 700; }
 
     .description-card mat-card-title {
       font-size: 1rem;
       font-weight: 600;
-      color: #0f172a;
+      color: var(--bg-dark);
     }
 
     .desc-text {
@@ -286,7 +286,7 @@ import { TestTechnique } from '../models/test.model';
       margin: 0;
       font-size: 1.25rem;
       font-weight: 700;
-      color: #0f172a;
+      color: var(--bg-dark);
     }
 
     .count-badge {
@@ -301,7 +301,7 @@ import { TestTechnique } from '../models/test.model';
     .question-item {
       border-radius: 16px;
       margin-bottom: 1.5rem;
-      border: 1px solid #f1f5f9;
+      border: 1px solid var(--bg-light);
       box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
       transition: transform 0.2s;
     }
@@ -322,7 +322,7 @@ import { TestTechnique } from '../models/test.model';
     .inner-idx {
       width: 28px;
       height: 28px;
-      background: #0f172a;
+      background: var(--bg-dark);
       color: white;
       border-radius: 50%;
       display: flex;
@@ -338,11 +338,11 @@ import { TestTechnique } from '../models/test.model';
       text-transform: uppercase;
       padding: 0.25rem 0.6rem;
       border-radius: 6px;
-      background: #f1f5f9;
+      background: var(--bg-light);
       color: #475569;
     }
 
-    .q-type.qcm { background: #e0e7ff; color: #4338ca; }
+    .q-type.qcm { background: rgba(15,98,254,0.1); color: var(--primary); }
 
     .points-badge {
       font-size: 0.85rem;
@@ -370,7 +370,7 @@ import { TestTechnique } from '../models/test.model';
       align-items: center;
       gap: 0.5rem;
       margin-bottom: 0.5rem;
-      color: #10b981;
+      color: var(--success);
       font-size: 0.85rem;
       font-weight: 700;
       text-transform: uppercase;

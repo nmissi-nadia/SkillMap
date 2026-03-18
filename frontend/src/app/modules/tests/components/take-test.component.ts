@@ -113,15 +113,15 @@ import { TestEmploye, TestTechnique, Question } from '../models/test.model';
   `,
   styles: [`
     :host {
-      --primary: #0f172a;
-      --accent: #6366f1;
-      --bg: #f8fafc;
+      --primary: var(--text-primary);
+      --accent: var(--primary);
+      --bg: var(--bg-light);
       --card-bg: rgba(255, 255, 255, 0.9);
-      --text: #1e293b;
-      --muted: #64748b;
-      --border: #e2e8f0;
-      --error: #ef4444;
-      --success: #10b981;
+      --text: var(--text-primary);
+      --muted: var(--text-secondary);
+      --border: var(--border-light);
+      --error: var(--error);
+      --success: var(--success);
     }
 
     .take-test-wrapper {
@@ -155,7 +155,7 @@ import { TestEmploye, TestTechnique, Question } from '../models/test.model';
     .test-subtitle { color: var(--muted); font-size: 0.9rem; margin: 0.25rem 0 0; font-weight: 600; }
 
     .timer-card {
-      background: #f1f5f9;
+      background: var(--bg-light);
       padding: 0.75rem 1.25rem;
       border-radius: 16px;
       display: flex;
@@ -163,16 +163,16 @@ import { TestEmploye, TestTechnique, Question } from '../models/test.model';
       gap: 1rem;
       transition: all 0.3s;
     }
-    .timer-card.urgent { background: #fee2e2; color: #ef4444; animation: pulse 1.5s infinite; }
+    .timer-card.urgent { background: rgba(218,30,40,0.1); color: var(--error); animation: pulse 1.5s infinite; }
     @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
     
     .timer-icon { color: var(--accent); }
-    .timer-card.urgent .timer-icon { color: #ef4444; }
+    .timer-card.urgent .timer-icon { color: var(--error); }
     .timer-values { display: flex; flex-direction: column; }
     .time { font-family: 'Sora', sans-serif; font-size: 1.25rem; font-weight: 800; line-height: 1; }
     .label { font-size: 0.7rem; text-transform: uppercase; font-weight: 700; opacity: 0.7; }
 
-    .progress-container { max-width: 1000px; margin: 0 auto; position: relative; height: 8px; background: #f1f5f9; border-radius: 10px; overflow: hidden; }
+    .progress-container { max-width: 1000px; margin: 0 auto; position: relative; height: 8px; background: var(--bg-light); border-radius: 10px; overflow: hidden; }
     .progress-bar { height: 100%; background: var(--accent); transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
     .progress-text { position: absolute; right: 0; top: -20px; font-size: 0.75rem; font-weight: 700; color: var(--muted); }
 
@@ -192,7 +192,7 @@ import { TestEmploye, TestTechnique, Question } from '../models/test.model';
     }
 
     .card-header { display: flex; justify-content: space-between; margin-bottom: 2rem; }
-    .q-badge { background: #e0e7ff; color: #4338ca; padding: 0.4rem 1rem; border-radius: 10px; font-weight: 800; font-size: 0.8rem; }
+    .q-badge { background: rgba(15,98,254,0.1); color: var(--primary); padding: 0.4rem 1rem; border-radius: 10px; font-weight: 800; font-size: 0.8rem; }
     .points-badge { color: var(--muted); font-weight: 700; font-size: 0.9rem; }
 
     .question-content { font-family: 'Sora', sans-serif; font-size: 1.75rem; font-weight: 700; color: var(--primary); line-height: 1.4; margin-bottom: 2.5rem; }
@@ -207,7 +207,7 @@ import { TestEmploye, TestTechnique, Question } from '../models/test.model';
       cursor: pointer;
     }
     .option-item:hover { border-color: var(--accent); background: #f8fafc; }
-    .option-item.selected { border-color: var(--accent); background: #eef2ff; box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.1); }
+    .option-item.selected { border-color: var(--accent); background: rgba(15,98,254,0.05); box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.1); }
     
     ::ng-deep .mat-mdc-radio-button { width: 100%; }
     ::ng-deep .mdc-label { font-weight: 700 !important; color: var(--text) !important; font-size: 1.1rem !important; }
@@ -233,11 +233,11 @@ import { TestEmploye, TestTechnique, Question } from '../models/test.model';
     .btn-primary:hover { background: var(--accent); transform: translateX(5px); }
     
     .btn-secondary { background: transparent; color: var(--muted); border: 1px solid var(--border); }
-    .btn-secondary:hover:not(:disabled) { background: #f1f5f9; color: var(--primary); }
+    .btn-secondary:hover:not(:disabled) { background: var(--bg-light); color: var(--primary); }
     .btn-secondary:disabled { opacity: 0.5; cursor: not-allowed; }
 
     .btn-submit { background: var(--success); color: white; box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.2); }
-    .btn-submit:hover { background: #059669; transform: scale(1.05); }
+    .btn-submit:hover { background: var(--success); transform: scale(1.05); }
 
     @media (max-width: 768px) {
       .options-grid { grid-template-columns: 1fr; }

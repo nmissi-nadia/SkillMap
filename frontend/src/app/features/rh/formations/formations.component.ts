@@ -135,17 +135,17 @@ export class FormationsComponent implements OnInit {
         switch (s) {
             case 'PLANIFIÉE':
             case 'PLANIFIEE':
-                return '#3b82f6';
+                return 'var(--info)';
             case 'EN_COURS':
-                return '#f59e0b';
+                return 'var(--warning)';
             case 'TERMINÉE':
             case 'TERMINEE':
-                return '#10b981';
+                return 'var(--success)';
             case 'ANNULÉE':
             case 'ANNULEE':
-                return '#ef4444';
+                return 'var(--error)';
             default:
-                return '#6b7280';
+                return 'var(--text-light)';
         }
     }
 

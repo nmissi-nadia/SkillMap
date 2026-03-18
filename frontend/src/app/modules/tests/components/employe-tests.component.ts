@@ -123,13 +123,13 @@ import { TestEmploye } from '../models/test.model';
   `,
   styles: [`
     :host {
-      --primary: #0f172a;
-      --accent: #6366f1;
-      --bg: #f8fafc;
+      --primary: var(--text-primary);
+      --accent: var(--primary);
+      --bg: var(--bg-light);
       --card-bg: #ffffff;
-      --text: #1e293b;
-      --muted: #64748b;
-      --border: #e2e8f0;
+      --text: var(--text-primary);
+      --muted: var(--text-secondary);
+      --border: var(--border-light);
     }
 
     .page-layout {
@@ -171,9 +171,9 @@ import { TestEmploye } from '../models/test.model';
       width: 54px; height: 54px; border-radius: 16px; 
       display: flex; align-items: center; justify-content: center; 
     }
-    .stat-icon-wrap.pending { background: #fee2e2; color: #ef4444; }
-    .stat-icon-wrap.completed { background: #dcfce7; color: #10b981; }
-    .stat-icon-wrap.avg { background: #e0e7ff; color: #6366f1; }
+    .stat-icon-wrap.pending { background: rgba(218,30,40,0.1); color: var(--error); }
+    .stat-icon-wrap.completed { background: rgba(36,161,72,0.1); color: var(--success); }
+    .stat-icon-wrap.avg { background: rgba(15,98,254,0.1); color: var(--primary); }
     
     .stat-num { display: block; font-family: 'Sora', sans-serif; font-size: 1.75rem; font-weight: 800; color: var(--primary); line-height: 1; }
     .stat-desc { font-size: 0.8rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
@@ -202,7 +202,7 @@ import { TestEmploye } from '../models/test.model';
       font-size: 0.65rem; font-weight: 800; padding: 0.3rem 0.8rem; border-radius: 8px; text-transform: uppercase; 
       letter-spacing: 0.05em;
     }
-    .status-badge.assigned { background: #f1f5f9; color: #475569; }
+    .status-badge.assigned { background: var(--bg-light); color: #475569; }
     .status-badge.in_progress { background: #fff7ed; color: #c2410c; }
     .status-badge.completed { background: #ecfdf5; color: #059669; }
     
@@ -229,11 +229,11 @@ import { TestEmploye } from '../models/test.model';
     }
     .btn-outline:hover { background: var(--primary); color: white; }
 
-    .score-bar { position: absolute; bottom: 0; left: 0; right: 0; height: 5px; background: #f1f5f9; }
+    .score-bar { position: absolute; bottom: 0; left: 0; right: 0; height: 5px; background: var(--bg-light); }
     .progress { height: 100%; transition: width 1s ease-out; }
-    .progress.low { background: #ef4444; }
-    .progress.mid { background: #f59e0b; }
-    .progress.high { background: #10b981; }
+    .progress.low { background: var(--error); }
+    .progress.mid { background: var(--warning); }
+    .progress.high { background: var(--success); }
 
     .empty-state { padding: 8rem 0; text-align: center; display: flex; flex-direction: column; align-items: center; color: var(--muted); }
     .empty-icon { font-size: 4rem; width: 4rem; height: 4rem; opacity: 0.2; margin-bottom: 1.5rem; }

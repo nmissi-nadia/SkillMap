@@ -1,15 +1,15 @@
 :host {
-    --primary: #6366f1;
-    --primary-dark: #4f46e5;
-    --accent: #10b981;
-    --text-main: #0f172a;
-    --text-muted: #64748b;
-    --bg-light: #f8fafc;
-    --glass-bg: rgba(255, 255, 255, 0.7);
-    --glass-border: rgba(255, 255, 255, 0.4);
-    --border-color: #e2e8f0;
+    --primary: var(--primary);
+    --primary-dark: var(--accent);
+    --accent: var(--success);
+    --text-main: var(--text-primary);
+    --text-muted: var(--text-secondary);
+    --bg-light: var(--bg-light);
+    --glass-bg: rgba(var(--bg-card-rgb), 0.7);
+    --glass-border: var(--border-light);
+    --border-color: var(--border-light);
     --shadow-soft: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
-    --shadow-hover: 0 20px 40px -10px rgba(99, 102, 241, 0.15);
+    --shadow-hover: 0 20px 40px -10px rgba(var(--primary-rgb), 0.15);
 }
 
 .rh-formations {

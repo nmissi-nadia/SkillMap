@@ -5,8 +5,8 @@
 
 $sidebar-w: 240px;
 $sidebar-collapsed: 68px;
-$sidebar-bg: #1e1b4b;
-$sidebar-accent: #6366f1;
+$sidebar-bg: var(--bg-dark);
+$sidebar-accent: var(--primary);
 $transition: 0.25s ease;
 
 /* ======================== SHELL ======================== */
@@ -44,13 +44,13 @@ $transition: 0.25s ease;
     display: flex;
     align-items: center;
     gap: 0.625rem;
-    color: #a5b4fc;
+    color: var(--primary-light, #a5b4fc);
     overflow: hidden;
 
     .logo-text {
         font-size: 1.1rem;
         font-weight: 800;
-        background: linear-gradient(135deg, #a5b4fc, #e0e7ff);
+        background: linear-gradient(135deg, var(--primary-light, #a5b4fc), var(--bg-light));
         -webkit-background-clip: text;
         background-clip: text;
         -webkit-text-fill-color: transparent;
@@ -63,8 +63,8 @@ $transition: 0.25s ease;
     height: 32px;
     border-radius: 8px;
     border: none;
-    background: rgba(255, 255, 255, 0.06);
-    color: #94a3b8;
+    background: var(--bg-light);
+    color: var(--text-secondary);
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -74,7 +74,7 @@ $transition: 0.25s ease;
 
     &:hover {
         background: rgba(255, 255, 255, 0.1);
-        color: #e2e8f0;
+        color: var(--text-primary);
     }
 }
 
@@ -87,7 +87,7 @@ $transition: 0.25s ease;
     border-radius: 8px;
     font-size: 0.7rem;
     font-weight: 700;
-    color: #a5b4fc;
+    color: var(--primary-light, #a5b4fc);
     text-transform: uppercase;
     letter-spacing: 0.05em;
     text-align: center;
@@ -110,24 +110,24 @@ $transition: 0.25s ease;
     padding: 0.7rem 0.875rem;
     border-radius: 10px;
     text-decoration: none;
-    color: #94a3b8;
+    color: var(--text-secondary);
     transition: all 0.15s;
     white-space: nowrap;
     overflow: hidden;
     position: relative;
 
     &:hover {
-        background: rgba(255, 255, 255, 0.06);
-        color: #e2e8f0;
+        background: var(--bg-light);
+        color: var(--text-primary);
     }
 
     &.active {
         background: $sidebar-accent;
-        color: #fff;
+        color: var(--bg-primary);
         box-shadow: 0 4px 12px rgba($sidebar-accent, 0.35);
 
         .nav-icon {
-            color: #fff;
+            color: var(--bg-primary);
         }
     }
 
@@ -163,7 +163,7 @@ $transition: 0.25s ease;
     height: 34px;
     border-radius: 50%;
     background: linear-gradient(135deg, $sidebar-accent, #8b5cf6);
-    color: #fff;
+    color: var(--bg-primary);
     font-size: 0.7rem;
     font-weight: 700;
     display: flex;
@@ -179,7 +179,7 @@ $transition: 0.25s ease;
     .user-name {
         font-size: 0.8rem;
         font-weight: 600;
-        color: #e2e8f0;
+        color: var(--text-primary);
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -217,5 +217,5 @@ $transition: 0.25s ease;
 /* ======================== MAIN ======================== */
 .main-content {
     overflow-y: auto;
-    background: #f8fafc;
+    background: var(--bg-light);
 }

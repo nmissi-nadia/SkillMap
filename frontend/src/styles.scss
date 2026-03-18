@@ -73,17 +73,53 @@ button {
 }
 
 .text-primary {
-    color: var(--primary);
+    color: var(--text-primary);
 }
 
 .text-secondary {
     color: var(--text-secondary);
 }
 
+.text-light {
+    color: var(--text-light);
+}
+
 .bg-primary {
     background-color: var(--primary);
 }
 
+.bg-primary-light {
+    background-color: rgba(var(--primary-rgb), 0.1);
+}
+
+.bg-background {
+    background-color: var(--background);
+}
+
+.bg-border {
+    background-color: var(--border);
+}
+
 .bg-white {
     background-color: var(--white);
+}
+
+.border-border {
+    border-color: var(--border);
+}
+
+.border-primary-light {
+    border-color: rgba(var(--primary-rgb), 0.2);
+}
+
+.hover\:bg-primary-dark:hover {
+    background-color: rgba(var(--primary-rgb), 0.9);
+}
+
+.shadow-primary-soft {
+    box-shadow: var(--shadow-md);
+}
+
+.shadow-none {
+    box-shadow: none;
 }

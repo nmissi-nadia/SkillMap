@@ -164,13 +164,13 @@ import { TestTechnique } from '../models/test.model';
   `,
   styles: [`
     :host {
-      --primary: #0f172a;
-      --accent: #6366f1;
-      --bg: #f8fafc;
+      --primary: var(--text-primary);
+      --accent: var(--primary);
+      --bg: var(--bg-light);
       --card-bg: #ffffff;
-      --text: #1e293b;
-      --muted: #64748b;
-      --border: #e2e8f0;
+      --text: var(--text-primary);
+      --muted: var(--text-secondary);
+      --border: var(--border-light);
     }
 
     .page-layout {
@@ -284,11 +284,11 @@ import { TestTechnique } from '../models/test.model';
 
     .card-top { display: flex; justify-content: space-between; margin-bottom: 1.25rem; }
     .level-badge { font-family: 'DM Mono', monospace; font-size: 0.65rem; font-weight: 700; padding: 0.25rem 0.6rem; border-radius: 6px; text-transform: uppercase; }
-    .level-badge.junior { background: #ecfdf5; color: #059669; }
-    .level-badge.confirme { background: #eff6ff; color: #2563eb; }
-    .level-badge.senior { background: #fef2f2; color: #dc2626; }
-    .level-badge.expert { background: #faf5ff; color: #7c3aed; }
-    .level-badge.default { background: #f8fafc; color: #64748b; }
+    .level-badge.junior { background: rgba(36,161,72,0.1); color: var(--success); }
+    .level-badge.confirme { background: rgba(0,67,206,0.1); color: var(--info); }
+    .level-badge.senior { background: rgba(218,30,40,0.1); color: var(--error); }
+    .level-badge.expert { background: rgba(124,58,237,0.1); color: var(--accent); }
+    .level-badge.default { background: var(--bg-light); color: var(--text-secondary); }
     .tech-tag { font-size: 0.7rem; font-weight: 700; color: var(--muted); }
 
     .test-title { font-family: 'Sora', sans-serif; font-size: 1.25rem; font-weight: 700; color: var(--primary); margin: 0 0 0.75rem; }
@@ -306,16 +306,16 @@ import { TestTechnique } from '../models/test.model';
       padding-top: 1rem;
       margin-top: auto;
     }
-    .btn-action { transform: scale(0.85); background: #f8fafc; border-radius: 10px; }
+    .btn-action { transform: scale(0.85); background: var(--bg-light); border-radius: 10px; }
     .btn-action:hover { background: #f1f5f9; transform: scale(1); }
 
     .difficulty-bar { position: absolute; bottom: 0; left: 0; right: 0; height: 4px; background: #f1f5f9; overflow: hidden; border-radius: 0 0 24px 24px; }
     .progress { height: 100%; transition: width 0.8s ease-in-out; }
-    .progress.junior { background: #10b981; }
-    .progress.confirme { background: #3b82f6; }
-    .progress.senior { background: #ef4444; }
-    .progress.expert { background: #8b5cf6; }
-    .progress.default { background: #cbd5e1; }
+    .progress.junior { background: var(--success); }
+    .progress.confirme { background: var(--info); }
+    .progress.senior { background: var(--error); }
+    .progress.expert { background: var(--primary); }
+    .progress.default { background: var(--border-light); }
 
     .loader-wrap, .empty-state { display: flex; flex-direction: column; align-items: center; gap: 1rem; padding: 6rem 0; color: var(--muted); }
     .empty-icon { font-size: 3rem; width: 3rem; height: 3rem; opacity: 0.3; }
@@ -340,10 +340,10 @@ export class TestListComponent implements OnInit {
 
   getStats() {
     return [
-      { label: 'Total des Tests', value: this.allTests().length, icon: 'quiz', color: '#6366f1', bg: '#e0e7ff' },
-      { label: 'Niveau Junior', value: this.countByLevel('JUNIOR'), icon: 'school', color: '#10b981', bg: '#dcfce7' },
-      { label: 'Experts Senior', value: this.countByLevel('SENIOR'), icon: 'stars', color: '#f59e0b', bg: '#fef3c7' },
-      { label: 'Difficulté Max', value: this.countByLevel('EXPERT'), icon: 'psychology', color: '#d946ef', bg: '#fae8ff' }
+      { label: 'Total des Tests', value: this.allTests().length, icon: 'quiz', color: 'var(--primary)', bg: '#e0e7ff' },
+      { label: 'Niveau Junior', value: this.countByLevel('JUNIOR'), icon: 'school', color: 'var(--success)', bg: '#dcfce7' },
+      { label: 'Experts Senior', value: this.countByLevel('SENIOR'), icon: 'stars', color: 'var(--warning)', bg: '#fef3c7' },
+      { label: 'Difficulté Max', value: this.countByLevel('EXPERT'), icon: 'psychology', color: 'var(--accent)', bg: '#fae8ff' }
     ];
   }
 

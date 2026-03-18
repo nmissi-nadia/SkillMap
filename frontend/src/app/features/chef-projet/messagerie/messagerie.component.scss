@@ -18,13 +18,13 @@
     .page-title {
         font-size: 1.75rem;
         font-weight: 700;
-        color: #0f172a;
+        color: var(--text-primary);
         margin: 0;
     }
 
     .page-subtitle {
         font-size: 0.9rem;
-        color: #64748b;
+        color: var(--text-secondary);
         margin: 0.25rem 0 0;
     }
 }
@@ -36,7 +36,7 @@
     gap: 0;
     background: #fff;
     border-radius: 20px;
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--border-light);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
     overflow: hidden;
     flex: 1;
@@ -45,7 +45,7 @@
 
 /* ======================== SIDEBAR ======================== */
 .channels-sidebar {
-    background: #1e1b4b;
+    background: var(--bg-dark);
     display: flex;
     flex-direction: column;
     overflow-y: auto;
@@ -60,8 +60,8 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    color: #a5b4fc;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    color: var(--primary-light);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .channel-item {
@@ -82,7 +82,7 @@
     }
 
     &.active {
-        background: #4f46e5;
+        background: var(--accent);
     }
 }
 
@@ -91,7 +91,7 @@
     height: 32px;
     border-radius: 8px;
     background: rgba(255, 255, 255, 0.1);
-    color: #a5b4fc;
+    color: var(--primary-light);
     font-size: 1rem;
     font-weight: 700;
     display: flex;
@@ -107,7 +107,7 @@
     .channel-name {
         font-size: 0.82rem;
         font-weight: 600;
-        color: #e2e8f0;
+        color: var(--border-light);
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -115,8 +115,8 @@
 
     .channel-statut {
         font-size: 0.68rem;
-        color: #6366f1;
-        background: rgba(99, 102, 241, 0.15);
+        color: var(--primary);
+        background: rgba(15, 98, 254, 0.15);
         border-radius: 4px;
         padding: 0.1rem 0.3rem;
         display: inline-block;
@@ -154,13 +154,13 @@
     align-items: center;
     justify-content: center;
     gap: 1rem;
-    color: #94a3b8;
+    color: var(--text-light);
     text-align: center;
     padding: 2rem;
 
     h3 {
         font-size: 1.2rem;
-        color: #475569;
+        color: var(--text-secondary);
         margin: 0;
     }
 
@@ -175,7 +175,7 @@
 .chat-header {
     padding: 1rem 1.5rem;
     background: #fff;
-    border-bottom: 1px solid #e2e8f0;
+    border-bottom: 1px solid var(--border-light);
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -188,13 +188,13 @@
 
     .chat-channel-name {
         font-weight: 700;
-        color: #0f172a;
+        color: var(--text-primary);
         font-size: 1rem;
     }
 
     .chat-channel-meta {
         font-size: 0.75rem;
-        color: #94a3b8;
+        color: var(--text-light);
     }
 }
 
@@ -221,16 +221,16 @@
         content: '';
         flex: 1;
         height: 1px;
-        background: #e2e8f0;
+        background: var(--border-light);
     }
 
     span {
         font-size: 0.72rem;
         font-weight: 600;
-        color: #94a3b8;
+        color: var(--text-light);
         white-space: nowrap;
         padding: 0.2rem 0.75rem;
-        background: #f1f5f9;
+        background: var(--border-light);
         border-radius: 999px;
     }
 }
@@ -252,7 +252,7 @@
     width: 34px;
     height: 34px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    background: linear-gradient(135deg, var(--primary), var(--primary));
     color: #fff;
     font-size: 0.7rem;
     font-weight: 700;
@@ -266,14 +266,14 @@
 /* ======================== MESSAGE BUBBLE ======================== */
 .message-bubble {
     background: #fff;
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--border-light);
     border-radius: 18px 18px 18px 4px;
     padding: 0.75rem 1rem;
     max-width: 100%;
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
 
     &.mine {
-        background: linear-gradient(135deg, #6366f1, #4f46e5);
+        background: linear-gradient(135deg, var(--primary), var(--accent));
         border-color: transparent;
         border-radius: 18px 18px 4px 18px;
         color: #fff;
@@ -290,7 +290,7 @@
     .msg-sender {
         font-size: 0.72rem;
         font-weight: 700;
-        color: #6366f1;
+        color: var(--primary);
         margin-bottom: 0.25rem;
     }
 
@@ -304,7 +304,7 @@
 
     .msg-time {
         font-size: 0.65rem;
-        color: #94a3b8;
+        color: var(--text-light);
         margin-top: 0.35rem;
         text-align: right;
     }
@@ -314,7 +314,7 @@
 .input-zone {
     padding: 1rem 1.5rem;
     background: #fff;
-    border-top: 1px solid #e2e8f0;
+    border-top: 1px solid var(--border-light);
     display: flex;
     flex-direction: column;
     gap: 0.4rem;
@@ -324,15 +324,15 @@
     display: flex;
     align-items: flex-end;
     gap: 0.75rem;
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
+    background: var(--bg-light);
+    border: 1px solid var(--border-light);
     border-radius: 14px;
     padding: 0.5rem 0.75rem;
     transition: border-color 0.2s;
 
     &:focus-within {
-        border-color: #6366f1;
-        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(15, 98, 254, 0.1);
     }
 
     textarea {
@@ -341,7 +341,7 @@
         outline: none;
         background: transparent;
         font-size: 0.875rem;
-        color: #0f172a;
+        color: var(--text-primary);
         resize: none;
         line-height: 1.5;
         max-height: 120px;
@@ -349,7 +349,7 @@
         font-family: inherit;
 
         &::placeholder {
-            color: #94a3b8;
+            color: var(--text-light);
         }
     }
 }
@@ -359,7 +359,7 @@
     height: 38px;
     border-radius: 10px;
     border: none;
-    background: linear-gradient(135deg, #6366f1, #4f46e5);
+    background: linear-gradient(135deg, var(--primary), var(--accent));
     color: #fff;
     cursor: pointer;
     display: flex;
@@ -367,11 +367,11 @@
     justify-content: center;
     flex-shrink: 0;
     transition: all 0.2s;
-    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+    box-shadow: 0 2px 8px rgba(15, 98, 254, 0.3);
 
     &:hover:not(:disabled) {
         transform: scale(1.05);
-        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+        box-shadow: 0 4px 12px rgba(15, 98, 254, 0.4);
     }
 
     &:disabled {
@@ -382,7 +382,7 @@
 
 .input-hint {
     font-size: 0.7rem;
-    color: #94a3b8;
+    color: var(--text-light);
     padding-left: 0.25rem;
 }
 
@@ -394,7 +394,7 @@
     align-items: center;
     gap: 1rem;
     padding: 3rem;
-    color: #94a3b8;
+    color: var(--text-light);
     text-align: center;
     margin: auto;
 
@@ -407,8 +407,8 @@
 .spinner {
     width: 32px;
     height: 32px;
-    border: 3px solid #e2e8f0;
-    border-top-color: #6366f1;
+    border: 3px solid var(--border-light);
+    border-top-color: var(--primary);
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
 }

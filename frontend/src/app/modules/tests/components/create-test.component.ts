@@ -36,9 +36,9 @@ import { CompetenceDTO } from '../../../core/services/rh.service';
       <nav class="topnav">
         <div class="nav-brand">
           <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-            <rect width="28" height="28" rx="8" fill="#0d0d14"/>
+            <rect width="28" height="28" rx="8" fill="var(--bg-dark)"/>
             <path d="M8 20 L14 8 L20 20" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <circle cx="14" cy="14" r="2" fill="#34d399"/>
+            <circle cx="14" cy="14" r="2" fill="var(--success)"/>
           </svg>
           <span class="nav-title">Concepteur d'Évaluation</span>
         </div>
@@ -309,17 +309,17 @@ import { CompetenceDTO } from '../../../core/services/rh.service';
     @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Sora:wght@300;400;600;700&display=swap');
 
     :host {
-      --ink: #0d0d14;
-      --ink-60: rgba(13,13,20,0.55);
-      --ink-30: rgba(13,13,20,0.3);
+      --ink: var(--text-primary);
+      --ink-60: var(--text-secondary);
+      --ink-30: var(--text-light);
       --ink-10: rgba(13,13,20,0.1);
       --ink-05: rgba(13,13,20,0.05);
-      --paper: #f5f3ef;
+      --paper: var(--bg-light);
       --white: #ffffff;
-      --border: #e5e0d8;
-      --green: #34d399;
-      --blue: #60a5fa;
-      --rose: #f87171;
+      --border: var(--border-light);
+      --green: var(--success);
+      --blue: var(--info);
+      --rose: var(--error);
       --r: 12px;
     }
 
@@ -481,7 +481,7 @@ import { CompetenceDTO } from '../../../core/services/rh.service';
     }
     .lvl:hover { border-color: var(--ink-30); }
     .lvl.active { background: var(--ink); border-color: var(--ink); color: white; }
-    .lvl.expert.active { background: #7c3aed; border-color: #7c3aed; }
+    .lvl.expert.active { background: var(--accent); border-color: var(--accent); }
     .lvl-bar { display: inline-block; width: 4px; border-radius: 2px; background: currentColor; opacity: 0.2; }
     .lvl-bar.b1 { height: 6px; } .lvl-bar.b2 { height: 10px; } .lvl-bar.b3 { height: 14px; }
     .lvl-bar.on { opacity: 1; }
@@ -606,7 +606,7 @@ import { CompetenceDTO } from '../../../core/services/rh.service';
     .btn-ghost:hover { border-color: var(--ink); color: var(--ink); }
     .btn-submit {
       display: flex; align-items: center; gap: 0.5rem; margin-left: auto;
-      background: linear-gradient(135deg, #059669, #2563eb); color: white; border: none;
+      background: linear-gradient(135deg, var(--success), var(--accent)); color: white; border: none;
       font-family: 'Sora', sans-serif; font-size: 0.88rem; font-weight: 700;
       padding: 0.85rem 2rem; border-radius: 99px; cursor: pointer; transition: all 0.2s;
     }

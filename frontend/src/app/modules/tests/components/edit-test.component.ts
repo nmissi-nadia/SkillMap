@@ -35,9 +35,9 @@ import { CompetenceDTO } from '../../../core/services/rh.service';
       <nav class="topnav">
         <div class="nav-brand">
           <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-            <rect width="28" height="28" rx="8" fill="#0d0d14"/>
+            <rect width="28" height="28" rx="8" fill="var(--bg-dark)"/>
             <path d="M8 20 L14 8 L20 20" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <circle cx="14" cy="14" r="2" fill="#34d399"/>
+            <circle cx="14" cy="14" r="2" fill="var(--success)"/>
           </svg>
           <span class="nav-title">Modifier l'Évaluation</span>
         </div>
@@ -164,11 +164,11 @@ import { CompetenceDTO } from '../../../core/services/rh.service';
     .step-footer { display: flex; justify-content: space-between; gap: 1rem; margin-top: 2rem; border-top: 1px solid #eee; padding-top: 1rem; }
     .btn-primary, .btn-submit { padding: 0.8rem 1.5rem; border-radius: 99px; cursor: pointer; border: none; font-weight: 700; }
     .btn-primary { background: #000; color: #fff; }
-    .btn-submit { background: #10b981; color: #fff; }
+    .btn-submit { background: var(--success); color: #fff; }
     .btn-ghost { padding: 0.8rem 1.5rem; background: transparent; border: 1px solid #ccc; border-radius: 99px; cursor: pointer; }
     .tpill { padding: 0.2rem 0.6rem; border-radius: 99px; border: 1px solid #ccc; background: #fff; font-size: 0.7rem; cursor: pointer; }
     .tpill.on { background: #000; color: #fff; }
-    .btn-del { border: none; background: transparent; color: #ef4444; cursor: pointer; }
+    .btn-del { border: none; background: transparent; color: var(--error); cursor: pointer; }
   `]
 })
 export class EditTestComponent implements OnInit {

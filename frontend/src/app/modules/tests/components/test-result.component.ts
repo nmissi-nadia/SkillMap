@@ -77,16 +77,16 @@ import { AuthService } from '../../../core/services/auth.service';
   `,
   styles: [`
     :host {
-      --primary: #0f172a;
-      --accent: #6366f1;
-      --bg: #f8fafc;
+      --primary: var(--text-primary);
+      --accent: var(--primary);
+      --bg: var(--bg-light);
       --card-bg: rgba(255, 255, 255, 0.9);
-      --text: #1e293b;
-      --muted: #64748b;
-      --border: #e2e8f0;
-      --error: #ef4444;
-      --success: #10b981;
-      --warning: #f59e0b;
+      --text: var(--text-primary);
+      --muted: var(--text-secondary);
+      --border: var(--border-light);
+      --error: var(--error);
+      --success: var(--success);
+      --warning: var(--warning);
     }
 
     .result-layout {
@@ -126,7 +126,7 @@ import { AuthService } from '../../../core/services/auth.service';
     }
     .gauge-bg {
       position: absolute; width: 100%; height: 100%;
-      border-radius: 50%; border: 12px solid #f1f5f9;
+      border-radius: 50%; border: 12px solid var(--bg-light);
     }
     .gauge-fill {
       position: absolute; width: 100%; height: 100%;
@@ -148,8 +148,8 @@ import { AuthService } from '../../../core/services/auth.service';
       padding: 1.5rem; border-radius: 20px; margin-bottom: 2.5rem;
       border: 1px solid var(--border);
     }
-    .feedback-box.success { background: #f0fdf4; border-color: #dcfce7; }
-    .feedback-box.error { background: #fef2f2; border-color: #fee2e2; }
+    .feedback-box.success { background: #f0fdf4; border-color: rgba(36,161,72,0.1); }
+    .feedback-box.error { background: #fef2f2; border-color: rgba(218,30,40,0.1); }
 
     .feedback-icon mat-icon { font-size: 2.5rem; width: 2.5rem; height: 2.5rem; }
     .feedback-box.success .feedback-icon { color: var(--success); }
