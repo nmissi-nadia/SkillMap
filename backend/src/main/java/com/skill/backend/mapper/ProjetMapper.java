@@ -19,6 +19,5 @@ public interface ProjetMapper {
 
     @Mapping(target = "chefProjet", ignore = true)
     @Mapping(target = "employes", ignore = true)
-    @Mapping(target = "messages", ignore = true)
     Projet toEntity(ProjetDTO projetDTO);
 }

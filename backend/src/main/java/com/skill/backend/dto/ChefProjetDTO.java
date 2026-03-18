@@ -19,5 +19,4 @@ public class ChefProjetDTO {
     private String domaine;
     private Set<String> projetIds;
     private Set<String> affectationIds;
-    private Set<String> messageProjetIds;
 }

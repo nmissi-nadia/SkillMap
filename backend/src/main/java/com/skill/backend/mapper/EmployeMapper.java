@@ -20,7 +20,6 @@ public interface EmployeMapper {
     @Mapping(source = "competenceEmployes", target = "competenceEmployeIds", qualifiedByName = "competenceEmployesToIds")
     @Mapping(source = "evaluations", target = "evaluationIds", qualifiedByName = "evaluationsToIds")
     @Mapping(source = "testEmployes", target = "testTechniqueIds", qualifiedByName = "testEmployesToIds")
-    @Mapping(source = "messagesEnvoyes", target = "messageEnvoyeIds", qualifiedByName = "messagesToIds")
     @Mapping(source = "projets", target = "projetIds", qualifiedByName = "projetsToIds")
     @Mapping(source = "inscriptionsFormation", target = "formationIds", qualifiedByName = "inscriptionsToIds")
     EmployeDTO toDto(Employe employe);
@@ -29,7 +28,6 @@ public interface EmployeMapper {
     @Mapping(target = "competenceEmployes", ignore = true)
     @Mapping(target = "evaluations", ignore = true)
     @Mapping(target = "testEmployes", ignore = true)
-    @Mapping(target = "messagesEnvoyes", ignore = true)
     @Mapping(target = "projets", ignore = true)
     @Mapping(target = "inscriptionsFormation", ignore = true)
     @Mapping(target = "password", ignore = true)
@@ -71,16 +69,6 @@ public interface EmployeMapper {
                 .collect(Collectors.toSet());
     }
 
-    @Named("messagesToIds")
-    static Set<String> messagesToIds(Set<Message> messages) {
-        if (messages == null || !org.hibernate.Hibernate.isInitialized(messages)) {
-            return null;
-        }
-        return messages.stream()
-                .filter(Objects::nonNull)
-                .map(Message::getId)
-                .collect(Collectors.toSet());
-    }
 
     @Named("projetsToIds")
     static Set<String> projetsToIds(Set<Projet> projets) {

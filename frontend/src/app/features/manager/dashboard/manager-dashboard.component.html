@@ -69,6 +69,7 @@
                 <div>
                     <h3 class="text-4xl font-black text-text-primary mb-1">{{ stats()!.nombreEmployes }}
                     </h3>
+                    <p
                         class="text-sm font-medium text-text-secondary flex items-center gap-1 group-hover:text-info transition-colors">
                         Membres actifs
                     </p>
@@ -91,7 +92,8 @@
                 </div>
                 <div>
                     <h3 class="text-3xl font-black text-text-primary mb-2 flex items-baseline gap-1">
-                            class="text-lg text-text-light font-medium">%</span>
+                        {{ stats()!.niveauMoyenEquipe }}
+                        <span class="text-lg text-text-light font-medium">%</span>
                     </h3>
                     <div class="flex justify-between text-xs font-medium text-text-secondary mb-1.5">
                         <span>Niveau global</span>
@@ -111,6 +113,7 @@
             </div>
             <div class="relative z-10">
                 <div class="flex justify-between items-start mb-4">
+                    <div
                         class="h-12 w-12 rounded-xl bg-warning/10 flex items-center justify-center text-warning group-hover:scale-110 transition-transform duration-300">
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

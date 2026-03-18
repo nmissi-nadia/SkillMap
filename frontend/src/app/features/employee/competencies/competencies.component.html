@@ -213,7 +213,7 @@
                     <select [(ngModel)]="selectedCompetenceId" [disabled]="isEditMode">
                         <option value="">Sélectionner dans la liste...</option>
                         @for (c of allCompetencies(); track c.id) {
-                        <option [value]="c.id">{{ c.nom }} ({{ (c as any).type || c.categorie }})</option>
+                        <option [value]="c.id">{{ c.nom }} ({{ c.categorie }})</option>
                         }
                     </select>
                 </div>

@@ -3,7 +3,6 @@ package com.skill.backend.mapper;
 import com.skill.backend.dto.ChefProjetDTO;
 import com.skill.backend.entity.AffectationProjet;
 import com.skill.backend.entity.ChefProjet;
-import com.skill.backend.entity.Message;
 import com.skill.backend.entity.Projet;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -20,12 +19,10 @@ public interface ChefProjetMapper {
 
     @Mapping(source = "projets", target = "projetIds", qualifiedByName = "projetsToIds")
     @Mapping(source = "affectations", target = "affectationIds", qualifiedByName = "affectationsToIds")
-    @Mapping(source = "messagesProjet", target = "messageProjetIds", qualifiedByName = "messagesToIds")
     ChefProjetDTO toDto(ChefProjet chefProjet);
 
     @Mapping(target = "projets", ignore = true)
     @Mapping(target = "affectations", ignore = true)
-    @Mapping(target = "messagesProjet", ignore = true)
     @Mapping(target = "password", ignore = true)
     @Mapping(target = "provider", ignore = true)
     @Mapping(target = "providerId", ignore = true)
@@ -48,11 +45,4 @@ public interface ChefProjetMapper {
         return affectations.stream().map(AffectationProjet::getId).collect(Collectors.toSet());
     }
 
-    @Named("messagesToIds")
-    static Set<String> messagesToIds(Set<Message> messages) {
-        if (messages == null) {
-            return null;
-        }
-        return messages.stream().map(Message::getId).collect(Collectors.toSet());
-    }
 }

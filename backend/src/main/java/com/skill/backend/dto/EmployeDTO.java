@@ -27,7 +27,6 @@ public class EmployeDTO {
     private Set<String> competenceEmployeIds;
     private Set<String> evaluationIds;
     private Set<String> testTechniqueIds;
-    private Set<String> messageEnvoyeIds;
     private Set<String> projetIds;
     private Set<String> formationIds;
 }

@@ -157,12 +157,6 @@ export const routes: Routes = [
         data: { roles: ['CHEF_PROJET'] }
     },
     {
-        path: 'chef-projet/messagerie',
-        loadComponent: () => import('./features/chef-projet/messagerie/messagerie.component').then(m => m.MessagerieComponent),
-        canActivate: [authGuard, roleGuard],
-        data: { roles: ['CHEF_PROJET', 'MANAGER', 'RH', 'EMPLOYE'] } // Messagerie unifié potentiellement
-    },
-    {
         path: 'chef-projet',
         redirectTo: 'chef-projet/dashboard',
         pathMatch: 'full'
@@ -203,14 +197,6 @@ export const routes: Routes = [
             { path: '', loadComponent: () => import('./modules/tests/components/employe-tests.component').then(m => m.EmployeTestsComponent) },
             { path: ':id/pass', loadComponent: () => import('./modules/tests/components/take-test.component').then(m => m.TakeTestComponent) },
             { path: ':id/result', loadComponent: () => import('./modules/tests/components/test-result.component').then(m => m.TestResultComponent) }
-        ]
-    },
-    {
-        path: 'messages',
-        loadComponent: () => import('./features/messaging/messaging.component').then(m => m.MessagingComponent),
-        canActivate: [authGuard],
-        children: [
-            { path: ':id', loadComponent: () => import('./features/messaging/chat/chat').then(m => m.ChatComponent) }
         ]
     },
     {

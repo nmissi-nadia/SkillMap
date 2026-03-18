@@ -27,8 +27,5 @@ public class ChefProjet extends Utilisateur {
     @JoinColumn(name = "chef_projet_id")
     private Set<AffectationProjet> affectations = new HashSet<>();
 
-    @OneToMany
-    @JoinColumn(name = "chef_projet_id")
-    private Set<Message> messagesProjet = new HashSet<>();
 
 }

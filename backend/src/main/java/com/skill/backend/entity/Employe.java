@@ -40,8 +40,6 @@ public class Employe extends Utilisateur {
     @OneToMany(mappedBy = "employe", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<TestEmploye> testEmployes = new HashSet<>();
 
-    @OneToMany(mappedBy = "expediteur")
-    private Set<Message> messagesEnvoyes = new HashSet<>();
 
     @ManyToMany
     @JoinTable(name = "employe_projet",
