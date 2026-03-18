@@ -27,9 +27,10 @@ export class CompetenciesComponent implements OnInit {
 
     // Computed: Filtered list
     filteredCompetencies = computed(() => {
-        return this.competencies().filter((comp: EmployeeCompetence) => {
+        return this.competencies().filter((comp: any) => {
             const matchesSearch = comp.competence.nom.toLowerCase().includes(this.searchTerm().toLowerCase());
-            const matchesCategory = !this.selectedCategory() || comp.competence.categorie === this.selectedCategory();
+            const cat = comp.competence.type || comp.competence.categorie;
+            const matchesCategory = !this.selectedCategory() || cat === this.selectedCategory();
             const matchesLevel = !this.selectedLevel() || comp.niveauAuto === this.selectedLevel();
             return matchesSearch && matchesCategory && matchesLevel;
         });
@@ -54,7 +55,7 @@ export class CompetenciesComponent implements OnInit {
     // Unique categories for the filter
     categories = computed(() => {
         const cats = this.competencies()
-            .map((c: EmployeeCompetence) => c.competence.categorie)
+            .map((c: any) => c.competence.type || c.competence.categorie)
             .filter((v: string | undefined, i: number, a: (string | undefined)[]) => !!v && a.indexOf(v) === i);
         return cats as string[];
     });

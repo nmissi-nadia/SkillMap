@@ -180,8 +180,13 @@
         </div>
         } @empty {
         <div class="empty-state">
-            <img src="/c:/Users/youco/.gemini/antigravity/brain/b5bb226c-36f7-46d1-992b-7e04ff4ac649/no_competencies_illustration_1770215389035.png"
-                alt="Aucune compétence" class="empty-illustration">
+            <div class="empty-illustration">
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" class="opacity-50 mx-auto mb-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+            </div>
             <h2>Prêt à briller ?</h2>
             <p>Vous n'avez pas encore ajouté de compétences. Commencez par déclarer vos talents pour booster votre
                 profil.</p>
@@ -208,7 +213,7 @@
                     <select [(ngModel)]="selectedCompetenceId" [disabled]="isEditMode">
                         <option value="">Sélectionner dans la liste...</option>
                         @for (c of allCompetencies(); track c.id) {
-                        <option [value]="c.id">{{ c.nom }} ({{ c.categorie }})</option>
+                        <option [value]="c.id">{{ c.nom }} ({{ (c as any).type || c.categorie }})</option>
                         }
                     </select>
                 </div>

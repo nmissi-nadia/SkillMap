@@ -1,27 +1,7 @@
-:host {
-    --primary: #6366f1;
-    --primary-light: #e0e7ff;
-    --success: #10b981;
-    --success-light: #dcfce7;
-    --warning: #f59e0b;
-    --warning-light: #fef3c7;
-    --danger: #ef4444;
-    --danger-light: #fee2e2;
-    --bg-page: #f8fafc;
-    --bg-card: rgba(255, 255, 255, 0.7);
-    --glass-border: rgba(255, 255, 255, 0.4);
-    --border: #e2e8f0;
-    --text-main: #0f172a;
-    --text-muted: #64748b;
-    --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-    --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-}
-
 .mf-shell {
     min-height: 100vh;
-    background-color: var(--bg-page);
-    font-family: 'Inter', sans-serif;
-    color: var(--text-main);
+    background-color: var(--background);
+    color: var(--text-primary);
     padding: 2rem 1rem;
 }
 
@@ -62,7 +42,7 @@
 
     .header-breadcrumb {
         font-size: 0.85rem;
-        color: var(--text-muted);
+        color: var(--text-secondary);
         margin: 0 0 0.25rem;
         font-weight: 500;
     }
@@ -72,7 +52,7 @@
         font-size: 2.25rem;
         font-weight: 800;
         margin: 0;
-        color: var(--text-main);
+        color: var(--text-primary);
         letter-spacing: -0.04em;
     }
 }
@@ -85,7 +65,7 @@
     background: white;
     border: 1px solid var(--border);
     border-radius: 12px;
-    color: var(--text-main);
+    color: var(--text-primary);
     font-weight: 600;
     text-decoration: none;
     transition: all 0.2s;
@@ -107,7 +87,7 @@
 }
 
 .stat-card {
-    background: var(--bg-card);
+    background: var(--surface);
     padding: 1.5rem;
     border-radius: 20px;
     border: 1px solid var(--border);
@@ -148,13 +128,13 @@
     .stat-value {
         font-size: 1.5rem;
         font-weight: 800;
-        color: var(--text-main);
+        color: var(--text-primary);
         line-height: 1;
     }
 
     .stat-label {
         font-size: 0.85rem;
-        color: var(--text-muted);
+        color: var(--text-secondary);
         font-weight: 500;
         margin-top: 0.25rem;
     }
@@ -168,7 +148,7 @@
 }
 
 .item-card {
-    background: var(--bg-card);
+    background: var(--surface);
     backdrop-filter: blur(12px);
     border: 1px solid var(--glass-border);
     border-radius: 28px;
@@ -255,7 +235,7 @@
     font-size: 1.5rem;
     font-weight: 800;
     margin: 0;
-    color: var(--text-main);
+    color: var(--text-primary);
     line-height: 1.2;
     letter-spacing: -0.02em;
 }
@@ -270,7 +250,7 @@
         .progress-label {
             font-size: 0.85rem;
             font-weight: 600;
-            color: var(--text-muted);
+            color: var(--text-secondary);
         }
 
         .progress-value {
@@ -315,7 +295,7 @@
     align-items: center;
     gap: 0.5rem;
     font-size: 0.9rem;
-    color: var(--text-muted);
+    color: var(--text-secondary);
     background: #f8fafc;
     padding: 0.75rem;
     border-radius: 12px;
@@ -326,7 +306,7 @@
     }
 
     strong {
-        color: var(--text-main);
+        color: var(--text-primary);
     }
 }
 
@@ -336,7 +316,7 @@
         font-size: 0.8rem;
         font-weight: 700;
         text-transform: uppercase;
-        color: var(--text-muted);
+        color: var(--text-secondary);
         letter-spacing: 0.05em;
         margin-bottom: 0.75rem;
     }
@@ -356,7 +336,7 @@
         border: 1px solid var(--border);
         border-radius: 12px;
         text-decoration: none;
-        color: var(--text-main);
+        color: var(--text-primary);
         font-size: 0.9rem;
         transition: all 0.2s;
 
@@ -396,7 +376,7 @@
         align-items: center;
         gap: 0.4rem;
         font-size: 0.8rem;
-        color: var(--text-muted);
+        color: var(--text-secondary);
         font-weight: 500;
 
         .material-icons {
@@ -421,7 +401,7 @@
     }
 
     p {
-        color: var(--text-muted);
+        color: var(--text-secondary);
         font-weight: 500;
     }
 }
@@ -458,7 +438,7 @@
     }
 
     .empty-text {
-        color: var(--text-muted);
+        color: var(--text-secondary);
         max-width: 400px;
         margin: 0 auto 2rem;
     }

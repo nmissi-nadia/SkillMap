@@ -2,6 +2,7 @@ import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { TestAssignment, TestStatut } from '../../../core/models/test.model';
+import { EmployeeService } from '../../../core/services/employee.service';
 
 @Component({
     selector: 'app-employee-tests',
@@ -15,6 +16,8 @@ export class EmployeeTestsComponent implements OnInit {
     loading = signal(true);
     errorMessage = signal<string | null>(null);
 
+    constructor(private employeeService: EmployeeService) {}
+
     // Filter
     selectedFilter = signal<'all' | 'assigned' | 'in_progress' | 'completed'>('all');
 
@@ -26,85 +29,17 @@ export class EmployeeTestsComponent implements OnInit {
         this.loading.set(true);
         this.errorMessage.set(null);
 
-        // TODO: Replace with actual API call
-        // Simulated data for now
-        setTimeout(() => {
-            const mockTests: TestAssignment[] = [
-                {
-                    id: '1',
-                    testId: 't1',
-                    test: {
-                        id: 't1',
-                        titre: 'Test Technique Angular',
-                        description: 'Évaluation des compétences Angular avancées',
-                        type: 'TECHNIQUE' as any,
-                        duree: 60,
-                        difficulte: 'MOYEN' as any,
-                        technologie: 'Angular',
-                        competences: ['Angular', 'TypeScript', 'RxJS'],
-                        dateCreation: new Date()
-                    },
-                    employeId: 'emp1',
-                    employeNom: 'Dupont',
-                    employePrenom: 'Jean',
-                    managerId: 'mgr1',
-                    statut: 'ASSIGNE' as TestStatut,
-                    dateAssignation: new Date('2026-02-01'),
-                    dateLimite: new Date('2026-02-10')
-                },
-                {
-                    id: '2',
-                    testId: 't2',
-                    test: {
-                        id: 't2',
-                        titre: 'Test Java/Spring Boot',
-                        description: 'Évaluation des compétences backend Java',
-                        type: 'TECHNIQUE' as any,
-                        duree: 90,
-                        difficulte: 'DIFFICILE' as any,
-                        technologie: 'Java',
-                        competences: ['Java', 'Spring Boot', 'JPA'],
-                        dateCreation: new Date()
-                    },
-                    employeId: 'emp1',
-                    employeNom: 'Dupont',
-                    employePrenom: 'Jean',
-                    managerId: 'mgr1',
-                    statut: 'EN_COURS' as TestStatut,
-                    dateAssignation: new Date('2026-01-25'),
-                    dateLimite: new Date('2026-02-05'),
-                    dateDebut: new Date('2026-02-03')
-                },
-                {
-                    id: '3',
-                    testId: 't3',
-                    test: {
-                        id: 't3',
-                        titre: 'Test Architecture Logicielle',
-                        description: 'Évaluation des connaissances en architecture',
-                        type: 'TECHNIQUE' as any,
-                        duree: 45,
-                        difficulte: 'MOYEN' as any,
-                        technologie: 'Cloud/DevOps',
-                        competences: ['Architecture', 'Design Patterns'],
-                        dateCreation: new Date()
-                    },
-                    employeId: 'emp1',
-                    employeNom: 'Dupont',
-                    employePrenom: 'Jean',
-                    managerId: 'mgr1',
-                    statut: 'TERMINE' as TestStatut,
-                    dateAssignation: new Date('2026-01-15'),
-                    dateLimite: new Date('2026-01-25'),
-                    dateDebut: new Date('2026-01-20'),
-                    dateFin: new Date('2026-01-20'),
-                    score: 85
-                }
-            ];
-
-            this.assignedTests.set(mockTests);
-            this.loading.set(false);
-        }, 1000);
+        this.employeeService.getActiveTests().subscribe({
+            next: (tests) => {
+                this.assignedTests.set(tests);
+                this.loading.set(false);
+            },
+            error: (err) => {
+                console.error('Erreur chargement tests', err);
+                this.errorMessage.set('Impossible de charger vos tests');
+                this.loading.set(false);
+            }
+        });
     }
 
     get filteredTests() {

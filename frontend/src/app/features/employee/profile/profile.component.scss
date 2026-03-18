@@ -39,7 +39,7 @@
             font-size: 3.5rem;
             color: var(--primary);
             font-weight: 700;
-            background-color: #EEF2FF;
+            background-color: rgba(var(--primary-rgb), 0.1);
         }
 
         .info-content {
@@ -154,13 +154,13 @@
             font-weight: 600;
 
             &.available {
-                background: #DCFCE7;
-                color: #15803D;
+                background: rgba(16, 185, 129, 0.1);
+                color: var(--success);
             }
 
             &.busy {
-                background: #FEE2E2;
-                color: #B91C1C;
+                background: rgba(var(--error-rgb), 0.1);
+                color: var(--error);
             }
         }
     }

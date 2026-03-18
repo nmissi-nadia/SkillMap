@@ -3,7 +3,7 @@
 }
 
 .kpi-card {
-    @apply bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700 relative overflow-hidden cursor-pointer transition-all duration-300;
+    @apply bg-surface rounded-2xl p-6 shadow-sm border border-border relative overflow-hidden cursor-pointer transition-all duration-300;
 
     &:hover {
         @apply shadow-xl transform -translate-y-1;
@@ -22,19 +22,19 @@
     @apply inline-flex items-center px-3 py-1.5 rounded-xl text-sm font-semibold shadow-sm border transition-transform hover:-translate-y-0.5;
 
     &.badge-success {
-        @apply bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800;
+        @apply bg-success/10 text-success border-success;
     }
 
     &.badge-warning {
-        @apply bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800;
+        @apply bg-warning/10 text-warning border-warning;
     }
 }
 
 .action-btn {
-    @apply flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 transition-all cursor-pointer;
+    @apply flex items-center justify-between p-4 bg-surface rounded-2xl shadow-sm border border-border transition-all cursor-pointer;
 
     &:hover {
-        @apply shadow-md transform -translate-y-0.5 border-blue-200 dark:border-blue-800;
+        @apply shadow-md transform -translate-y-0.5 border-primary;
     }
 
     .action-icon-container {
