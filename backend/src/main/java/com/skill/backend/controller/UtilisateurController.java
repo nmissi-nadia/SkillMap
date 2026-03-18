@@ -42,7 +42,7 @@ public class UtilisateurController {
         dto.setNom(u.getNom());
         dto.setPrenom(u.getPrenom());
         dto.setEmail(u.getEmail());
-        dto.setRole(u.getRole().name());
+        dto.setRole(u.getRole());
         return dto;
     }
 }

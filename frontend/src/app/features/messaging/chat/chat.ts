@@ -2,7 +2,7 @@ import { Component, OnInit, signal, computed, ViewChild, ElementRef, AfterViewCh
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterModule } from '@angular/router';
-import { MessagingService, MessageDTO } from '../../../core/services/messaging.service';
+import { MessagingService, MessageDTO, ConversationDTO } from '../../../core/services/messaging.service';
 import { AuthService } from '../../../core/services/auth.service';
 
 @Component({

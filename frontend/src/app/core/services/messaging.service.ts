@@ -7,6 +7,7 @@ export interface Participant {
     id: string;
     nom: string;
     prenom: string;
+    role: string;
 }
 
 export interface MessageDTO {

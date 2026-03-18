@@ -44,9 +44,23 @@ services:
       dockerfile: Dockerfile
     container_name: skillmap-frontend
     ports:
-      - "80:80"
+      - "58640:80"
     depends_on:
       - backend
+    networks:
+      - skillmap-network
+
+  # pgAdmin
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: skillmap-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@skillmap.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - db
     networks:
       - skillmap-network
 
