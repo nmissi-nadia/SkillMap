@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/evaluations/competences")
 @RequiredArgsConstructor
@@ -31,11 +33,11 @@ public class CompetenceEvaluationController {
         return ResponseEntity.ok(competenceEvaluationService.autoEvaluer(employeId, request));
     }
 
-    @PutMapping("/{competenceEmployeId}/valider")
+    @PutMapping("/{competenceEmployeId}/validate")
     @PreAuthorize("hasAuthority('ROLE_MANAGER')")
     @Operation(summary = "Validation manager d'une évaluation",
                description = "Permet au manager de valider et noter l'auto-évaluation d'un employé")
-    public ResponseEntity<com.skill.backend.dto.CompetenceEmployeDTO> validerEvaluation(
+    public ResponseEntity<com.skill.backend.dto.CompetenceEmployeDTO> validateEvaluation(
             @PathVariable String competenceEmployeId,
             @RequestBody ValidationEvaluationDTO request) {
         return ResponseEntity.ok(competenceEvaluationService.validerEvaluation(
@@ -43,5 +45,13 @@ public class CompetenceEvaluationController {
             request.getNiveauValide() != null ? request.getNiveauValide() : 0, 
             request.getCommentaireManager()
         ));
+    }
+
+    @GetMapping("/{employeId}/history")
+    @PreAuthorize("hasAnyAuthority('ROLE_MANAGER', 'ROLE_EMPLOYE')")
+    @Operation(summary = "Récupérer l'historique des évaluations",
+               description = "Permet de consulter l'historique des évaluations d'un employé")
+    public ResponseEntity<List<com.skill.backend.dto.CompetenceEmployeDTO>> getHistory(@PathVariable String employeId) {
+        return ResponseEntity.ok(competenceEvaluationService.getHistory(employeId));
     }
 }

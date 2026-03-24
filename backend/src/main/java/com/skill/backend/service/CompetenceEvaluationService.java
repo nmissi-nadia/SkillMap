@@ -95,6 +95,16 @@ public class CompetenceEvaluationService {
         return toDTO(updated);
     }
 
+    /**
+     * Récupérer l'historique des évaluations d'un employé
+     */
+    @Transactional(readOnly = true)
+    public java.util.List<com.skill.backend.dto.CompetenceEmployeDTO> getHistory(String employeId) {
+        return competenceEmployeRepository.findByEmployeId(employeId).stream()
+                .map(this::toDTO)
+                .collect(java.util.stream.Collectors.toList());
+    }
+
     private com.skill.backend.dto.CompetenceEmployeDTO toDTO(CompetenceEmploye entity) {
         com.skill.backend.dto.CompetenceEmployeDTO dto = new com.skill.backend.dto.CompetenceEmployeDTO();
         dto.setId(entity.getId());

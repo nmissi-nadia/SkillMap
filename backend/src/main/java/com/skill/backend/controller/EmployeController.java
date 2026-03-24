@@ -29,6 +29,7 @@ public class EmployeController {
 
     private final EmployeService employeService;
     private final TestAssignmentService testAssignmentService;
+    private final com.skill.backend.service.NotificationService notificationService;
 
     @GetMapping
     @PreAuthorize("hasAnyAuthority('ROLE_RH', 'ROLE_MANAGER', 'ROLE_CHEF_PROJET', 'ROLE_EMPLOYE')")
@@ -65,6 +66,31 @@ public class EmployeController {
                description = "Permet à un employé de récupérer la liste de ses compétences")
     public ResponseEntity<List<CompetenceEmployeDTO>> getMyCompetencies(Authentication authentication) {
         return ResponseEntity.ok(employeService.getMyCompetencies(authentication.getName()));
+    }
+
+    @GetMapping("/me/kpis")
+    @PreAuthorize("hasAnyAuthority('ROLE_EMPLOYE', 'ROLE_MANAGER')")
+    @Operation(summary = "Récupérer ses KPIs",
+               description = "Permet à un employé ou manager de récupérer ses statistiques")
+    public ResponseEntity<com.skill.backend.dto.EmployeeKPIDTO> getMyKPIs(Authentication authentication) {
+        return ResponseEntity.ok(employeService.getMyKPIs(authentication.getName()));
+    }
+
+    @GetMapping("/me/todos")
+    @PreAuthorize("hasAnyAuthority('ROLE_EMPLOYE', 'ROLE_MANAGER')")
+    @Operation(summary = "Récupérer ses tâches à faire",
+               description = "Permet de récupérer la liste des tests et formations en attente")
+    public ResponseEntity<List<com.skill.backend.dto.TodoItemDTO>> getMyTodos(Authentication authentication) {
+        return ResponseEntity.ok(employeService.getMyTodos(authentication.getName()));
+    }
+
+    @GetMapping("/me/notifications")
+    @PreAuthorize("hasAnyAuthority('ROLE_EMPLOYE', 'ROLE_MANAGER')")
+    @Operation(summary = "Récupérer ses notifications",
+               description = "Permet de récupérer les notifications de l'utilisateur connecté")
+    public ResponseEntity<List<com.skill.backend.entity.Notification>> getMyNotifications(Authentication authentication) {
+        EmployeDTO profile = employeService.getMyProfile(authentication.getName());
+        return ResponseEntity.ok(notificationService.getNotifications(profile.getId()));
     }
 
     @PutMapping("/{employeId}")

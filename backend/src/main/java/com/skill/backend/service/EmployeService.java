@@ -35,6 +35,9 @@ public class EmployeService {
     private final NotificationService notificationService;
     private final CompetenceEmployeRepository competenceEmployeRepository;
     private final CompetenceEmployeMapper competenceEmployeMapper;
+    private final TestEmployeRepository testEmployeRepository;
+    private final FormationEmployeRepository formationEmployeRepository;
+    private final ProjetRepository projetRepository;
 
     /**
      * Récupérer le profil de l'employé connecté
@@ -296,5 +299,77 @@ public class EmployeService {
                 "WARNING"
             );
         }
+    }
+
+    /**
+     * Récupérer les KPIs du dashboard pour l'employé
+     */
+    @Transactional(readOnly = true)
+    public com.skill.backend.dto.EmployeeKPIDTO getMyKPIs(String email) {
+        Employe employe = (Employe) utilisateurRepository.findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("Employé non trouvé"));
+
+        List<com.skill.backend.entity.CompetenceEmploye> comps = competenceEmployeRepository.findByEmploye(employe);
+        
+        double avgScore = comps.stream()
+            .mapToInt(c -> c.getNiveauManager() > 0 ? c.getNiveauManager() : c.getNiveauAuto())
+            .average()
+            .orElse(0.0);
+
+        long validatedCount = comps.stream()
+            .filter(c -> c.getNiveauManager() > 0)
+            .count();
+
+        long ongoingFormations = formationEmployeRepository.findByEmployeIdAndStatut(employe.getId(), "EN_COURS").size();
+        
+        long activeProjects = projetRepository.findAll().stream()
+            .filter(p -> "EN_COURS".equals(p.getStatut()) && p.getEmployes().contains(employe))
+            .count();
+
+        return com.skill.backend.dto.EmployeeKPIDTO.builder()
+            .niveauGlobalCompetences(avgScore)
+            .competencesValidees((int) validatedCount)
+            .formationsEnCours((int) ongoingFormations)
+            .projetsActifs((int) activeProjects)
+            .build();
+    }
+
+    /**
+     * Récupérer les tâches à faire (todos) pour l'employé
+     */
+    @Transactional(readOnly = true)
+    public List<com.skill.backend.dto.TodoItemDTO> getMyTodos(String email) {
+        Employe employe = (Employe) utilisateurRepository.findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("Employé non trouvé"));
+
+        java.util.List<com.skill.backend.dto.TodoItemDTO> todos = new java.util.ArrayList<>();
+
+        // 1. Tests assignés
+        testEmployeRepository.findByEmployeId(employe.getId()).stream()
+            .filter(t -> "ASSIGNED".equals(t.getStatut()))
+            .forEach(t -> {
+                com.skill.backend.dto.TodoItemDTO dto = new com.skill.backend.dto.TodoItemDTO();
+                dto.setId(t.getId());
+                dto.setType("TEST");
+                dto.setTitle("Test technique: " + t.getTestTechnique().getTitre());
+                dto.setPriority("HIGH");
+                dto.setStatus("PENDING");
+                todos.add(dto);
+            });
+
+        // 2. Formations à suivre (assignées mais pas encore en cours ou terminées)
+        formationEmployeRepository.findByEmployeId(employe.getId()).stream()
+            .filter(f -> "ASSIGNEE".equals(f.getStatut()))
+            .forEach(f -> {
+                com.skill.backend.dto.TodoItemDTO dto = new com.skill.backend.dto.TodoItemDTO();
+                dto.setId(f.getId());
+                dto.setType("FORMATION");
+                dto.setTitle("Formation: " + f.getFormation().getTitre());
+                dto.setPriority("MEDIUM");
+                dto.setStatus("PENDING");
+                todos.add(dto);
+            });
+
+        return todos;
     }
 }
