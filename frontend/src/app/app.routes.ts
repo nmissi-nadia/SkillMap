@@ -24,6 +24,11 @@ export const routes: Routes = [
         loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent),
         canActivate: [authGuard]
     },
+    {
+        path: 'notifications',
+        loadComponent: () => import('./features/notifications/notifications.component').then(m => m.NotificationsComponent),
+        canActivate: [authGuard]
+    },
     // Manager routes
     {
         path: 'manager/dashboard',

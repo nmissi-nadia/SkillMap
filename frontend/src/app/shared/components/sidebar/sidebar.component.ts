@@ -5,13 +5,15 @@ import { AuthService } from '../../../core/services/auth.service';
 import { ManagerService } from '../../../core/services/manager.service';
 import { RhService } from '../../../core/services/rh.service';
 
+import { NotificationBellComponent } from '../notification-bell/notification-bell.component';
+
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterLinkActive],
+  imports: [CommonModule, RouterLink, RouterLinkActive, NotificationBellComponent],
   template: `
     <aside class="sidebar" *ngIf="authService.isAuthenticated()">
-      <!-- Header with Logo -->
+      <!-- Header with Logo and Bell -->
       <div class="sidebar-header">
         <div class="logo">
           <svg class="logo-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -21,6 +23,7 @@ import { RhService } from '../../../core/services/rh.service';
           </svg>
           <span class="logo-text">SkillMap</span>
         </div>
+        <app-notification-bell class="header-bell"></app-notification-bell>
       </div>
 
       <nav class="sidebar-nav">
@@ -253,8 +256,15 @@ import { RhService } from '../../../core/services/rh.service';
     }
 
     .sidebar-header {
-      padding: 2rem 1.5rem;
+      padding: 1.5rem 1.25rem;
       border-bottom: 1px solid var(--border-light);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header-bell {
+      margin-left: auto;
     }
 
     .logo {

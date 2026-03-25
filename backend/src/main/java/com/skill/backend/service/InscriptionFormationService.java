@@ -26,6 +26,7 @@ public class InscriptionFormationService {
     private final InscriptionFormationRepository inscriptionRepository;
     private final FormationRepository formationRepository;
     private final EmployeRepository employeRepository;
+    private final NotificationService notificationService;
 
     @Transactional
     public InscriptionDTO assignFormationToEmployee(String formationId, String employeeId) {
@@ -47,6 +48,15 @@ public class InscriptionFormationService {
         inscription.setProgress(0);
 
         inscription = inscriptionRepository.save(inscription);
+
+        // Envoyer une notification à l'employé
+        notificationService.notifyFormationAssignment(
+            employe.getId(),
+            formation.getTitre(),
+            "RH", // Inscription souvent faite par RH ou système
+            "Département RH"
+        );
+
         return toInscriptionDTO(inscription);
     }
 

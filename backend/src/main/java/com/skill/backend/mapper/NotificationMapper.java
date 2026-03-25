@@ -4,16 +4,19 @@ import com.skill.backend.dto.NotificationDTO;
 import com.skill.backend.entity.Notification;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.factory.Mappers;
 
+/**
+ * Mapper MapStruct pour convertir Notification <-> NotificationDTO.
+ */
 @Mapper(componentModel = "spring")
 public interface NotificationMapper {
 
-    NotificationMapper INSTANCE = Mappers.getMapper(NotificationMapper.class);
-
-    @Mapping(source = "utilisateur.id", target = "utilisateurId")
+    @Mapping(target = "lu", source = "lu")
+    @Mapping(target = "senderId", source = "senderId")
+    @Mapping(target = "senderNom", source = "senderNom")
+    @Mapping(target = "lien", source = "lien")
     NotificationDTO toDto(Notification notification);
 
-    @Mapping(source = "utilisateurId", target = "utilisateur.id")
-    Notification toEntity(NotificationDTO notificationDTO);
+    @Mapping(target = "utilisateur", ignore = true)
+    Notification toEntity(NotificationDTO dto);
 }

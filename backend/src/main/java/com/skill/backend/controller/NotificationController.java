@@ -1,16 +1,22 @@
 package com.skill.backend.controller;
 
-import com.skill.backend.entity.Notification;
+import com.skill.backend.dto.NotificationDTO;
 import com.skill.backend.service.NotificationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
+/**
+ * Contrôleur REST pour la gestion des notifications.
+ * Expose uniquement les notifications de l'utilisateur authentifié (JWT).
+ */
 @RestController
 @RequestMapping("/api/notifications")
 @RequiredArgsConstructor
@@ -20,18 +26,40 @@ public class NotificationController {
 
     private final NotificationService notificationService;
 
-    @GetMapping("/{userId}")
-    @Operation(summary = "Récupérer toutes les notifications d'un utilisateur")
-    public ResponseEntity<List<Notification>> getNotifications(@PathVariable String userId) {
+    /**
+     * Récupérer toutes les notifications de l'utilisateur connecté.
+     */
+    @GetMapping
+    @Operation(summary = "Toutes mes notifications")
+    public ResponseEntity<List<NotificationDTO>> getMyNotifications(Authentication authentication) {
+        String userId = authentication.getName();
         return ResponseEntity.ok(notificationService.getNotifications(userId));
     }
 
-    @GetMapping("/{userId}/unread")
-    @Operation(summary = "Récupérer les notifications non lues")
-    public ResponseEntity<List<Notification>> getUnreadNotifications(@PathVariable String userId) {
+    /**
+     * Récupérer les notifications non lues de l'utilisateur connecté.
+     */
+    @GetMapping("/unread")
+    @Operation(summary = "Mes notifications non lues")
+    public ResponseEntity<List<NotificationDTO>> getMyUnreadNotifications(Authentication authentication) {
+        String userId = authentication.getName();
         return ResponseEntity.ok(notificationService.getUnreadNotifications(userId));
     }
 
+    /**
+     * Nombre de notifications non lues.
+     */
+    @GetMapping("/count/unread")
+    @Operation(summary = "Nombre de notifications non lues")
+    public ResponseEntity<Map<String, Long>> countUnread(Authentication authentication) {
+        String userId = authentication.getName();
+        long count = notificationService.countUnread(userId);
+        return ResponseEntity.ok(Map.of("count", count));
+    }
+
+    /**
+     * Marquer une notification spécifique comme lue.
+     */
     @PutMapping("/{notificationId}/read")
     @Operation(summary = "Marquer une notification comme lue")
     public ResponseEntity<Void> markAsRead(@PathVariable String notificationId) {
@@ -39,10 +67,24 @@ public class NotificationController {
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("/{userId}/read-all")
+    /**
+     * Marquer toutes les notifications comme lues.
+     */
+    @PutMapping("/read-all")
     @Operation(summary = "Marquer toutes les notifications comme lues")
-    public ResponseEntity<Void> markAllAsRead(@PathVariable String userId) {
+    public ResponseEntity<Void> markAllAsRead(Authentication authentication) {
+        String userId = authentication.getName();
         notificationService.markAllAsRead(userId);
         return ResponseEntity.ok().build();
+    }
+
+    /**
+     * Supprimer une notification.
+     */
+    @DeleteMapping("/{notificationId}")
+    @Operation(summary = "Supprimer une notification")
+    public ResponseEntity<Void> deleteNotification(@PathVariable String notificationId) {
+        notificationService.deleteNotification(notificationId);
+        return ResponseEntity.noContent().build();
     }
 }

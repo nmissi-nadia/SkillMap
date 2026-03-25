@@ -26,6 +26,7 @@ public class AuthService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final AuditLogService auditLogService;
+    private final NotificationService notificationService;
 
     @Transactional
     public AuthenticationResponse register(RegisterRequest request) {
@@ -33,10 +34,13 @@ public class AuthService {
         Utilisateur user = createUserByRole(request);
         
         // Sauvegarder l'utilisateur (cascade sauvegarde automatiquement l'entité spécifique)
-        repository.save(user);
+        user = repository.save(user); // Récupérer l'entité avec ID généré
         
         // Log l'inscription
         auditLogService.logAuthentication(user.getId(), "REGISTER", true);
+
+        // Envoyer une notification de bienvenue
+        notificationService.notifyNewUser(user.getId(), user.getNom(), user.getPrenom());
         
         var jwtToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);

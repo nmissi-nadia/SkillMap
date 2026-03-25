@@ -28,6 +28,7 @@ public class TestAssignmentService {
     private final EmployeRepository employeRepository;
     private final ManagerRepository managerRepository;
     private final TestEmployeMapper testEmployeMapper;
+    private final NotificationService notificationService;
 
     /**
      * Affecter un test à un employé. Crée un TestEmploye avec statut ASSIGNED.
@@ -63,6 +64,15 @@ public class TestAssignmentService {
         testEmploye.setScore(0.0);
 
         TestEmploye saved = testEmployeRepository.save(testEmploye);
+
+        // Envoyer une notification à l'employé
+        notificationService.notifyTestAssignment(
+            employe.getId(),
+            test.getTitre(),
+            manager.getId(),
+            manager.getPrenom() + " " + manager.getNom()
+        );
+
         return testEmployeMapper.toDto(saved);
     }
 

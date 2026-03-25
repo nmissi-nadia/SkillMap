@@ -27,6 +27,7 @@ public class ProjectService {
     private final ChefProjetRepository chefProjetRepository;
     private final AffectationProjetRepository affectationRepository;
     private final EmployeRepository employeRepository;
+    private final NotificationService notificationService;
 
     // ========================================================
     // Récupérer le chef de projet connecté
@@ -136,10 +137,20 @@ public class ProjectService {
         if (dto.getDateDebut() != null) affectation.setDateDebut(dto.getDateDebut());
         if (dto.getDateFin() != null) affectation.setDateFin(dto.getDateFin());
 
-        String chefId = getChefProjetConnecte().getId();
-        affectation.setAssignePar(chefId);
+        ChefProjet chef = getChefProjetConnecte();
+        affectation.setAssignePar(chef.getId());
 
-        return toAffectationDTO(affectationRepository.save(affectation));
+        AffectationProjet saved = affectationRepository.save(affectation);
+
+        // Envoyer une notification à l'employé
+        notificationService.notifyProjectAssignment(
+            employe.getId(),
+            projet.getNom(),
+            chef.getId(),
+            chef.getPrenom() + " " + chef.getNom()
+        );
+
+        return toAffectationDTO(saved);
     }
 
     @Transactional

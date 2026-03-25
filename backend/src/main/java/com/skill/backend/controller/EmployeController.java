@@ -88,9 +88,8 @@ public class EmployeController {
     @PreAuthorize("hasAnyAuthority('ROLE_EMPLOYE', 'ROLE_MANAGER')")
     @Operation(summary = "Récupérer ses notifications",
                description = "Permet de récupérer les notifications de l'utilisateur connecté")
-    public ResponseEntity<List<com.skill.backend.entity.Notification>> getMyNotifications(Authentication authentication) {
-        EmployeDTO profile = employeService.getMyProfile(authentication.getName());
-        return ResponseEntity.ok(notificationService.getNotifications(profile.getId()));
+    public ResponseEntity<List<com.skill.backend.dto.NotificationDTO>> getMyNotifications(Authentication authentication) {
+        return ResponseEntity.ok(notificationService.getNotifications(authentication.getName()));
     }
 
     @PutMapping("/{employeId}")
