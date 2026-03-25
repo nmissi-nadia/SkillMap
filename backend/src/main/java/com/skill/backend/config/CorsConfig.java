@@ -16,6 +16,7 @@ import java.util.List;
 public class CorsConfig {
 
     @Bean
+    @org.springframework.context.annotation.Primary
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         

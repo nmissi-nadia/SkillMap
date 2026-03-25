@@ -191,4 +191,81 @@ class EvaluationServiceTest {
         r.setTestEmploye(testEmploye);
         return r;
     }
+
+    // ─────────── Edge Cases for 100% Coverage ───────────
+
+    @Test
+    void evaluate_shouldHandleEmptyTestTechnique() {
+        testEmploye.setTestTechnique(null);
+        when(testEmployeRepository.save(any())).thenReturn(testEmploye);
+        
+        ResultatTestDTO resultat = evaluationService.evaluate(testEmploye);
+        
+        assertThat(resultat.getTestId()).isNull();
+        assertThat(resultat.getCompetenceId()).isNull();
+    }
+
+    @Test
+    void evaluate_shouldHandleNullEmploye() {
+        testEmploye.setEmploye(null);
+        when(testEmployeRepository.save(any())).thenReturn(testEmploye);
+        
+        ResultatTestDTO resultat = evaluationService.evaluate(testEmploye);
+        
+        assertThat(resultat.getEmployeId()).isNull();
+    }
+
+    @Test
+    void evaluate_shouldHandleNullQuestionPoints() {
+        Question q = new Question();
+        q.setPoints(null);
+        ReponseEmploye r = new ReponseEmploye();
+        r.setQuestion(q);
+        r.setEstCorrect(true);
+        testEmploye.getReponses().add(r);
+        
+        when(testEmployeRepository.save(any())).thenReturn(testEmploye);
+        
+        ResultatTestDTO resultat = evaluationService.evaluate(testEmploye);
+        assertThat(resultat.getScore()).isEqualTo(0.0);
+    }
+
+    @Test
+    void updateCompetenceEmploye_shouldDoNothing_whenCompetenceNotFound() {
+        Question q = buildQuestion("q-1", "Rep A", 10);
+        ReponseEmploye r = buildReponse(q, "Rep A", true);
+        testEmploye.getReponses().add(r);
+
+        when(testEmployeRepository.save(any())).thenReturn(testEmploye);
+        when(competenceRepository.findById("comp-001")).thenReturn(Optional.empty());
+
+        evaluationService.evaluate(testEmploye);
+
+        verify(competenceEmployeRepository, never()).save(any());
+    }
+
+    @Test
+    void updateCompetenceEmploye_shouldCreateNew_whenNoExistantFound() {
+        Competence comp = new Competence();
+        comp.setId("comp-001");
+        
+        when(testEmployeRepository.save(any())).thenReturn(testEmploye);
+        when(competenceRepository.findById("comp-001")).thenReturn(Optional.of(comp));
+        when(competenceEmployeRepository.findByEmploye(employe)).thenReturn(null); // Coverage for null check
+        
+        evaluationService.evaluate(testEmploye);
+        
+        verify(competenceEmployeRepository).save(any());
+    }
+
+    @Test
+    void calculateNiveauCompetence_shouldHandleAllThresholds() {
+        assertThat(evaluationService.calculateNiveauCompetence(100)).isEqualTo(4);
+        assertThat(evaluationService.calculateNiveauCompetence(80)).isEqualTo(4);
+        assertThat(evaluationService.calculateNiveauCompetence(79)).isEqualTo(3);
+        assertThat(evaluationService.calculateNiveauCompetence(60)).isEqualTo(3);
+        assertThat(evaluationService.calculateNiveauCompetence(59)).isEqualTo(2);
+        assertThat(evaluationService.calculateNiveauCompetence(40)).isEqualTo(2);
+        assertThat(evaluationService.calculateNiveauCompetence(39)).isEqualTo(1);
+    }
 }
