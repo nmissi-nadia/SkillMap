@@ -89,7 +89,7 @@ import { TestTechnique } from '../models/test.model';
 
         <div class="filter-chips">
           <button
-            *ngFor="let level of ['','JUNIOR','CONFIRME','SENIOR','EXPERT']"
+            *ngFor="let level of ['','DEBUTANT','INTERMEDIAIRE','AVANCE']"
             class="chip"
             [class.active]="selectedLevel() === level"
             (click)="selectedLevel.set(level)"
@@ -113,7 +113,7 @@ import { TestTechnique } from '../models/test.model';
             [routerLink]="['/tests', test.id]"
           >
             <div class="card-top">
-              <span class="level-badge" [class]="test.niveau.toLowerCase() || 'default'">
+              <span class="level-badge" [ngClass]="test.niveau?.toLowerCase() || 'default'">
                 {{test.niveau || 'Standard'}}
               </span>
               <span class="tech-tag">{{test.technologie || 'Générique'}}</span>
@@ -129,7 +129,7 @@ import { TestTechnique } from '../models/test.model';
               </div>
               <div class="meta-item">
                 <mat-icon>analytics</mat-icon>
-                <span>{{test.questions.length || 0}} Qs</span>
+                <span>{{test.questions?.length || 0}} Qs</span>
               </div>
             </div>
 
@@ -146,7 +146,7 @@ import { TestTechnique } from '../models/test.model';
             </div>
 
             <div class="difficulty-bar">
-              <div class="progress" [style.width]="difficultyValue(test.niveau) + '%'" [class]="test.niveau.toLowerCase() || 'default'"></div>
+              <div class="progress" [style.width]="difficultyValue(test.niveau) + '%'" [ngClass]="test.niveau?.toLowerCase() || 'default'"></div>
             </div>
           </div>
         </div>
@@ -284,10 +284,9 @@ import { TestTechnique } from '../models/test.model';
 
     .card-top { display: flex; justify-content: space-between; margin-bottom: 1.25rem; }
     .level-badge { font-family: 'DM Mono', monospace; font-size: 0.65rem; font-weight: 700; padding: 0.25rem 0.6rem; border-radius: 6px; text-transform: uppercase; }
-    .level-badge.junior { background: rgba(36,161,72,0.1); color: var(--success); }
-    .level-badge.confirme { background: rgba(0,67,206,0.1); color: var(--info); }
-    .level-badge.senior { background: rgba(218,30,40,0.1); color: var(--error); }
-    .level-badge.expert { background: rgba(124,58,237,0.1); color: var(--accent); }
+    .level-badge.debutant { background: rgba(36,161,72,0.1); color: #10B981; }
+    .level-badge.intermediaire { background: rgba(0,67,206,0.1); color: #3b82f6; }
+    .level-badge.avance { background: rgba(218,30,40,0.1); color: #f43f5e; }
     .level-badge.default { background: var(--bg-light); color: var(--text-secondary); }
     .tech-tag { font-size: 0.7rem; font-weight: 700; color: var(--muted); }
 
@@ -311,10 +310,9 @@ import { TestTechnique } from '../models/test.model';
 
     .difficulty-bar { position: absolute; bottom: 0; left: 0; right: 0; height: 4px; background: #f1f5f9; overflow: hidden; border-radius: 0 0 24px 24px; }
     .progress { height: 100%; transition: width 0.8s ease-in-out; }
-    .progress.junior { background: var(--success); }
-    .progress.confirme { background: var(--info); }
-    .progress.senior { background: var(--error); }
-    .progress.expert { background: var(--primary); }
+    .progress.debutant { background: #10B981; }
+    .progress.intermediaire { background: #3b82f6; }
+    .progress.avance { background: #f43f5e; }
     .progress.default { background: var(--border-light); }
 
     .loader-wrap, .empty-state { display: flex; flex-direction: column; align-items: center; gap: 1rem; padding: 6rem 0; color: var(--muted); }
@@ -341,9 +339,9 @@ export class TestListComponent implements OnInit {
   getStats() {
     return [
       { label: 'Total des Tests', value: this.allTests().length, icon: 'quiz', color: 'var(--primary)', bg: '#e0e7ff' },
-      { label: 'Niveau Junior', value: this.countByLevel('JUNIOR'), icon: 'school', color: 'var(--success)', bg: '#dcfce7' },
-      { label: 'Experts Senior', value: this.countByLevel('SENIOR'), icon: 'stars', color: 'var(--warning)', bg: '#fef3c7' },
-      { label: 'Difficulté Max', value: this.countByLevel('EXPERT'), icon: 'psychology', color: 'var(--accent)', bg: '#fae8ff' }
+      { label: 'Débutants', value: this.countByLevel('DEBUTANT'), icon: 'school', color: '#10B981', bg: '#dcfce7' },
+      { label: 'Intermédiaires', value: this.countByLevel('INTERMEDIAIRE'), icon: 'trending_up', color: '#3b82f6', bg: '#dbeafe' },
+      { label: 'Avancés', value: this.countByLevel('AVANCE'), icon: 'stars', color: '#f43f5e', bg: '#ffe4e6' }
     ];
   }
 
@@ -387,16 +385,14 @@ export class TestListComponent implements OnInit {
     return this.allTests().filter(t => t.niveau === level).length;
   }
 
-  difficultyValue(level: string) {
-
-    switch (level) {
-      case 'JUNIOR': return 25;
-      case 'CONFIRME': return 50;
-      case 'SENIOR': return 75;
-      case 'EXPERT': return 100;
+  difficultyValue(level: string|undefined) {
+    if (!level) return 0;
+    switch (level.toUpperCase()) {
+      case 'DEBUTANT': return 33;
+      case 'INTERMEDIAIRE': return 66;
+      case 'AVANCE': return 100;
       default: return 0;
     }
-
   }
 
   resetFilters() {

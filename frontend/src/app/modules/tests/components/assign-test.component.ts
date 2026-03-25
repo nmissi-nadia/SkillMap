@@ -36,75 +36,140 @@ interface EmployeSimpleDTO {
     MatSnackBarModule
   ],
   template: `
-    <div class="assign-container">
-      <div class="header">
-        <button mat-icon-button routerLink="/tests">
-          <mat-icon>arrow_back</mat-icon>
-        </button>
-        <h1>Assigner un Test Technique</h1>
-      </div>
-
-      <mat-card *ngIf="test() as t">
-        <mat-card-header>
-          <mat-card-title>Test : {{t.titre}}</mat-card-title>
-          <mat-card-subtitle>Niveau: {{t.niveau}} | Durée: {{t.dureeMinutes}} min</mat-card-subtitle>
-        </mat-card-header>
-
-        <mat-card-content>
-          <p class="description">{{t.description}}</p>
-
-          <div class="selection-box">
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Sélectionner l'Employé</mat-label>
-              <mat-select [(ngModel)]="selectedEmployeId">
-                <mat-option *ngFor="let emp of employees()" [value]="emp.id">
-                  {{emp.prenom}} {{emp.nom}} ({{emp.poste || 'Employé'}})
-                </mat-option>
-              </mat-select>
-            </mat-form-field>
-            <p class="hint" *ngIf="employees().length === 0 && !loading">Aucun employé disponible.</p>
-          </div>
-        </mat-card-content>
-
-        <mat-card-actions align="end">
-          <button mat-button routerLink="/tests">Annuler</button>
-          <button mat-raised-button color="primary" [disabled]="!selectedEmployeId" (click)="onAssign()">
-            Confirmer l'Assignation
+    <div class="min-h-screen p-4 md:p-8 bg-background text-text-primary animate-fade-in">
+      <div class="max-w-2xl mx-auto">
+        <!-- Header -->
+        <div class="mb-10 flex items-center gap-6">
+          <button (click)="goBack()" 
+                  class="h-12 w-12 rounded-xl bg-surface border border-border flex items-center justify-center text-text-secondary hover:text-primary hover:border-primary transition-all shadow-sm">
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
           </button>
-        </mat-card-actions>
-      </mat-card>
+          <div>
+            <h1 class="text-3xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">
+              Assigner un Test
+            </h1>
+            <p class="text-text-secondary font-medium">Planification de l'évaluation technique</p>
+          </div>
+        </div>
 
-      <div *ngIf="!test()" style="padding:2rem;text-align:center;color:#999">
-        Chargement du test…
+        @if (test(); as testData) {
+          <div class="space-y-8 animate-slide-down">
+            <!-- Test Details Card -->
+            <div class="bg-surface rounded-3xl p-6 md:p-8 shadow-xl border border-border relative overflow-hidden group">
+              <div class="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
+                <svg class="h-32 w-32" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                </svg>
+              </div>
+              
+              <div class="relative z-10">
+                <div class="flex flex-wrap gap-3 mb-6">
+                  <span class="px-3 py-1 bg-primary/10 text-primary text-xs font-bold rounded-full uppercase tracking-wider">
+                    {{ testData.technologie || 'Technique' }}
+                  </span>
+                  <span class="px-3 py-1 bg-accent/10 text-accent text-xs font-bold rounded-full uppercase tracking-wider">
+                    {{ testData.niveau }}
+                  </span>
+                  <span class="px-3 py-1 bg-info/10 text-info text-xs font-bold rounded-full uppercase tracking-wider">
+                    {{ testData.dureeMinutes }} MIN
+                  </span>
+                </div>
+
+                <h2 class="text-2xl font-bold mb-4">{{ testData.titre }}</h2>
+                <p class="text-text-secondary leading-relaxed mb-0">{{ testData.description }}</p>
+              </div>
+            </div>
+
+            <!-- Selection Card -->
+            <div class="bg-surface rounded-3xl p-6 md:p-8 shadow-lg border border-border">
+              <div class="flex items-center gap-3 mb-8">
+                <div class="h-10 w-10 rounded-xl bg-accent/10 flex items-center justify-center text-accent">
+                  <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                  </svg>
+                </div>
+                <h3 class="text-xl font-bold">Sélection de l'employé</h3>
+              </div>
+
+              <div class="space-y-4">
+                @if (loading) {
+                  <div class="flex justify-center py-10">
+                    <div class="h-10 w-10 border-4 border-accent border-t-transparent rounded-full animate-spin"></div>
+                  </div>
+                } @else if (employees().length > 0) {
+                  <div class="grid grid-cols-1 gap-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                    @for (emp of employees(); track emp.id) {
+                      <button (click)="selectedEmployeId = emp.id"
+                              [class]="selectedEmployeId === emp.id 
+                                ? 'w-full text-left p-4 rounded-2xl border border-accent bg-accent text-white transition-all flex items-center justify-between group' 
+                                : 'w-full text-left p-4 rounded-2xl border border-border bg-surface-hover hover:border-accent transition-all flex items-center justify-between group'"
+                      >
+                        <div class="flex items-center gap-4">
+                          <div class="h-12 w-12 rounded-full bg-background flex items-center justify-center text-accent font-bold text-lg"
+                               [class.bg-white]="selectedEmployeId === emp.id"
+                               [class.text-accent]="selectedEmployeId === emp.id">
+                            {{ emp.prenom[0] }}{{ emp.nom[0] }}
+                          </div>
+                          <div>
+                            <div class="font-bold">{{ emp.prenom }} {{ emp.nom }}</div>
+                            <div class="text-sm opacity-80" [class.text-text-secondary]="selectedEmployeId !== emp.id">
+                              {{ emp.poste || 'Employé' }}
+                            </div>
+                          </div>
+                        </div>
+                        @if (selectedEmployeId === emp.id) {
+                          <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                          </svg>
+                        }
+                      </button>
+                    }
+                  </div>
+                } @else {
+                  <div class="p-8 text-center bg-background rounded-2xl border border-dashed border-border text-text-secondary">
+                    <p>Aucun employé disponible pour ce test.</p>
+                  </div>
+                }
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex flex-col sm:flex-row gap-4 pt-4">
+              <button (click)="goBack()" 
+                      class="flex-1 px-8 py-4 rounded-2xl border border-border font-bold text-text-secondary hover:bg-surface transition-all">
+                Annuler
+              </button>
+              <button (click)="onAssign()" 
+                      [disabled]="!selectedEmployeId"
+                      class="flex-[2] px-8 py-4 rounded-2xl bg-gradient-to-r from-primary to-accent text-white font-bold shadow-lg shadow-primary/25 hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:scale-100 disabled:shadow-none">
+                Confirmer l'Assignation
+              </button>
+            </div>
+          </div>
+        } @else {
+          <div class="flex flex-col items-center justify-center py-32 animate-fade-in text-text-secondary">
+            <div class="h-16 w-16 border-4 border-primary border-t-transparent rounded-full animate-spin mb-6"></div>
+            <p class="font-medium">Chargement des détails du test...</p>
+          </div>
+        }
       </div>
     </div>
   `,
   styles: [`
-    .assign-container {
-      padding: 2rem;
-      max-width: 600px;
-      margin: 0 auto;
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
     }
-    .header {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      margin-bottom: 2rem;
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: transparent;
     }
-    .description {
-      margin: 1.5rem 0;
-      color: var(--text-secondary, #666);
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #e5e7eb;
+      border-radius: 10px;
     }
-    .selection-box {
-      margin-top: 2rem;
-    }
-    .full-width {
-      width: 100%;
-    }
-    .hint {
-      font-size: 0.8rem;
-      color: #f44336;
-      margin-top: -0.5rem;
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #d1d5db;
     }
   `]
 })
@@ -130,7 +195,6 @@ export class AssignTestComponent implements OnInit {
 
   loadEmployees(): void {
     this.loading = true;
-    // Utilise GET /api/employes accessible à ROLE_MANAGER (pas besoin de ROLE_RH)
     this.http.get<EmployeSimpleDTO[]>(`${environment.apiUrl}/employes`).subscribe({
       next: (res) => {
         this.employees.set(res);
@@ -142,6 +206,10 @@ export class AssignTestComponent implements OnInit {
         this.snackBar.open('Impossible de charger la liste des employés.', 'Fermer', { duration: 4000 });
       }
     });
+  }
+
+  goBack(): void {
+    this.router.navigate(['/tests']);
   }
 
   onAssign(): void {

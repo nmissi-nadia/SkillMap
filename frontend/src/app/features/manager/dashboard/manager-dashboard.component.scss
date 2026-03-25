@@ -22,11 +22,13 @@
     @apply inline-flex items-center px-3 py-1.5 rounded-xl text-sm font-semibold shadow-sm border transition-transform hover:-translate-y-0.5;
 
     &.badge-success {
-        @apply bg-success/10 text-success border-success;
+        background-color: rgba(var(--success-rgb), 0.1);
+        @apply text-success border-success;
     }
 
     &.badge-warning {
-        @apply bg-warning/10 text-warning border-warning;
+        background-color: rgba(var(--warning-rgb), 0.1);
+        @apply text-warning border-warning;
     }
 }
 
@@ -39,6 +41,7 @@
 
     .action-icon-container {
         @apply p-3 rounded-xl transition-colors duration-300;
+        /* Note: explicit background colors may be needed if @apply fails elsewhere */
 
         svg {
             width: 1.5rem;
