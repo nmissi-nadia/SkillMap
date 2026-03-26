@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class InscriptionFormationService {
 
     private final InscriptionFormationRepository inscriptionRepository;
@@ -61,9 +62,19 @@ public class InscriptionFormationService {
     }
 
     public List<FormationDetailDTO> getEmployeeFormations(String employeeId) {
-        return inscriptionRepository.findByEmployeId(employeeId).stream()
-                .map(this::toFormationDTO)
-                .collect(Collectors.toList());
+        System.out.println("🎓 [InscriptionFormationService] getEmployeeFormations called for: " + employeeId);
+        try {
+            List<InscriptionFormation> inscriptions = inscriptionRepository.findByEmployeId(employeeId);
+            System.out.println("✅ [InscriptionFormationService] Found " + inscriptions.size() + " registrations");
+            
+            return inscriptions.stream()
+                    .map(this::toFormationDTO)
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            System.err.println("❌ [InscriptionFormationService] Error: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
     }
 
     @Transactional

@@ -82,11 +82,11 @@ import { FormsModule } from '@angular/forms';
                         {{ log.action }}
                       </span>
                     </td>
-                    <td class="p-4 text-sm text-gray-400 font-medium">
+                    <td class="p-4 text-sm text-slate-600 font-medium">
                       {{ log.entite }}
                     </td>
                     <td class="p-4">
-                      <div class="max-w-md truncate text-xs text-gray-500 hover:text-gray-300 transition-colors cursor-help" 
+                      <div class="max-w-md truncate text-xs text-slate-600 hover:text-slate-900 transition-colors cursor-help" 
                            [title]="getFormatedDetail(log)">
                         {{ log.nouvelEtat || 'N/A' }}
                       </div>
