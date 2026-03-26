@@ -2,6 +2,9 @@
     <app-sidebar *ngIf="authService.isAuthenticated()"></app-sidebar>
 
     <main class="main-content">
-        <router-outlet></router-outlet>
+        <app-header *ngIf="authService.isAuthenticated()"></app-header>
+        <div class="page-content">
+            <router-outlet></router-outlet>
+        </div>
     </main>
 </div>

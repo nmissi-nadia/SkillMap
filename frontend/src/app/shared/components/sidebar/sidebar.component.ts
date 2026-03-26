@@ -5,12 +5,11 @@ import { AuthService } from '../../../core/services/auth.service';
 import { ManagerService } from '../../../core/services/manager.service';
 import { RhService } from '../../../core/services/rh.service';
 
-import { NotificationBellComponent } from '../notification-bell/notification-bell.component';
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterLinkActive, NotificationBellComponent],
+  imports: [CommonModule, RouterLink, RouterLinkActive],
   template: `
     <aside class="sidebar" *ngIf="authService.isAuthenticated()">
       <!-- Header with Logo and Bell -->
@@ -23,7 +22,6 @@ import { NotificationBellComponent } from '../notification-bell/notification-bel
           </svg>
           <span class="logo-text">SkillMap</span>
         </div>
-        <app-notification-bell class="header-bell"></app-notification-bell>
       </div>
 
       <nav class="sidebar-nav">
@@ -226,15 +224,7 @@ import { NotificationBellComponent } from '../notification-bell/notification-bel
         </ul>
       </nav>
 
-      <!-- Footer with User Info -->
       <div class="sidebar-footer">
-        <div class="user-info" *ngIf="user()">
-          <div class="user-avatar">{{ user()?.prenom?.[0] }}{{ user()?.nom?.[0] }}</div>
-          <div class="user-details">
-            <span class="user-name">{{ user()?.prenom }} {{ user()?.nom }}</span>
-            <span class="user-role">{{ getRoleLabel(user()?.role) }}</span>
-          </div>
-        </div>
         <button class="btn-logout" (click)="logout()">
           <svg class="nav-icon" viewBox="0 0 24 24" fill="none">
             <path d="M9 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -269,13 +259,10 @@ import { NotificationBellComponent } from '../notification-bell/notification-bel
       padding: 1.5rem 1.25rem;
       border-bottom: 1px solid var(--border-light);
       display: flex;
-      justify-content: space-between;
+      justify-content: center;
       align-items: center;
     }
 
-    .header-bell {
-      margin-left: auto;
-    }
 
     .logo {
       display: flex;

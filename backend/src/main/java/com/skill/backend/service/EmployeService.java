@@ -309,8 +309,11 @@ public class EmployeService {
      */
     @Transactional(readOnly = true)
     public com.skill.backend.dto.EmployeeKPIDTO getMyKPIs(String email) {
-        Employe employe = (Employe) utilisateurRepository.findByEmail(email)
-            .orElseThrow(() -> new RuntimeException("Employé non trouvé"));
+        com.skill.backend.entity.Utilisateur user = utilisateurRepository.findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé: " + email));
+            
+        Employe employe = employeRepository.findById(user.getId())
+            .orElseThrow(() -> new RuntimeException("L'utilisateur n'est pas enregistré comme employé: " + email));
 
         List<com.skill.backend.entity.CompetenceEmploye> comps = competenceEmployeRepository.findByEmploye(employe);
         
@@ -344,8 +347,11 @@ public class EmployeService {
      */
     @Transactional(readOnly = true)
     public List<com.skill.backend.dto.TodoItemDTO> getMyTodos(String email) {
-        Employe employe = (Employe) utilisateurRepository.findByEmail(email)
-            .orElseThrow(() -> new RuntimeException("Employé non trouvé"));
+        com.skill.backend.entity.Utilisateur user = utilisateurRepository.findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé: " + email));
+            
+        Employe employe = employeRepository.findById(user.getId())
+            .orElseThrow(() -> new RuntimeException("L'utilisateur n'est pas enregistré comme employé: " + email));
 
         java.util.List<com.skill.backend.dto.TodoItemDTO> todos = new java.util.ArrayList<>();
 

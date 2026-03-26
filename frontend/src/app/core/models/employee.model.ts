@@ -1,4 +1,5 @@
 import { RoleUtilisateur } from './role.enum';
+import { Notification } from './notification.model';
 
 /**
  * Modèle Employé
@@ -61,17 +62,6 @@ export interface TodoItem {
     status: 'PENDING' | 'IN_PROGRESS' | 'COMPLETED';
 }
 
-/**
- * Notification
- */
-export interface Notification {
-    id: string;
-    type: 'VALIDATION' | 'AFFECTATION' | 'MESSAGE' | 'FORMATION';
-    title: string;
-    message: string;
-    date: Date;
-    read: boolean;
-}
 
 /**
  * Données pour le radar chart

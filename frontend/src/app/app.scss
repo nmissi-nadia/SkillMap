@@ -11,6 +11,10 @@
             height: 100vh;
             overflow-y: auto;
             background-color: var(--background);
+
+            .page-content {
+                padding: 1.5rem 2rem;
+            }
         }
     }
 

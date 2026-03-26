@@ -154,6 +154,14 @@ public class NotificationService {
     // Lecture et gestion
     // ─────────────────────────────────────────────────────────────
 
+    /** Récupérer l'ID d'un utilisateur à partir de son email */
+    @Transactional(readOnly = true)
+    public String getUserIdFromEmail(String email) {
+        return utilisateurRepository.findByEmail(email)
+                .map(Utilisateur::getId)
+                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé: " + email));
+    }
+
     /** Toutes les notifications d'un utilisateur (version dépréciée) */
     public List<NotificationDTO> getNotifications(String userId) {
         return notificationRepository.findByUtilisateurIdOrderByDateEnvoiDesc(userId)

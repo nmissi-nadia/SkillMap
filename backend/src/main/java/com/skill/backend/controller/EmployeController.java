@@ -89,7 +89,23 @@ public class EmployeController {
     @Operation(summary = "Récupérer ses notifications",
                description = "Permet de récupérer les notifications de l'utilisateur connecté")
     public ResponseEntity<List<com.skill.backend.dto.NotificationDTO>> getMyNotifications(Authentication authentication) {
-        return ResponseEntity.ok(notificationService.getNotifications(authentication.getName()));
+        System.out.println("🔔 [EmployeController] getMyNotifications called for: " + authentication.getName());
+        try {
+            // Utiliser une méthode robuste pour récupérer l'ID
+            String userId = getUserIdFromAuthentication(authentication);
+            return ResponseEntity.ok(notificationService.getNotifications(userId));
+        } catch (Exception e) {
+            System.err.println("❌ [EmployeController] Error fetching notifications: " + e.getMessage());
+            return ResponseEntity.status(500).build();
+        }
+    }
+
+    private String getUserIdFromAuthentication(Authentication authentication) {
+        Object principal = authentication.getPrincipal();
+        if (principal instanceof com.skill.backend.entity.Utilisateur) {
+            return ((com.skill.backend.entity.Utilisateur) principal).getId();
+        }
+        return notificationService.getUserIdFromEmail(authentication.getName());
     }
 
     @PutMapping("/{employeId}")

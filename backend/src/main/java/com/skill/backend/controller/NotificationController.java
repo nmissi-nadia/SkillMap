@@ -79,8 +79,19 @@ public class NotificationController {
     public ResponseEntity<List<NotificationDTO>> getLatestNotifications(
             Authentication authentication,
             @RequestParam(defaultValue = "5") int limit) {
-        String userId = getUserId(authentication);
-        return ResponseEntity.ok(notificationService.getLatestNotifications(userId, limit));
+        log.info("🔔 [NotificationController] getLatestNotifications - Limit: {}", limit);
+        try {
+            String userId = getUserId(authentication);
+            log.info("👤 [NotificationController] Resolved userId: {}", userId);
+            
+            List<NotificationDTO> latest = notificationService.getLatestNotifications(userId, limit);
+            log.info("✅ [NotificationController] Found {} notifications", latest.size());
+            
+            return ResponseEntity.ok(latest);
+        } catch (Exception e) {
+            log.error("❌ [NotificationController] Error in getLatestNotifications: ", e);
+            throw e;
+        }
     }
 
     /**

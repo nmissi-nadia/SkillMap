@@ -3,7 +3,8 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { EmployeeService } from '../../../core/services/employee.service';
 import { AuthService } from '../../../core/services/auth.service';
-import { Employee, EmployeeKPI, TodoItem, Notification } from '../../../core/models/employee.model';
+import { Employee, EmployeeKPI, TodoItem } from '../../../core/models/employee.model';
+import { Notification } from '../../../core/models/notification.model';
 
 @Component({
   selector: 'app-employee-dashboard',
@@ -131,10 +132,17 @@ export class DashboardComponent implements OnInit {
   }
 
   /**
+   * Obtenir le temps relatif (alias pour le template)
+   */
+  getRelativeTimeStr(dateStr: string): string {
+    return this.getRelativeTime(new Date(dateStr) as any);
+  }
+
+  /**
    * Obtenir le nombre de notifications non lues
    */
   getUnreadCount(): number {
-    return this.notifications().filter(n => !n.read).length;
+    return this.notifications().filter(n => !n.lu).length;
   }
 
   /**

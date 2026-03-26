@@ -10,7 +10,7 @@ import { Notification } from '../../../core/models/notification.model';
   standalone: true,
   imports: [CommonModule, RouterModule],
   template: `
-    <div class="notif-bell-wrapper" #wrapper>
+    <div class="notif-bell-wrapper">
       <!-- Cloche avec badge -->
       <button class="bell-btn" (click)="toggleDropdown()" [class.active]="isOpen" title="Notifications">
         <span class="bell-icon">🔔</span>
@@ -19,14 +19,18 @@ import { Notification } from '../../../core/models/notification.model';
         }
       </button>
 
-      <!-- Dropdown -->
+      <!-- Overlay & Centered Dropdown -->
       @if (isOpen) {
-        <div class="notif-dropdown">
+        <div class="notif-overlay" (click)="isOpen = false"></div>
+        <div class="notif-dropdown centered">
           <div class="notif-header">
             <h3>Notifications</h3>
-            @if (unreadCount > 0) {
-              <button class="mark-all-btn" (click)="markAllAsRead()">Tout lire</button>
-            }
+            <div class="header-actions">
+              @if (unreadCount > 0) {
+                <button class="mark-all-btn" (click)="markAllAsRead()">Tout lire</button>
+              }
+              <button class="close-btn" (click)="isOpen = false">✕</button>
+            </div>
           </div>
 
           <div class="notif-list">
@@ -119,34 +123,78 @@ import { Notification } from '../../../core/models/notification.model';
       to { transform: scale(1); }
     }
 
-    /* Dropdown */
-    .notif-dropdown {
-      position: absolute;
-      top: calc(100% + 12px);
-      right: -12px;
-      width: 360px;
-      background: #ffffff;
-      border: 1px solid rgba(0,0,0,0.08);
-      border-radius: 16px;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-      z-index: 9999;
-      overflow: hidden;
-      animation: slideDown 0.2s ease;
+    /* Overlay background */
+    .notif-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(4px);
+      z-index: 9998;
+      animation: fadeIn 0.3s ease;
     }
 
-    @keyframes slideDown {
-      from { opacity: 0; transform: translateY(-8px); }
-      to { opacity: 1; transform: translateY(0); }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    /* Dropdown Centered */
+    .notif-dropdown {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 450px;
+      max-width: 90vw;
+      background: #ffffff;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+      z-index: 9999;
+      overflow: hidden;
+      animation: zoomIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    @keyframes zoomIn {
+      from { opacity: 0; transform: translate(-50%, -45%) scale(0.95); }
+      to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
     }
 
     .notif-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 16px 20px 12px;
-      border-bottom: 1px solid rgba(0,0,0,0.05);
+      padding: 20px 24px;
+      border-bottom: 2px solid #f1f5f9;
 
-      h3 { margin: 0; color: #1e293b; font-size: 1rem; font-weight: 600; }
+      h3 { margin: 0; color: #1e293b; font-size: 1.2rem; font-weight: 700; }
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .close-btn {
+      background: #f1f5f9;
+      border: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #64748b;
+      transition: all 0.2s;
+    }
+
+    .close-btn:hover {
+      background: #e2e8f0;
+      color: #0f172a;
     }
 
     .mark-all-btn {
