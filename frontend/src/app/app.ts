@@ -23,7 +23,7 @@ export class App {
     effect(() => {
       const user = this.authService.currentUser();
       if (user && user.id) {
-        this.notifService.connectWebSocket(user.id);
+        this.notifService.connectWebSocket(user.email);
         this.notifService.fetchUnreadCount();
       } else {
         this.notifService.disconnect();

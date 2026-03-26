@@ -125,10 +125,10 @@ import { Notification } from '../../../core/models/notification.model';
       top: calc(100% + 12px);
       right: -12px;
       width: 360px;
-      background: #1e2235;
-      border: 1px solid rgba(255,255,255,0.1);
+      background: #ffffff;
+      border: 1px solid rgba(0,0,0,0.08);
       border-radius: 16px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+      box-shadow: 0 10px 40px rgba(0,0,0,0.1);
       z-index: 9999;
       overflow: hidden;
       animation: slideDown 0.2s ease;
@@ -144,9 +144,9 @@ import { Notification } from '../../../core/models/notification.model';
       justify-content: space-between;
       align-items: center;
       padding: 16px 20px 12px;
-      border-bottom: 1px solid rgba(255,255,255,0.08);
+      border-bottom: 1px solid rgba(0,0,0,0.05);
 
-      h3 { margin: 0; color: #fff; font-size: 1rem; font-weight: 600; }
+      h3 { margin: 0; color: #1e293b; font-size: 1rem; font-weight: 600; }
     }
 
     .mark-all-btn {
@@ -172,7 +172,7 @@ import { Notification } from '../../../core/models/notification.model';
     .notif-empty {
       text-align: center;
       padding: 40px 20px;
-      color: rgba(255,255,255,0.4);
+      color: #64748b;
       span { font-size: 2rem; }
       p { margin: 8px 0 0; font-size: 0.9rem; }
     }
@@ -187,10 +187,10 @@ import { Notification } from '../../../core/models/notification.model';
       position: relative;
     }
 
-    .notif-item:hover { background: rgba(255,255,255,0.06); }
+    .notif-item:hover { background: #f8fafc; }
 
     .notif-item.unread {
-      background: rgba(99,102,241,0.08);
+      background: #f5f3ff;
     }
 
     .notif-item.unread::before {
@@ -214,7 +214,7 @@ import { Notification } from '../../../core/models/notification.model';
 
     .notif-title {
       margin: 0 0 4px;
-      color: #fff;
+      color: #1e293b;
       font-size: 0.85rem;
       font-weight: 600;
       white-space: nowrap;
@@ -224,7 +224,7 @@ import { Notification } from '../../../core/models/notification.model';
 
     .notif-msg {
       margin: 0 0 4px;
-      color: rgba(255,255,255,0.6);
+      color: #475569;
       font-size: 0.78rem;
       display: -webkit-box;
       -webkit-line-clamp: 2;
@@ -233,14 +233,14 @@ import { Notification } from '../../../core/models/notification.model';
     }
 
     .notif-time {
-      color: rgba(255,255,255,0.35);
+      color: #94a3b8;
       font-size: 0.72rem;
     }
 
     .notif-delete {
       background: none;
       border: none;
-      color: rgba(255,255,255,0.25);
+      color: rgba(0,0,0,0.15);
       cursor: pointer;
       font-size: 0.75rem;
       padding: 4px;
@@ -251,11 +251,11 @@ import { Notification } from '../../../core/models/notification.model';
     }
 
     .notif-item:hover .notif-delete { opacity: 1; }
-    .notif-delete:hover { background: rgba(239,68,68,0.2); color: #ef4444; }
+    .notif-delete:hover { background: rgba(239,68,68,0.1); color: #ef4444; }
 
     .notif-footer {
       padding: 12px 20px;
-      border-top: 1px solid rgba(255,255,255,0.08);
+      border-top: 1px solid rgba(0,0,0,0.05);
       text-align: center;
 
       a {
@@ -263,7 +263,7 @@ import { Notification } from '../../../core/models/notification.model';
         font-size: 0.85rem;
         text-decoration: none;
         transition: color 0.2s;
-        &:hover { color: #818cf8; }
+        &:hover { color: #4338ca; }
       }
     }
   `]

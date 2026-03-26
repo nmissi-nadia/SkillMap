@@ -20,7 +20,7 @@ public class DashboardService {
 
     private final UtilisateurRepository utilisateurRepository;
     private final CompetenceEmployeRepository competenceEmployeRepository;
-    private final FormationEmployeRepository formationEmployeRepository;
+    private final InscriptionFormationRepository inscriptionFormationRepository;
     private final ProjetRepository projetRepository;
     private final RHService rhService;
     private final ManagerService managerService;
@@ -50,7 +50,9 @@ public class DashboardService {
                 .filter(ce -> ce.getNiveauManager() > 0)
                 .count();
         
-        long ongoing = formationEmployeRepository.findByEmployeIdAndStatut(employeId, "EN_COURS").size();
+        long ongoing = inscriptionFormationRepository.findByEmployeId(employeId).stream()
+                .filter(i -> com.skill.backend.enums.InscriptionStatut.EN_COURS.equals(i.getStatut()))
+                .count();
         
         builder.validatedCompetencies((int) validated);
         builder.ongoingFormations((int) ongoing);

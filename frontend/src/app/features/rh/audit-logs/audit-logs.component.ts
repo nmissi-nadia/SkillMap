@@ -11,8 +11,8 @@ import { FormsModule } from '@angular/forms';
   template: `
     <div class="audit-container p-6">
       <div class="header mb-8">
-        <h1 class="text-3xl font-bold text-white mb-2">Logs d'Audit</h1>
-        <p class="text-gray-400">Traçabilité complète des actions effectuées sur la plateforme</p>
+        <h1 class="text-3xl font-bold text-slate-900 mb-2">Logs d'Audit</h1>
+        <p class="text-slate-500">Traçabilité complète des actions effectuées sur la plateforme</p>
       </div>
 
       <!-- Filters & Tools -->
@@ -21,9 +21,9 @@ import { FormsModule } from '@angular/forms';
           <div class="search-box relative">
             <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">🔍</span>
             <input type="text" placeholder="Rechercher une action..." 
-                   class="bg-white/5 border border-white/10 rounded-xl py-2 pl-10 pr-4 text-white focus:outline-none focus:border-blue-500/50 w-64">
+                   class="bg-white border border-slate-200 rounded-xl py-2 pl-10 pr-4 text-slate-900 focus:outline-none focus:border-blue-500/50 w-64 shadow-sm">
           </div>
-          <select class="bg-white/5 border border-white/10 rounded-xl py-2 px-4 text-white focus:outline-none">
+          <select class="bg-white border border-slate-200 rounded-xl py-2 px-4 text-slate-900 focus:outline-none shadow-sm">
             <option value="">Toutes les entités</option>
             <option value="USER">Utilisateurs</option>
             <option value="TEST">Tests</option>
@@ -38,19 +38,19 @@ import { FormsModule } from '@angular/forms';
       </div>
 
       <!-- Table Card -->
-      <div class="bg-white/5 border border-white/10 rounded-2xl backdrop-blur-xl overflow-hidden">
+      <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
         <div class="overflow-x-auto">
           <table class="w-full text-left border-collapse">
             <thead>
-              <tr class="border-b border-white/10 bg-white/5">
-                <th class="p-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Date</th>
-                <th class="p-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Utilisateur</th>
-                <th class="p-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Action</th>
-                <th class="p-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Entité</th>
-                <th class="p-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Détails</th>
+              <tr class="border-b border-slate-100 bg-slate-50">
+                <th class="p-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Date</th>
+                <th class="p-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Utilisateur</th>
+                <th class="p-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Action</th>
+                <th class="p-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Entité</th>
+                <th class="p-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Détails</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-white/5">
+            <tbody class="divide-y divide-slate-100">
               @if (loading()) {
                 @for (i of [1,2,3,4,5]; track i) {
                   <tr class="animate-pulse">
@@ -63,17 +63,17 @@ import { FormsModule } from '@angular/forms';
                 }
               } @else {
                 @for (log of logs(); track log.id) {
-                  <tr class="hover:bg-white/5 transition-colors group">
+                  <tr class="hover:bg-slate-50/80 transition-colors group">
                     <td class="p-4">
-                      <div class="text-sm text-white">{{ log.dateAction | date:'dd/MM/yyyy' }}</div>
-                      <div class="text-[10px] text-gray-500">{{ log.dateAction | date:'HH:mm:ss' }}</div>
+                      <div class="text-sm text-slate-900 font-medium">{{ log.dateAction | date:'dd/MM/yyyy' }}</div>
+                      <div class="text-[10px] text-slate-400">{{ log.dateAction | date:'HH:mm:ss' }}</div>
                     </td>
                     <td class="p-4">
                       <div class="flex items-center gap-2">
-                        <div class="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center text-[10px] font-bold text-blue-400 border border-blue-500/30">
+                        <div class="w-8 h-8 rounded-full bg-blue-500/10 flex items-center justify-center text-[10px] font-bold text-blue-600 border border-blue-200">
                           {{ log.utilisateurId.substring(0, 2) | uppercase }}
                         </div>
-                        <span class="text-sm text-gray-300 font-mono text-[11px]">{{ log.utilisateurId }}</span>
+                        <span class="text-sm text-slate-600 font-mono text-[11px]">{{ log.utilisateurId }}</span>
                       </div>
                     </td>
                     <td class="p-4">
@@ -99,18 +99,18 @@ import { FormsModule } from '@angular/forms';
         </div>
 
         <!-- Pagination -->
-        <div class="p-4 border-t border-white/10 flex items-center justify-between text-sm text-gray-400 bg-white/5">
+        <div class="p-4 border-t border-slate-100 flex items-center justify-between text-sm text-slate-600 bg-slate-50/50">
           <div>
-            Affichage de <b>{{ logs().length }}</b> sur <b>{{ totalElements() }}</b> logs
+            Affichage de <b class="text-slate-900">{{ logs().length }}</b> sur <b class="text-slate-900">{{ totalElements() }}</b> logs
           </div>
           <div class="flex gap-2">
             <button (click)="prevPage()" [disabled]="page() === 0" 
-                    class="px-3 py-1 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 disabled:opacity-30 transition-colors">
+                    class="px-3 py-1 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 disabled:opacity-30 transition-colors shadow-sm">
               Précédent
             </button>
-            <span class="flex items-center px-4">Page {{ page() + 1 }} sur {{ totalPages() }}</span>
+            <span class="flex items-center px-4 font-medium">Page {{ page() + 1 }} sur {{ totalPages() }}</span>
             <button (click)="nextPage()" [disabled]="page() === totalPages() - 1"
-                    class="px-3 py-1 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 disabled:opacity-30 transition-colors">
+                    class="px-3 py-1 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 disabled:opacity-30 transition-colors shadow-sm">
               Suivant
             </button>
           </div>

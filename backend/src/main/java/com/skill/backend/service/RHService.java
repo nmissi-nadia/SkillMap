@@ -7,6 +7,7 @@ import com.skill.backend.enums.TypeCompetence;
 import com.skill.backend.mapper.EmployeMapper;
 import com.skill.backend.mapper.ManagerMapper;
 import com.skill.backend.mapper.RHMapper;
+import com.skill.backend.enums.InscriptionStatut;
 import com.skill.backend.exception.BadRequestException;
 import com.skill.backend.exception.ResourceNotFoundException;
 import com.skill.backend.repository.*;
@@ -33,7 +34,8 @@ public class RHService {
     private final CompetenceRepository competenceRepository;
     private final CompetenceEmployeRepository competenceEmployeRepository;
     private final FormationRepository formationRepository;
-    private final FormationEmployeRepository formationEmployeRepository;
+    private final InscriptionFormationRepository inscriptionFormationRepository;
+    private final NotificationService notificationService;
     private final RHMapper rhMapper;
     private final EmployeMapper employeMapper;
     private final ManagerMapper managerMapper;
@@ -523,8 +525,8 @@ public class RHService {
                 .orElseThrow(() -> new RuntimeException("Formation non trouvée"));
         
         // Supprimer d'abord les liens avec les employés
-        List<FormationEmploye> fe = formationEmployeRepository.findByFormationId(formationId);
-        formationEmployeRepository.deleteAll(fe);
+        List<InscriptionFormation> inscriptions = inscriptionFormationRepository.findByFormationId(formationId);
+        inscriptionFormationRepository.deleteAll(inscriptions);
         
         formationRepository.delete(formation);
     }
@@ -545,17 +547,24 @@ public class RHService {
             Employe employe = employeRepository.findById(employeId)
                     .orElseThrow(() -> new RuntimeException("Employé non trouvé: " + employeId));
             
-            FormationEmploye fe = new FormationEmploye();
-            fe.setId(UUID.randomUUID().toString());
-            fe.setEmploye(employe);
-            fe.setFormation(formation);
-            fe.setStatut("ASSIGNEE");
-            fe.setDateAssignation(LocalDateTime.now());
-            fe.setProgression(0);
-            fe.setValideeParRH(false);
+            InscriptionFormation inscription = new InscriptionFormation();
+            inscription.setId(UUID.randomUUID().toString());
+            inscription.setEmploye(employe);
+            inscription.setFormation(formation);
+            inscription.setStatut(InscriptionStatut.INSCRIT);
+            inscription.setDateInscription(LocalDateTime.now());
+            inscription.setProgress(0);
             
-            fe = formationEmployeRepository.save(fe);
-            assignedIds.add(fe.getId());
+            inscription = inscriptionFormationRepository.save(inscription);
+            assignedIds.add(inscription.getId());
+
+            // Envoyer une notification
+            notificationService.notifyFormationAssignment(
+                employe.getId(), 
+                formation.getTitre(),
+                "RH",
+                "Département RH"
+            );
         }
         
         return assignedIds;
@@ -570,7 +579,7 @@ public class RHService {
         Formation formation = formationRepository.findById(formationId)
                 .orElseThrow(() -> new RuntimeException("Formation non trouvée"));
         
-        List<FormationEmploye> formationEmployes = formationEmployeRepository.findByFormationId(formationId);
+        List<InscriptionFormation> inscriptions = inscriptionFormationRepository.findByFormationId(formationId);
         
         FormationBudgetDTO budget = new FormationBudgetDTO();
         budget.setFormationId(formation.getId());
@@ -579,9 +588,9 @@ public class RHService {
         budget.setDateDebut(formation.getDateDebut());
         budget.setDateFin(formation.getDateFin());
         
-        int totalAssignes = formationEmployes.size();
-        long termines = formationEmployes.stream().filter(fe -> "TERMINEE".equals(fe.getStatut())).count();
-        long enCours = formationEmployes.stream().filter(fe -> "EN_COURS".equals(fe.getStatut())).count();
+        int totalAssignes = inscriptions.size();
+        long termines = inscriptions.stream().filter(i -> InscriptionStatut.TERMINE.equals(i.getStatut())).count();
+        long enCours = inscriptions.stream().filter(i -> InscriptionStatut.EN_COURS.equals(i.getStatut())).count();
         
         budget.setNombreEmployesAssignes(totalAssignes);
         budget.setNombreEmployesTermines((int) termines);
@@ -601,19 +610,18 @@ public class RHService {
         budget.setBudgetRestant(0.0);
         
         // ROI simplifié : basé sur le taux de complétion
-        budget.setRoi(calculateFormationROI(formation, formationEmployes));
+        budget.setRoi(0.0); // calculateFormationROI deprecated
         
         // Statuts des employés
-        List<EmployeFormationStatusDTO> statuts = formationEmployes.stream()
-                .map(fe -> {
+        List<EmployeFormationStatusDTO> statuts = inscriptions.stream()
+                .map(i -> {
                     EmployeFormationStatusDTO status = new EmployeFormationStatusDTO();
-                    status.setEmployeId(fe.getEmploye().getId());
-                    status.setEmployeNom(fe.getEmploye().getNom());
-                    status.setEmployePrenom(fe.getEmploye().getPrenom());
-                    status.setStatut(fe.getStatut());
-                    status.setProgression(fe.getProgression());
-                    status.setCertification(fe.getCertification());
-                    status.setValideeParRH(fe.getValideeParRH());
+                    status.setEmployeId(i.getEmploye().getId());
+                    status.setEmployeNom(i.getEmploye().getNom());
+                    status.setEmployePrenom(i.getEmploye().getPrenom());
+                    status.setStatut(i.getStatut().name());
+                    status.setProgression(i.getProgress());
+                    status.setValideeParRH(i.getProgress() >= 100);
                     return status;
                 })
                 .collect(Collectors.toList());
@@ -632,9 +640,9 @@ public class RHService {
         Formation formation = formationRepository.findById(formationId)
                 .orElseThrow(() -> new RuntimeException("Formation non trouvée"));
         
-        List<FormationEmploye> formationEmployes = formationEmployeRepository.findByFormationId(formationId);
+        List<InscriptionFormation> inscriptions = inscriptionFormationRepository.findByFormationId(formationId);
         
-        return calculateFormationROI(formation, formationEmployes);
+        return calculateFormationROI(formation, inscriptions);
     }
 
     /**
@@ -642,33 +650,19 @@ public class RHService {
      */
     @Transactional
     public void validateCertification(String rhEmail, CertificationValidationDTO dto) {
-        Utilisateur rh = validateRH(rhEmail); // Vérifier les droits
+        validateRH(rhEmail); // Vérifier les droits
         
-        List<FormationEmploye> formationEmployes = formationEmployeRepository.findByFormationId(dto.getFormationId());
+        Optional<InscriptionFormation> opt = inscriptionFormationRepository.findByEmployeIdAndFormationId(dto.getEmployeId(), dto.getFormationId());
         
-        FormationEmploye fe = formationEmployes.stream()
-                .filter(f -> f.getEmploye().getId().equals(dto.getEmployeId()))
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("Formation non trouvée pour cet employé"));
-        
-        if (dto.getValide()) {
-            fe.setValideeParRH(true);
-            fe.setCertification(dto.getCertification());
-            fe.setUrlCertificat(dto.getUrlCertificat());
-            fe.setStatut("TERMINEE");
-            fe.setProgression(100);
-            
-            // Mettre à jour la formation principale
-            Formation formation = fe.getFormation();
-            // formation.setDateValidation(LocalDateTime.now());
-            // formation.setValideePar(rh.getId());
-            formationRepository.save(formation);
-        } else {
-            fe.setValideeParRH(false);
-            // Optionnel: ajouter un commentaire de rejet
+        if (opt.isPresent()) {
+            InscriptionFormation inscription = opt.get();
+            if (dto.getValide()) {
+                inscription.setStatut(InscriptionStatut.TERMINE);
+                inscription.setProgress(100);
+                inscription.setScore(100); // Score par défaut
+                inscriptionFormationRepository.save(inscription);
+            }
         }
-        
-        formationEmployeRepository.save(fe);
     }
 
     /**
@@ -719,7 +713,7 @@ public class RHService {
         return dto;
     }
 
-    private Double calculateFormationROI(Formation formation, List<com.skill.backend.entity.FormationEmploye> formationEmployes) {
+    private Double calculateFormationROI(Formation formation, List<com.skill.backend.entity.InscriptionFormation> inscriptions) {
         // Le calcul du ROI a été désactivé temporairement suite à la refonte du module Formation (V2)
         // car le champ coût a été supprimé des spécifications de Formation.
         return 0.0;

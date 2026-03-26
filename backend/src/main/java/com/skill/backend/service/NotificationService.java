@@ -63,10 +63,10 @@ public class NotificationService {
         Notification saved = notificationRepository.save(notification);
         NotificationDTO dto = notificationMapper.toDto(saved);
 
-        // Push temps réel vers l'utilisateur via WebSocket
+        // Push temps réel vers l'utilisateur via WebSocket (utiliser l'email car c'est le Principal name)
         try {
-            messagingTemplate.convertAndSendToUser(userId, "/queue/notifications", dto);
-            log.debug("🔔 Notification WebSocket envoyée à {}: {}", userId, titre);
+            messagingTemplate.convertAndSendToUser(utilisateur.getEmail(), "/queue/notifications", dto);
+            log.debug("🔔 Notification WebSocket envoyée à {}: {}", utilisateur.getEmail(), titre);
         } catch (Exception e) {
             log.warn("⚠️ Impossible d'envoyer la notification WebSocket: {}", e.getMessage());
         }

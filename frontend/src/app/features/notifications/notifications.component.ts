@@ -21,7 +21,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
             <div class="title-section">
               <mat-icon class="header-icon">notifications_active</mat-icon>
               <div>
-                <h1>Centre de Notifications</h1>
+                <h1 class="text-slate-900">Centre de Notifications</h1>
                 <p class="subtitle">Gardez un œil sur vos activités et projets</p>
               </div>
             </div>
@@ -167,11 +167,10 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     .page-header {
       margin-bottom: 40px;
       padding: 32px;
-      background: rgba(255, 255, 255, 0.03);
-      backdrop-filter: blur(20px);
+      background: #fff;
       border-radius: 30px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+      border: 1px solid rgba(0, 0, 0, 0.05);
+      box-shadow: 0 10px 40px rgba(0,0,0,0.05);
 
       .header-content {
         display: flex;
@@ -188,10 +187,10 @@ import { MatTooltipModule } from '@angular/material/tooltip';
       .header-icon {
         font-size: 40px; width: 40px; height: 40px;
         color: var(--p-primary);
-        filter: drop-shadow(0 0 10px rgba(99, 102, 241, 0.5));
+        filter: drop-shadow(0 0 10px rgba(99, 102, 241, 0.2));
       }
-      h1 { margin: 0; font-size: 2.2rem; font-weight: 800; color: #fff; letter-spacing: -1px; }
-      .subtitle { margin: 4px 0 0; color: rgba(255,255,255,0.5); font-weight: 500; }
+      h1 { margin: 0; font-size: 2.2rem; font-weight: 800; color: #1e293b; letter-spacing: -1px; }
+      .subtitle { margin: 4px 0 0; color: #64748b; font-weight: 500; }
     }
 
     .header-actions { display: flex; gap: 12px; }
@@ -201,10 +200,10 @@ import { MatTooltipModule } from '@angular/material/tooltip';
       display: flex; align-items: center; gap: 8px;
       font-weight: 700; font-size: 0.9rem; cursor: pointer; transition: all 0.3s;
       
-      &.secondary { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.1); }
-      &.delete { background: rgba(244, 63, 94, 0.1); color: var(--p-danger); border: 1px solid rgba(244, 63, 94, 0.2); }
+      &.secondary { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; }
+      &.delete { background: #fff1f2; color: var(--p-danger); border: 1px solid #fecdd3; }
       
-      &:hover:not(:disabled) { transform: translateY(-2px); filter: brightness(1.2); }
+      &:hover:not(:disabled) { transform: translateY(-2px); filter: brightness(0.95); }
       &:disabled { opacity: 0.3; cursor: not-allowed; }
       mat-icon { font-size: 20px; }
     }
@@ -212,15 +211,15 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     .filters-bar {
       display: flex; gap: 10px;
       button {
-        background: rgba(255,255,255,0.05); border: none; color: rgba(255,255,255,0.5);
+        background: #f8fafc; border: 1px solid #e2e8f0; color: #64748b;
         padding: 10px 18px; border-radius: 14px; font-weight: 700; cursor: pointer;
         display: flex; align-items: center; gap: 10px; transition: all 0.3s;
         
         &.active {
-          background: var(--p-primary); color: #fff;
-          box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
+          background: var(--p-primary); color: #fff; border-color: var(--p-primary);
+          box-shadow: 0 10px 20px rgba(99, 102, 241, 0.2);
         }
-        &:hover:not(.active) { background: rgba(255,255,255,0.08); color: #fff; }
+        &:hover:not(.active) { background: #f1f5f9; color: #1e293b; }
       }
       .badge {
         background: rgba(255,255,255,0.1); padding: 2px 8px; border-radius: 8px; font-size: 0.8rem;
@@ -233,23 +232,22 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     .notif-item {
       position: relative; overflow: hidden;
       display: flex; gap: 24px; padding: 28px;
-      background: rgba(30, 34, 53, 0.5);
-      backdrop-filter: blur(15px);
+      background: #fff;
       border-radius: 24px;
-      border: 1px solid rgba(255,255,255,0.05);
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
       transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
 
       &.unread {
-        background: rgba(99, 102, 241, 0.05);
-        border-color: rgba(99, 102, 241, 0.2);
-        box-shadow: 0 10px 30px rgba(99, 102, 241, 0.05);
-        .notif-title { font-weight: 700; }
+        background: #f5f3ff;
+        border-color: #ddd6fe;
+        .notif-title { font-weight: 700; color: #4338ca; }
       }
 
       &:hover {
-        transform: scale(1.02);
-        background: rgba(30, 34, 53, 0.8);
-        border-color: rgba(255, 255, 255, 0.15);
+        transform: translateY(-4px);
+        box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+        border-color: #c4b5fd;
         .notif-glow { opacity: 1; }
       }
     }
@@ -286,15 +284,15 @@ import { MatTooltipModule } from '@angular/material/tooltip';
       display: flex; justify-content: space-between; align-items: center;
       margin-bottom: 12px;
       .notif-category { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--p-primary); }
-      .notif-date { color: rgba(255,255,255,0.3); font-size: 0.85rem; }
+      .notif-date { color: #94a3b8; font-size: 0.85rem; }
     }
 
-    .notif-title { margin: 0 0 8px; font-size: 1.25rem; color: #fff; }
-    .notif-text { color: rgba(255,255,255,0.6); margin: 0 0 20px; line-height: 1.6; }
+    .notif-title { margin: 0 0 8px; font-size: 1.25rem; color: #1e293b; }
+    .notif-text { color: #475569; margin: 0 0 20px; line-height: 1.6; }
 
     .notif-sender {
       display: flex; align-items: center; gap: 10px; margin-bottom: 20px;
-      font-size: 0.9rem; color: rgba(255,255,255,0.4);
+      font-size: 0.9rem; color: #64748b;
       .avatar-mini {
         width: 24px; height: 24px; border-radius: 50%; background: var(--p-primary); color: #fff;
         display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 800;
@@ -331,12 +329,12 @@ import { MatTooltipModule } from '@angular/material/tooltip';
       text-align: center; padding: 80px 40px;
       .empty-blob {
         width: 120px; height: 120px; margin: 0 auto 30px;
-        background: rgba(99, 102, 241, 0.05); border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+        background: #f1f5f9; border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
         display: flex; align-items: center; justify-content: center;
-        mat-icon { font-size: 60px; width: 60px; height: 60px; color: rgba(255,255,255,0.1); }
+        mat-icon { font-size: 60px; width: 60px; height: 60px; color: #cbd5e1; }
       }
-      h3 { font-size: 1.8rem; color: #fff; margin-bottom: 12px; }
-      p { color: rgba(255,255,255,0.4); max-width: 300px; margin: 0 auto; }
+      h3 { font-size: 1.8rem; color: #1e293b; margin-bottom: 12px; }
+      p { color: #64748b; max-width: 300px; margin: 0 auto; }
     }
 
     .pagination {

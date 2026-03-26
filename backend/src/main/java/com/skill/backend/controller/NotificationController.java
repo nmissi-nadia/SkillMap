@@ -1,11 +1,14 @@
 package com.skill.backend.controller;
 
 import com.skill.backend.dto.NotificationDTO;
+import com.skill.backend.entity.Utilisateur;
+import com.skill.backend.repository.UtilisateurRepository;
 import com.skill.backend.service.NotificationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
@@ -22,11 +25,38 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/notifications")
 @RequiredArgsConstructor
+@Slf4j
 @Tag(name = "Notifications", description = "Gestion des notifications utilisateur")
 @SecurityRequirement(name = "bearerAuth")
 public class NotificationController {
 
     private final NotificationService notificationService;
+    private final UtilisateurRepository utilisateurRepository;
+
+    private String getUserId(Authentication authentication) {
+        if (authentication == null) {
+            log.warn("⚠️ Authentication object is null");
+            throw new RuntimeException("Non authentifié");
+        }
+
+        Object principal = authentication.getPrincipal();
+        
+        // 1. Essayer de récupérer l'ID directement depuis le Principal (Utilisateur)
+        if (principal instanceof Utilisateur) {
+            return ((Utilisateur) principal).getId();
+        }
+        
+        // 2. Fallback via le repository (si principal est juste le username string)
+        String email = authentication.getName();
+        log.debug("🔍 Resolving userId from email: {}", email);
+        
+        return utilisateurRepository.findByEmail(email)
+                .map(Utilisateur::getId)
+                .orElseThrow(() -> {
+                    log.error("❌ Utilisateur non trouvé pour l'email: {}", email);
+                    return new RuntimeException("Utilisateur non trouvé: " + email);
+                });
+    }
 
     /**
      * Récupérer toutes les notifications de l'utilisateur connecté avec pagination.
@@ -37,7 +67,7 @@ public class NotificationController {
             Authentication authentication,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        String userId = authentication.getName();
+        String userId = getUserId(authentication);
         return ResponseEntity.ok(notificationService.getNotifications(userId, PageRequest.of(page, size)));
     }
 
@@ -49,7 +79,7 @@ public class NotificationController {
     public ResponseEntity<List<NotificationDTO>> getLatestNotifications(
             Authentication authentication,
             @RequestParam(defaultValue = "5") int limit) {
-        String userId = authentication.getName();
+        String userId = getUserId(authentication);
         return ResponseEntity.ok(notificationService.getLatestNotifications(userId, limit));
     }
 
@@ -59,7 +89,7 @@ public class NotificationController {
     @GetMapping("/unread")
     @Operation(summary = "Mes notifications non lues")
     public ResponseEntity<List<NotificationDTO>> getMyUnreadNotifications(Authentication authentication) {
-        String userId = authentication.getName();
+        String userId = getUserId(authentication);
         return ResponseEntity.ok(notificationService.getUnreadNotifications(userId));
     }
 
@@ -69,7 +99,7 @@ public class NotificationController {
     @GetMapping("/count/unread")
     @Operation(summary = "Nombre de notifications non lues")
     public ResponseEntity<Map<String, Long>> countUnread(Authentication authentication) {
-        String userId = authentication.getName();
+        String userId = getUserId(authentication);
         long count = notificationService.countUnread(userId);
         return ResponseEntity.ok(Map.of("count", count));
     }
@@ -90,7 +120,7 @@ public class NotificationController {
     @PutMapping("/read-all")
     @Operation(summary = "Marquer toutes les notifications comme lues")
     public ResponseEntity<Void> markAllAsRead(Authentication authentication) {
-        String userId = authentication.getName();
+        String userId = getUserId(authentication);
         notificationService.markAllAsRead(userId);
         return ResponseEntity.ok().build();
     }

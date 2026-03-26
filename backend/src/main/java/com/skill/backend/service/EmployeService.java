@@ -11,7 +11,7 @@ import com.skill.backend.repository.UtilisateurRepository;
 import com.skill.backend.repository.ManagerRepository;
 import com.skill.backend.repository.CompetenceEmployeRepository;
 import com.skill.backend.repository.TestEmployeRepository;
-import com.skill.backend.repository.FormationEmployeRepository;
+import com.skill.backend.repository.InscriptionFormationRepository;
 import com.skill.backend.repository.ProjetRepository;
 import com.skill.backend.mapper.CompetenceEmployeMapper;
 import com.skill.backend.dto.CompetenceEmployeDTO;
@@ -39,7 +39,7 @@ public class EmployeService {
     private final CompetenceEmployeRepository competenceEmployeRepository;
     private final CompetenceEmployeMapper competenceEmployeMapper;
     private final TestEmployeRepository testEmployeRepository;
-    private final FormationEmployeRepository formationEmployeRepository;
+    private final InscriptionFormationRepository inscriptionFormationRepository;
     private final ProjetRepository projetRepository;
 
     /**
@@ -323,7 +323,9 @@ public class EmployeService {
             .filter(c -> c.getNiveauManager() > 0)
             .count();
 
-        long ongoingFormations = formationEmployeRepository.findByEmployeIdAndStatut(employe.getId(), "EN_COURS").size();
+        long ongoingFormations = inscriptionFormationRepository.findByEmployeId(employe.getId()).stream()
+            .filter(i -> com.skill.backend.enums.InscriptionStatut.EN_COURS.equals(i.getStatut()))
+            .count();
         
         long activeProjects = projetRepository.findAll().stream()
             .filter(p -> "EN_COURS".equals(p.getStatut()) && p.getEmployes().contains(employe))
@@ -360,9 +362,9 @@ public class EmployeService {
                 todos.add(dto);
             });
 
-        // 2. Formations à suivre (assignées mais pas encore en cours ou terminées)
-        formationEmployeRepository.findByEmployeId(employe.getId()).stream()
-            .filter(f -> "ASSIGNEE".equals(f.getStatut()))
+        // 2. Formations à suivre (inscrites mais pas encore en cours ou terminées)
+        inscriptionFormationRepository.findByEmployeId(employe.getId()).stream()
+            .filter(f -> com.skill.backend.enums.InscriptionStatut.INSCRIT.equals(f.getStatut()))
             .forEach(f -> {
                 com.skill.backend.dto.TodoItemDTO dto = new com.skill.backend.dto.TodoItemDTO();
                 dto.setId(f.getId());
