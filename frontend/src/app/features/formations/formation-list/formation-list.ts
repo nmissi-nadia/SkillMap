@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { FormationService } from '../../../core/services/formation.service';
 import { FormationDetailDTO } from '../../../core/models/formation.model';
+import { MetadataService, MetadataOption } from '../../../core/services/metadata.service';
 
 @Component({
   selector: 'app-formation-list',
@@ -19,10 +20,20 @@ export class FormationList implements OnInit {
   activeFilter = '';
   loading = true;
 
-  constructor(private formationService: FormationService, private router: Router) { }
+  // Metadata
+  formationTypes = signal<MetadataOption[]>([]);
+
+  constructor(private formationService: FormationService, private router: Router, private metadataService: MetadataService) { }
 
   ngOnInit(): void {
+    this.loadMetadata();
     this.loadFormations();
+  }
+
+  loadMetadata(): void {
+    this.metadataService.getMetadata().subscribe(meta => {
+      this.formationTypes.set(meta.formationTypes);
+    });
   }
 
   loadFormations(): void {
@@ -69,12 +80,7 @@ export class FormationList implements OnInit {
   }
 
   getTypeLabel(type: string): string {
-    const map: Record<string, string> = {
-      PRESENTIEL: 'Présentiel',
-      LIEN: 'En ligne',
-      PDF: 'Document PDF'
-    };
-    return map[type] || type;
+    return this.metadataService.getLabel(this.formationTypes(), type);
   }
 
   getTypeEmoji(type: string): string {

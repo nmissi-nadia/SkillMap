@@ -94,12 +94,24 @@ export class TeamListComponent implements OnInit {
         const employee = this.selectedEmployee();
         if (!employee || !this.selectedCompetenceId()) return;
 
-        // Note: Ici on simule ou on utilise l'endpoint de validation si une auto-éval existe
-        // Pour une évaluation directe manager, on pourrait avoir besoin d'un nouvel endpoint
-        // Mais restons sur l'existant : simulation de succès pour l'UI
-        this.successMessage.set(`Évaluation envoyée pour ${employee.prenom}`);
-        this.closeEvaluateModal();
-        setTimeout(() => this.successMessage.set(null), 3000);
+        const evaluation = {
+            competenceId: this.selectedCompetenceId(),
+            niveau: this.evaluationLevel(),
+            commentaire: this.evaluationComment()
+        };
+
+        this.managerService.evaluateEmployee(employee.id, evaluation).subscribe({
+            next: () => {
+                this.successMessage.set(`Évaluation enregistrée pour ${employee.prenom}`);
+                this.closeEvaluateModal();
+                setTimeout(() => this.successMessage.set(null), 3000);
+            },
+            error: (err) => {
+                console.error('Erreur évaluation:', err);
+                this.errorMessage.set('Erreur lors de l\'enregistrement de l\'évaluation');
+                setTimeout(() => this.errorMessage.set(null), 5000);
+            }
+        });
     }
 
     openTestModal(employee: Employee) {
@@ -123,7 +135,7 @@ export class TeamListComponent implements OnInit {
         const assignment = {
             testId: this.selectedTestId(),
             employeId: employee.id,
-            dateLimite: this.testDueDate()
+            dateLimite: this.testDueDate() ? new Date(this.testDueDate()).toISOString() : undefined
         };
 
         this.managerService.assignTest(assignment).subscribe({
@@ -132,7 +144,11 @@ export class TeamListComponent implements OnInit {
                 this.closeTestModal();
                 setTimeout(() => this.successMessage.set(null), 3000);
             },
-            error: () => this.errorMessage.set('Erreur lors de l\'assignation du test')
+            error: (err) => {
+                console.error('Erreur assignation test:', err);
+                this.errorMessage.set('Erreur lors de l\'assignation du test');
+                setTimeout(() => this.errorMessage.set(null), 5000);
+            }
         });
     }
 

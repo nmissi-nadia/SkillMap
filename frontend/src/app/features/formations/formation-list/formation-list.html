@@ -68,11 +68,13 @@
         </div>
         <div class="type-filters">
             <button class="fchip" [class.active]="activeFilter === ''" (click)="filterByType('')">Tout</button>
-            <button class="fchip presentiel" [class.active]="activeFilter === 'PRESENTIEL'"
-                (click)="filterByType('PRESENTIEL')">Présentiel</button>
-            <button class="fchip online" [class.active]="activeFilter === 'LIEN'" (click)="filterByType('LIEN')">En
-                ligne</button>
-            <button class="fchip pdf" [class.active]="activeFilter === 'PDF'" (click)="filterByType('PDF')">PDF</button>
+            @for (type of formationTypes(); track type.value) {
+                <button class="fchip" [class.active]="$any(activeFilter) === type.value"
+                    [class]="getBannerClass(type.value.toString())"
+                    (click)="filterByType(type.value.toString())">
+                    {{ type.label }}
+                </button>
+            }
         </div>
     </div>
 

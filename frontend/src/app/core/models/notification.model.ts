@@ -13,3 +13,11 @@ export interface Notification {
 export interface UnreadCountResponse {
   count: number;
 }
+
+export interface PaginatedNotifications {
+  content: Notification[];
+  totalElements: number;
+  totalPages: number;
+  size: number;
+  number: number;
+}

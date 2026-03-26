@@ -1,6 +1,6 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { MatCardModule } from '@angular/material/card';
@@ -27,7 +27,6 @@ interface EmployeSimpleDTO {
   imports: [
     CommonModule,
     FormsModule,
-    RouterLink,
     MatCardModule,
     MatButtonModule,
     MatFormFieldModule,

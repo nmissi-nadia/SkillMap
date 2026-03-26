@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { RhService, UtilisateurDTO, CreateUtilisateurDTO, UpdateUtilisateurDTO, PageResponse } from '../../../core/services/rh.service';
+import { MetadataService, MetadataOption } from '../../../core/services/metadata.service';
 
 @Component({
     selector: 'app-user-management',
@@ -36,12 +37,19 @@ export class UserManagementComponent implements OnInit {
 
     editUser = signal<UpdateUtilisateurDTO>({});
 
-    roles = ['EMPLOYE', 'MANAGER', 'RH', 'CHEF_PROJET'];
+    roles = signal<MetadataOption[]>([]);
 
-    constructor(private rhService: RhService) { }
+    constructor(private rhService: RhService, private metadataService: MetadataService) { }
 
     ngOnInit(): void {
+        this.loadMetadata();
         this.loadUsers();
+    }
+
+    loadMetadata(): void {
+        this.metadataService.getMetadata().subscribe(meta => {
+            this.roles.set(meta.roles);
+        });
     }
 
     loadUsers(): void {
@@ -173,13 +181,7 @@ export class UserManagementComponent implements OnInit {
     }
 
     getRoleLabel(role: string): string {
-        switch (role) {
-            case 'EMPLOYE': return 'Employé';
-            case 'MANAGER': return 'Manager';
-            case 'RH': return 'Ressources Humaines';
-            case 'CHEF_PROJET': return 'Chef de Projet';
-            default: return role;
-        }
+        return this.metadataService.getLabel(this.roles(), role);
     }
 
     getFilteredUsers(): UtilisateurDTO[] {

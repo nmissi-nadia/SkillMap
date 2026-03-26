@@ -202,7 +202,7 @@
                 <div class="form-group">
                     <label>Rôle</label>
                     <select [(ngModel)]="newUser().role">
-                        <option *ngFor="let role of roles" [value]="role">{{ getRoleLabel(role) }}</option>
+                        <option *ngFor="let role of roles()" [value]="role.value">{{ role.label }}</option>
                     </select>
                 </div>
             </div>

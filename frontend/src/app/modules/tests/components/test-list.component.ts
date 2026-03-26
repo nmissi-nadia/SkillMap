@@ -113,8 +113,8 @@ import { TestTechnique } from '../models/test.model';
             [routerLink]="['/tests', test.id]"
           >
             <div class="card-top">
-              <span class="level-badge" [ngClass]="test.niveau?.toLowerCase() || 'default'">
-                {{test.niveau || 'Standard'}}
+              <span class="level-badge" [ngClass]="test.niveau.toLowerCase()">
+                {{test.niveau}}
               </span>
               <span class="tech-tag">{{test.technologie || 'Générique'}}</span>
             </div>
@@ -129,7 +129,7 @@ import { TestTechnique } from '../models/test.model';
               </div>
               <div class="meta-item">
                 <mat-icon>analytics</mat-icon>
-                <span>{{test.questions?.length || 0}} Qs</span>
+                <span>{{test.questions.length || 0}} Qs</span>
               </div>
             </div>
 
@@ -146,7 +146,7 @@ import { TestTechnique } from '../models/test.model';
             </div>
 
             <div class="difficulty-bar">
-              <div class="progress" [style.width]="difficultyValue(test.niveau) + '%'" [ngClass]="test.niveau?.toLowerCase() || 'default'"></div>
+              <div class="progress" [style.width]="difficultyValue(test.niveau) + '%'" [ngClass]="test.niveau.toLowerCase()"></div>
             </div>
           </div>
         </div>

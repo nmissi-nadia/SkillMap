@@ -36,7 +36,7 @@ import { Notification } from '../../../core/models/notification.model';
                 <p>Aucune notification</p>
               </div>
             }
-            @for (notif of notifications.slice(0, 8); track notif.id) {
+            @for (notif of notifications; track notif.id) {
               <div class="notif-item" [class.unread]="!notif.lu" (click)="handleNotifClick(notif)">
                 <span class="notif-type-icon">{{ getTypeIcon(notif.type) }}</span>
                 <div class="notif-content">
@@ -283,10 +283,16 @@ export class NotificationBellComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.subs.push(
-      this.notifService.notifications$.subscribe(n => this.notifications = n),
       this.notifService.unreadCount$.subscribe(c => this.unreadCount = c)
     );
-    this.notifService.loadAll();
+    this.notifService.fetchUnreadCount();
+    this.refreshLatest();
+  }
+
+  refreshLatest(): void {
+    this.notifService.getLatest(5).subscribe(notifs => {
+      this.notifications = notifs;
+    });
   }
 
   ngOnDestroy(): void {
@@ -295,6 +301,9 @@ export class NotificationBellComponent implements OnInit, OnDestroy {
 
   toggleDropdown(): void {
     this.isOpen = !this.isOpen;
+    if (this.isOpen) {
+      this.refreshLatest();
+    }
   }
 
   @HostListener('document:click', ['$event'])
@@ -316,12 +325,18 @@ export class NotificationBellComponent implements OnInit, OnDestroy {
   }
 
   markAllAsRead(): void {
-    this.notifService.markAllAsRead().subscribe(() => this.notifService.loadAll());
+    this.notifService.markAllAsRead().subscribe(() => {
+      this.notifService.fetchUnreadCount();
+      this.refreshLatest();
+    });
   }
 
   deleteNotif(event: Event, id: string): void {
     event.stopPropagation();
-    this.notifService.delete(id).subscribe(() => this.notifService.deleteLocally(id));
+    this.notifService.delete(id).subscribe(() => {
+      this.refreshLatest();
+      this.notifService.fetchUnreadCount();
+    });
   }
 
   getTypeIcon(type: string): string {

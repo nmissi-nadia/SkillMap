@@ -2,6 +2,8 @@ package com.skill.backend.repository;
 
 import com.skill.backend.entity.Notification;
 import com.skill.backend.entity.Utilisateur;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -17,6 +19,8 @@ public interface NotificationRepository extends JpaRepository<Notification, Stri
 
     // --- Par userId (plus performant, pas de join) ---
     List<Notification> findByUtilisateurIdOrderByDateEnvoiDesc(String userId);
+    Page<Notification> findByUtilisateurIdOrderByDateEnvoiDesc(String userId, Pageable pageable);
+    
     List<Notification> findByUtilisateurIdAndLuFalseOrderByDateEnvoiDesc(String userId);
     List<Notification> findByUtilisateurIdAndLuFalse(String userId);
     long countByUtilisateurIdAndLuFalse(String userId);

@@ -77,6 +77,9 @@
                 </div>
 
                 <div class="actions">
+                    <button class="action-btn assign" (click)="openAssignModal(formation)" title="Affecter à des employés">
+                        <mat-icon>person_add</mat-icon>
+                    </button>
                     <button class="action-btn budget" (click)="viewBudgetDetails(formation)" title="Voir Budget">
                         <mat-icon>account_balance_wallet</mat-icon>
                     </button>
@@ -147,10 +150,9 @@
                         <div class="form-group">
                             <label>Type de formation</label>
                             <select [(ngModel)]="editForm.type" name="type">
-                                <option value="PRESENTIEL">Présentiel</option>
-                                <option value="ONLINE">En ligne (Plateforme)</option>
-                                <option value="LIEN">En ligne (Lien externe)</option>
-                                <option value="PDF">Document / PDF</option>
+                                @for (t of formationTypes(); track t.value) {
+                                    <option [value]="t.value">{{ t.label }}</option>
+                                }
                             </select>
                         </div>
                     </div>
@@ -158,10 +160,9 @@
                         <div class="form-group">
                             <label>Statut de la formation</label>
                             <select [(ngModel)]="editForm.statut" name="statut">
-                                <option value="PLANIFIEE">Planifiée</option>
-                                <option value="EN_COURS">En cours</option>
-                                <option value="TERMINEE">Terminée</option>
-                                <option value="ANNULEE">Annulée</option>
+                                @for (s of formationStatuts(); track s.value) {
+                                    <option [value]="s.value">{{ s.label }}</option>
+                                }
                             </select>
                         </div>
                     </div>
@@ -230,6 +231,56 @@
             </div>
             <footer class="modal-footer">
                 <button class="btn-primary" (click)="closeBudgetModal()">Terminer</button>
+            </footer>
+        </div>
+    </div>
+
+    <!-- ASSIGN MODAL -->
+    <div class="modal-overlay" *ngIf="showAssignModal()" (click)="closeAssignModal()">
+        <div class="modal" (click)="$event.stopPropagation()">
+            <header class="modal-header">
+                <div>
+                    <h2>Affecter la formation</h2>
+                    <p class="modal-subtitle">{{ selectedFormation()?.titre }}</p>
+                </div>
+                <button class="modal-close" (click)="closeAssignModal()">
+                    <mat-icon>close</mat-icon>
+                </button>
+            </header>
+            <div class="modal-body">
+                <div class="search-box">
+                    <mat-icon>search</mat-icon>
+                    <input type="text" [(ngModel)]="searchTerm" name="search" placeholder="Rechercher un employé...">
+                </div>
+
+                <div class="employee-list">
+                    @for (emp of filteredEmployees; track emp.id) {
+                    <div class="employee-item" [class.selected]="selectedEmployeeIds().includes(emp.id)"
+                        (click)="toggleEmployeeSelection(emp.id)">
+                        <div class="emp-avatar">{{ emp.nom.substring(0,1) }}{{ emp.prenom.substring(0,1) }}</div>
+                        <div class="emp-info">
+                            <span class="emp-name">{{ emp.prenom }} {{ emp.nom }}</span>
+                            <span class="emp-email">{{ emp.email }}</span>
+                        </div>
+                        <div class="selection-check">
+                            <mat-icon>{{ selectedEmployeeIds().includes(emp.id) ? 'check_circle' : 'circle' }}</mat-icon>
+                        </div>
+                    </div>
+                    }
+                    @if (filteredEmployees.length === 0) {
+                    <div class="empty-list">Aucun employé trouvé.</div>
+                    }
+                </div>
+            </div>
+            <footer class="modal-footer">
+                <div class="selection-summary">
+                    <strong>{{ selectedEmployeeIds().length }}</strong> employé(s) sélectionné(s)
+                </div>
+                <button class="btn-secondary" (click)="closeAssignModal()">Annuler</button>
+                <button class="btn-primary" (click)="confirmAssignation()"
+                    [disabled]="selectedEmployeeIds().length === 0 || isAssigning()">
+                    {{ isAssigning() ? 'Affectation...' : 'Confirmer' }}
+                </button>
             </footer>
         </div>
     </div>

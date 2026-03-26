@@ -8,6 +8,9 @@ import com.skill.backend.repository.NotificationRepository;
 import com.skill.backend.repository.UtilisateurRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -151,9 +154,22 @@ public class NotificationService {
     // Lecture et gestion
     // ─────────────────────────────────────────────────────────────
 
-    /** Toutes les notifications d'un utilisateur */
+    /** Toutes les notifications d'un utilisateur (version dépréciée) */
     public List<NotificationDTO> getNotifications(String userId) {
         return notificationRepository.findByUtilisateurIdOrderByDateEnvoiDesc(userId)
+                .stream().map(notificationMapper::toDto).collect(Collectors.toList());
+    }
+
+    /** Toutes les notifications d'un utilisateur avec pagination */
+    public Page<NotificationDTO> getNotifications(String userId, Pageable pageable) {
+        return notificationRepository.findByUtilisateurIdOrderByDateEnvoiDesc(userId, pageable)
+                .map(notificationMapper::toDto);
+    }
+
+    /** Récupérer les X dernières notifications (pour le popup) */
+    public List<NotificationDTO> getLatestNotifications(String userId, int limit) {
+        Pageable limitPage = PageRequest.of(0, limit);
+        return notificationRepository.findByUtilisateurIdOrderByDateEnvoiDesc(userId, limitPage)
                 .stream().map(notificationMapper::toDto).collect(Collectors.toList());
     }
 

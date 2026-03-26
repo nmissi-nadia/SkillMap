@@ -82,8 +82,15 @@ export class ManagerService {
     /**
      * Assigner un test à un employé
      */
-    assignTest(assignment: any): Observable<TestAssignment> {
+    assignTest(assignment: { testId: string; employeId: string; dateLimite?: string }): Observable<TestAssignment> {
         return this.http.post<TestAssignment>(`${environment.apiUrl}/tests/assign`, assignment);
+    }
+
+    /**
+     * Évaluer directement une compétence pour un employé
+     */
+    evaluateEmployee(employeId: string, evaluation: { competenceId: string; niveau: number; commentaire: string }): Observable<any> {
+        return this.http.post(`${environment.apiUrl}/evaluations/competences/manager/${employeId}`, evaluation);
     }
 
     /**

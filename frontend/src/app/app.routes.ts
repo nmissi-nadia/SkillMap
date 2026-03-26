@@ -43,6 +43,12 @@ export const routes: Routes = [
         data: { roles: ['MANAGER'] }
     },
     {
+        path: 'manager/team/:id',
+        loadComponent: () => import('./features/manager/team/team-member-detail.component').then(m => m.TeamMemberDetailComponent),
+        canActivate: [authGuard, roleGuard],
+        data: { roles: ['MANAGER'] }
+    },
+    {
         path: 'manager/evaluations',
         loadComponent: () => import('./features/manager/evaluations/pending-evaluations.component').then(m => m.PendingEvaluationsComponent),
         canActivate: [authGuard, roleGuard],
@@ -86,6 +92,12 @@ export const routes: Routes = [
     {
         path: 'rh/formations',
         loadComponent: () => import('./features/rh/formations/formations.component').then(m => m.FormationsComponent),
+        canActivate: [authGuard, roleGuard],
+        data: { roles: ['RH'] }
+    },
+    {
+        path: 'rh/audit-logs',
+        loadComponent: () => import('./features/rh/audit-logs/audit-logs.component').then(m => m.AuditLogsComponent),
         canActivate: [authGuard, roleGuard],
         data: { roles: ['RH'] }
     },

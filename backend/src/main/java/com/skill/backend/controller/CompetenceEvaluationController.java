@@ -47,6 +47,16 @@ public class CompetenceEvaluationController {
         ));
     }
 
+    @PostMapping("/manager/{employeId}")
+    @PreAuthorize("hasAuthority('ROLE_MANAGER')")
+    @Operation(summary = "Évaluation directe par le manager",
+               description = "Permet à un manager d'évaluer directement une compétence d'un employé sans auto-évaluation préalable")
+    public ResponseEntity<com.skill.backend.dto.CompetenceEmployeDTO> directEvaluate(
+            @PathVariable String employeId,
+            @RequestBody com.skill.backend.dto.ManagerEvaluationRequestDTO request) {
+        return ResponseEntity.ok(competenceEvaluationService.directEvaluate(employeId, request));
+    }
+
     @GetMapping("/{employeId}/history")
     @PreAuthorize("hasAnyAuthority('ROLE_MANAGER', 'ROLE_EMPLOYE')")
     @Operation(summary = "Récupérer l'historique des évaluations",

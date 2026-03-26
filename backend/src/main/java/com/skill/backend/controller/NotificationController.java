@@ -6,6 +6,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -27,13 +29,28 @@ public class NotificationController {
     private final NotificationService notificationService;
 
     /**
-     * Récupérer toutes les notifications de l'utilisateur connecté.
+     * Récupérer toutes les notifications de l'utilisateur connecté avec pagination.
      */
     @GetMapping
-    @Operation(summary = "Toutes mes notifications")
-    public ResponseEntity<List<NotificationDTO>> getMyNotifications(Authentication authentication) {
+    @Operation(summary = "Toutes mes notifications (paginé)")
+    public ResponseEntity<Page<NotificationDTO>> getMyNotifications(
+            Authentication authentication,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
         String userId = authentication.getName();
-        return ResponseEntity.ok(notificationService.getNotifications(userId));
+        return ResponseEntity.ok(notificationService.getNotifications(userId, PageRequest.of(page, size)));
+    }
+
+    /**
+     * Récupérer les dernières notifications (pour le popup de la cloche).
+     */
+    @GetMapping("/latest")
+    @Operation(summary = "Mes dernières notifications")
+    public ResponseEntity<List<NotificationDTO>> getLatestNotifications(
+            Authentication authentication,
+            @RequestParam(defaultValue = "5") int limit) {
+        String userId = authentication.getName();
+        return ResponseEntity.ok(notificationService.getLatestNotifications(userId, limit));
     }
 
     /**

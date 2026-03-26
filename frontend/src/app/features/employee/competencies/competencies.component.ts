@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { EmployeeService } from '../../../core/services/employee.service';
 import { EmployeeCompetence } from '../../../core/models/employee.model';
+import { MetadataService, MetadataOption } from '../../../core/services/metadata.service';
 
 @Component({
     selector: 'app-employee-competencies',
@@ -24,6 +25,9 @@ export class CompetenciesComponent implements OnInit {
     searchTerm = signal('');
     selectedCategory = signal('');
     selectedLevel = signal<number | null>(null);
+
+    // Metadata
+    competenceLevels = signal<MetadataOption[]>([]);
 
     // Computed: Filtered list
     filteredCompetencies = computed(() => {
@@ -68,12 +72,19 @@ export class CompetenciesComponent implements OnInit {
         commentaire: ''
     };
 
-    constructor(private employeeService: EmployeeService) { }
+    constructor(private employeeService: EmployeeService, private metadataService: MetadataService) { }
 
     ngOnInit() {
+        this.loadMetadata();
         this.loadProfile();
         this.loadCompetencies();
         this.loadAllCompetencies();
+    }
+
+    loadMetadata() {
+        this.metadataService.getMetadata().subscribe(meta => {
+            this.competenceLevels.set(meta.competenceLevels);
+        });
     }
 
     loadProfile() {
@@ -163,13 +174,6 @@ export class CompetenciesComponent implements OnInit {
     }
 
     getNiveauLabel(niveau: number): string {
-        const labels: { [key: number]: string } = {
-            1: 'Débutant',
-            2: 'Notions',
-            3: 'Autonome',
-            4: 'Maîtrise',
-            5: 'Expert'
-        };
-        return labels[niveau] || 'Inconnu';
+        return this.metadataService.getLabel(this.competenceLevels(), niveau);
     }
 }

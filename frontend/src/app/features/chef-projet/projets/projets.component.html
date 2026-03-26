@@ -40,16 +40,15 @@
         </div>
         <select [value]="filtreStatut()" (change)="filtreStatut.set($any($event.target).value)">
             <option value="">Tous les statuts</option>
-            <option value="PLANIFIE">Planifié</option>
-            <option value="EN_COURS">En cours</option>
-            <option value="TERMINE">Terminé</option>
-            <option value="SUSPENDU">Suspendu</option>
+            @for (s of projetStatuts(); track s.value) {
+                <option [value]="s.value">{{ s.label }}</option>
+            }
         </select>
         <select [value]="filtrePriorite()" (change)="filtrePriorite.set($any($event.target).value)">
             <option value="">Toutes les priorités</option>
-            <option value="HAUTE">Haute</option>
-            <option value="MOYENNE">Moyenne</option>
-            <option value="BASSE">Basse</option>
+            @for (p of projetPriorites(); track p.value) {
+                <option [value]="p.value">{{ p.label }}</option>
+            }
         </select>
         <span class="results-count">{{ projetsFiltres().length }} projet(s)</span>
     </div>
@@ -241,19 +240,18 @@
                         <label>Priorité</label>
                         <select [value]="projetEnCours().priorite ?? 'MOYENNE'"
                             (change)="updateField('priorite', $any($event.target).value)">
-                            <option value="HAUTE">Haute</option>
-                            <option value="MOYENNE">Moyenne</option>
-                            <option value="BASSE">Basse</option>
+                            @for (p of projetPriorites(); track p.value) {
+                                <option [value]="p.value">{{ p.label }}</option>
+                            }
                         </select>
                     </div>
                     <div class="form-group">
                         <label>Statut</label>
                         <select [value]="projetEnCours().statut ?? 'PLANIFIE'"
                             (change)="updateField('statut', $any($event.target).value)">
-                            <option value="PLANIFIE">Planifié</option>
-                            <option value="EN_COURS">En cours</option>
-                            <option value="TERMINE">Terminé</option>
-                            <option value="SUSPENDU">Suspendu</option>
+                            @for (s of projetStatuts(); track s.value) {
+                                <option [value]="s.value">{{ s.label }}</option>
+                            }
                         </select>
                     </div>
                     <div class="form-group">

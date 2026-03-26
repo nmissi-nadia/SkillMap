@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
-import { Notification, UnreadCountResponse } from '../models/notification.model';
+import { Notification, UnreadCountResponse, PaginatedNotifications } from '../models/notification.model';
 import { environment } from '../../../environments/environment';
 
 /**
@@ -39,9 +39,18 @@ export class NotificationService {
     });
   }
 
-  /** Récupérer toutes les notifications */
-  getAll(): Observable<Notification[]> {
-    return this.http.get<Notification[]>(this.apiUrl);
+  /** Récuperer les notifications paginées (pour la page historique) */
+  getPaginated(page: number = 0, size: number = 10): Observable<PaginatedNotifications> {
+    return this.http.get<PaginatedNotifications>(this.apiUrl, {
+      params: { page: page.toString(), size: size.toString() }
+    });
+  }
+
+  /** Récupérer les dernières notifications (pour le popup de la cloche) */
+  getLatest(limit: number = 5): Observable<Notification[]> {
+    return this.http.get<Notification[]>(`${this.apiUrl}/latest`, {
+      params: { limit: limit.toString() }
+    });
   }
 
   /** Récupérer les notifications non lues */

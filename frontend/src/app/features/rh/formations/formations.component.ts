@@ -2,7 +2,8 @@ import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { RhService, FormationDTO, FormationBudgetDTO, PageResponse } from '../../../core/services/rh.service';
+import { RhService, FormationDTO, FormationBudgetDTO, PageResponse, UtilisateurDTO } from '../../../core/services/rh.service';
+import { MetadataService, MetadataOption } from '../../../core/services/metadata.service';
 import { MatIconModule } from '@angular/material/icon';
 @Component({
     selector: 'app-formations',
@@ -28,8 +29,19 @@ export class FormationsComponent implements OnInit {
     error = signal<string | null>(null);
     showBudgetModal = signal(false);
     showFormModal = signal(false);
+    showAssignModal = signal(false);
     isEditing = signal(false);
     isSaving = signal(false);
+
+    // Assignment state
+    employees = signal<UtilisateurDTO[]>([]);
+    selectedEmployeeIds = signal<string[]>([]);
+    searchTerm = signal('');
+    isAssigning = signal(false);
+
+    // Metadata
+    formationStatuts = signal<MetadataOption[]>([]);
+    formationTypes = signal<MetadataOption[]>([]);
 
     editForm: any = {
         titre: '',
@@ -43,10 +55,18 @@ export class FormationsComponent implements OnInit {
         maxParticipants: 10
     };
 
-    constructor(private rhService: RhService) { }
+    constructor(private rhService: RhService, private metadataService: MetadataService) { }
 
     ngOnInit(): void {
+        this.loadMetadata();
         this.loadFormations();
+    }
+
+    loadMetadata(): void {
+        this.metadataService.getMetadata().subscribe(meta => {
+            this.formationStatuts.set(meta.formationStatuts);
+            this.formationTypes.set(meta.formationTypes);
+        });
     }
 
     loadFormations(): void {
@@ -150,22 +170,7 @@ export class FormationsComponent implements OnInit {
     }
 
     getStatutLabel(statut: string): string {
-        const s = (statut || '').toUpperCase();
-        switch (s) {
-            case 'PLANIFIÉE':
-            case 'PLANIFIEE':
-                return 'Planifiée';
-            case 'EN_COURS':
-                return 'En cours';
-            case 'TERMINÉE':
-            case 'TERMINEE':
-                return 'Terminée';
-            case 'ANNULÉE':
-            case 'ANNULEE':
-                return 'Annulée';
-            default:
-                return statut || 'Non défini';
-        }
+        return this.metadataService.getLabel(this.formationStatuts(), statut);
     }
 
     formatDate(dateString: string): string {
@@ -254,5 +259,71 @@ export class FormationsComponent implements OnInit {
                 }
             });
         }
+    }
+
+    // ========== ASSIGNATION Logic ==========
+
+    openAssignModal(formation: FormationDTO): void {
+        this.selectedFormation.set(formation);
+        this.selectedEmployeeIds.set([]);
+        this.searchTerm.set('');
+        this.showAssignModal.set(true);
+        
+        // Charger les employés si la liste est vide
+        if (this.employees().length === 0) {
+            this.rhService.getAllUsers('EMPLOYE', 0, 100).subscribe({
+                next: (res) => this.employees.set(res.content),
+                error: (err) => console.error('Erreur chargement employés:', err)
+            });
+        }
+    }
+
+    closeAssignModal(): void {
+        this.showAssignModal.set(false);
+        this.selectedFormation.set(null);
+    }
+
+    toggleEmployeeSelection(id: string): void {
+        const current = this.selectedEmployeeIds();
+        if (current.includes(id)) {
+            this.selectedEmployeeIds.set(current.filter(i => i !== id));
+        } else {
+            this.selectedEmployeeIds.set([...current, id]);
+        }
+    }
+
+    get filteredEmployees(): UtilisateurDTO[] {
+        const term = this.searchTerm().toLowerCase();
+        return this.employees().filter(e => 
+            e.nom.toLowerCase().includes(term) || 
+            e.prenom.toLowerCase().includes(term) || 
+            e.email.toLowerCase().includes(term)
+        );
+    }
+
+    confirmAssignation(): void {
+        const formationId = this.selectedFormation()?.id;
+        const employeIds = this.selectedEmployeeIds();
+
+        if (!formationId || employeIds.length === 0) return;
+
+        this.isAssigning.set(true);
+        this.rhService.assignFormation({
+            formationId,
+            employeIds
+        }).subscribe({
+            next: () => {
+                this.isAssigning.set(false);
+                this.closeAssignModal();
+                this.loadFormations();
+                // Notification de succès via le service ? On pourrait injecter MatSnackBar
+                alert('Affectation réussie !');
+            },
+            error: (err) => {
+                console.error('Erreur affectation:', err);
+                this.isAssigning.set(false);
+                alert('Erreur lors de l\'affectation.');
+            }
+        });
     }
 }

@@ -34,7 +34,7 @@ public class TestAssignmentService {
      * Affecter un test à un employé. Crée un TestEmploye avec statut ASSIGNED.
      */
     @Transactional
-    public TestEmployeDTO assignTest(String testId, String employeId, String managerEmail) {
+    public TestEmployeDTO assignTest(String testId, String employeId, String managerEmail, java.time.LocalDateTime dateLimite) {
         TestTechnique test = testTechniqueRepository.findById(testId)
                 .orElseThrow(() -> new ResourceNotFoundException("TestTechnique", "id", testId));
 
@@ -62,6 +62,8 @@ public class TestAssignmentService {
         testEmploye.setManager(manager);
         testEmploye.setStatut("ASSIGNED");
         testEmploye.setScore(0.0);
+        testEmploye.setDateAssignation(java.time.LocalDateTime.now());
+        testEmploye.setDateLimite(dateLimite);
 
         TestEmploye saved = testEmployeRepository.save(testEmploye);
 

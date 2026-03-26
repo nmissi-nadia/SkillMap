@@ -29,6 +29,13 @@ export class EmployeeService {
     }
 
     /**
+     * Récupérer le profil d'un employé spécifique (pour les managers/RH)
+     */
+    getEmployeeById(id: string): Observable<Employee> {
+        return this.http.get<Employee>(`${this.apiUrl}/${id}`);
+    }
+
+    /**
      * Mettre à jour son propre profil
      */
     updateMyProfile(data: Partial<Employee>): Observable<Employee> {
@@ -43,6 +50,13 @@ export class EmployeeService {
      */
     getMyCompetencies(): Observable<EmployeeCompetence[]> {
         return this.http.get<EmployeeCompetence[]>(`${this.apiUrl}/me/competences`);
+    }
+
+    /**
+     * Récupérer l'historique des évaluations d'un employé spécifique
+     */
+    getEvaluationHistory(employeId: string): Observable<EmployeeCompetence[]> {
+        return this.http.get<EmployeeCompetence[]>(`${environment.apiUrl}/evaluations/competences/${employeId}/history`);
     }
 
     /**

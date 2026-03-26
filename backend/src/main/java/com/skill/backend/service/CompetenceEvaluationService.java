@@ -1,18 +1,23 @@
 package com.skill.backend.service;
 
 import com.skill.backend.dto.CompetenceEmployeRequestDTO;
+import com.skill.backend.dto.CompetenceEmployeDTO;
+import com.skill.backend.dto.CompetenceDTO;
+import com.skill.backend.dto.ManagerEvaluationRequestDTO;
 import com.skill.backend.entity.Competence;
 import com.skill.backend.entity.CompetenceEmploye;
 import com.skill.backend.entity.Employe;
 import com.skill.backend.repository.CompetenceEmployeRepository;
 import com.skill.backend.repository.CompetenceRepository;
 import com.skill.backend.repository.EmployeRepository;
+import com.skill.backend.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,15 +32,14 @@ public class CompetenceEvaluationService {
     /**
      * Auto-évaluation d'une compétence par un employé
      */
-    @PreAuthorize("hasAuthority('ROLE_EMPLOYE')")
-    public com.skill.backend.dto.CompetenceEmployeDTO autoEvaluer(String employeId, CompetenceEmployeRequestDTO request) {
+    @Transactional
+    public CompetenceEmployeDTO autoEvaluer(String employeId, CompetenceEmployeRequestDTO request) {
         Employe employe = employeRepository.findById(employeId)
-                .orElseThrow(() -> new RuntimeException("Employé non trouvé"));
+                .orElseThrow(() -> new ResourceNotFoundException("Employe", "id", employeId));
         
         Competence competence = competenceRepository.findById(request.getCompetenceId())
-                .orElseThrow(() -> new RuntimeException("Compétence non trouvée"));
+                .orElseThrow(() -> new ResourceNotFoundException("Competence", "id", request.getCompetenceId()));
 
-        // Chercher si l'évaluation existe déjà ou créer une nouvelle
         CompetenceEmploye competenceEmploye = competenceEmployeRepository.findByEmployeIdAndCompetenceId(employeId, request.getCompetenceId())
                 .orElse(new CompetenceEmploye());
 
@@ -46,14 +50,12 @@ public class CompetenceEvaluationService {
         
         competenceEmploye.setNiveauAuto(request.getNiveauAuto());
         competenceEmploye.setCommentaire(request.getCommentaire());
-        competenceEmploye.setDateEvaluation(java.time.LocalDate.now());
+        competenceEmploye.setDateEvaluation(LocalDate.now());
         
         CompetenceEmploye saved = competenceEmployeRepository.save(competenceEmploye);
 
-        // Log l'auto-évaluation
         auditLogService.logAutoEvaluation(employeId, competence.getId(), request.getNiveauAuto(), request.getCommentaire());
 
-        // Notifier le manager si l'employé en a un
         if (employe.getManager() != null) {
             notificationService.notifyManagerAutoEvaluation(
                 employe.getManager().getId(),
@@ -63,6 +65,40 @@ public class CompetenceEvaluationService {
             );
         }
 
+        return toDTO(saved);
+    }
+
+    /**
+     * Évaluation directe par le manager
+     */
+    @Transactional
+    public CompetenceEmployeDTO directEvaluate(String employeId, ManagerEvaluationRequestDTO request) {
+        Employe employe = employeRepository.findById(employeId)
+                .orElseThrow(() -> new ResourceNotFoundException("Employe", "id", employeId));
+        
+        Competence competence = competenceRepository.findById(request.getCompetenceId())
+                .orElseThrow(() -> new ResourceNotFoundException("Competence", "id", request.getCompetenceId()));
+
+        CompetenceEmploye competenceEmploye = competenceEmployeRepository.findByEmployeIdAndCompetenceId(employeId, request.getCompetenceId())
+                .orElse(new CompetenceEmploye());
+
+        if (competenceEmploye.getId() == null) {
+            competenceEmploye.setEmploye(employe);
+            competenceEmploye.setCompetence(competence);
+        }
+        
+        competenceEmploye.setNiveauManager(request.getNiveau());
+        
+        competenceEmploye.setCommentaire(request.getCommentaire());
+        competenceEmploye.setDateEvaluation(LocalDate.now());
+        
+        CompetenceEmploye saved = competenceEmployeRepository.save(competenceEmploye);
+
+        notificationService.notifyEmployeValidation(
+            employe.getId(),
+            competence.getNom(),
+            true
+        );
 
         return toDTO(saved);
     }
@@ -70,23 +106,21 @@ public class CompetenceEvaluationService {
     /**
      * Validation d'une évaluation par le manager
      */
-    @PreAuthorize("hasRole('MANAGER')")
-    public com.skill.backend.dto.CompetenceEmployeDTO validerEvaluation(String competenceEmployeId, int niveauManager, String commentaireManager) {
+    @Transactional
+    public CompetenceEmployeDTO validerEvaluation(String competenceEmployeId, int niveauManager, String commentaireManager) {
         CompetenceEmploye competenceEmploye = competenceEmployeRepository.findById(competenceEmployeId)
-                .orElseThrow(() -> new RuntimeException("Évaluation non trouvée"));
+                .orElseThrow(() -> new ResourceNotFoundException("CompetenceEmploye", "id", competenceEmployeId));
 
         competenceEmploye.setNiveauManager(niveauManager);
         
         CompetenceEmploye updated = competenceEmployeRepository.save(competenceEmploye);
 
-        // Log la validation
         auditLogService.logValidationManager(
             competenceEmploye.getEmploye().getManager().getId(),
             competenceEmployeId,
             niveauManager
         );
 
-        // Notifier l'employé
         notificationService.notifyEmployeValidation(
             competenceEmploye.getEmploye().getId(),
             competenceEmploye.getCompetence().getNom(),
@@ -100,14 +134,14 @@ public class CompetenceEvaluationService {
      * Récupérer l'historique des évaluations d'un employé
      */
     @Transactional(readOnly = true)
-    public java.util.List<com.skill.backend.dto.CompetenceEmployeDTO> getHistory(String employeId) {
+    public List<CompetenceEmployeDTO> getHistory(String employeId) {
         return competenceEmployeRepository.findByEmployeId(employeId).stream()
                 .map(this::toDTO)
-                .collect(java.util.stream.Collectors.toList());
+                .collect(Collectors.toList());
     }
 
-    private com.skill.backend.dto.CompetenceEmployeDTO toDTO(CompetenceEmploye entity) {
-        com.skill.backend.dto.CompetenceEmployeDTO dto = new com.skill.backend.dto.CompetenceEmployeDTO();
+    private CompetenceEmployeDTO toDTO(CompetenceEmploye entity) {
+        CompetenceEmployeDTO dto = new CompetenceEmployeDTO();
         dto.setId(entity.getId());
         dto.setNiveauAuto(entity.getNiveauAuto());
         dto.setNiveauManager(entity.getNiveauManager());
@@ -119,7 +153,7 @@ public class CompetenceEvaluationService {
             dto.setCompetenceId(entity.getCompetence().getId());
             dto.setCompetenceNom(entity.getCompetence().getNom());
             
-            com.skill.backend.dto.CompetenceDTO compDto = new com.skill.backend.dto.CompetenceDTO();
+            CompetenceDTO compDto = new CompetenceDTO();
             compDto.setId(entity.getCompetence().getId());
             compDto.setNom(entity.getCompetence().getNom());
             compDto.setType(entity.getCompetence().getType());

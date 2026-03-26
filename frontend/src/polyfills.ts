@@ -1,0 +1,9 @@
+/**
+ * Polyfills for SockJS / STOMP
+ */
+(window as any).global = window;
+(window as any).process = {
+  env: { DEBUG: undefined },
+};
+import { Buffer } from 'buffer';
+(window as any).Buffer = Buffer;

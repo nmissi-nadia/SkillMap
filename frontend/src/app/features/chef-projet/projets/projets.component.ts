@@ -4,6 +4,7 @@ import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ChefProjetService } from '../../../core/services/chef-projet.service';
 import { Projet, ProjetCreate } from '../../../core/models/chef-projet.model';
+import { MetadataService, MetadataOption } from '../../../core/services/metadata.service';
 
 @Component({
     selector: 'app-chef-projet-projets',
@@ -30,6 +31,10 @@ export class ProjetsComponent implements OnInit {
     projetEnCours = signal<Partial<ProjetCreate>>({});
     projetIdEnEdition = signal<string | null>(null);
 
+    // Metadata
+    projetStatuts = signal<MetadataOption[]>([]);
+    projetPriorites = signal<MetadataOption[]>([]);
+
     // Filtrage calculé
     projetsFiltres = computed(() => {
         let result = [...this.projets()];
@@ -46,9 +51,19 @@ export class ProjetsComponent implements OnInit {
         return result;
     });
 
-    constructor(private chefProjetService: ChefProjetService) { }
+    constructor(private chefProjetService: ChefProjetService, private metadataService: MetadataService) { }
 
-    ngOnInit() { this.loadProjets(); }
+    ngOnInit() { 
+        this.loadMetadata();
+        this.loadProjets(); 
+    }
+
+    loadMetadata() {
+        this.metadataService.getMetadata().subscribe(meta => {
+            this.projetStatuts.set(meta.projetStatuts);
+            this.projetPriorites.set(meta.projetPriorites);
+        });
+    }
 
     loadProjets() {
         this.loading.set(true);
@@ -127,7 +142,7 @@ export class ProjetsComponent implements OnInit {
     }
 
     getStatutLabel(s: string) {
-        return ({ PLANIFIE: 'Planifié', EN_COURS: 'En cours', TERMINE: 'Terminé', SUSPENDU: 'Suspendu' })[s] ?? s;
+        return this.metadataService.getLabel(this.projetStatuts(), s);
     }
 
     getPrioriteIcon(p: string) { return ''; }

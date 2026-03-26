@@ -14,6 +14,15 @@ public class AuditLogService {
 
     private final AuditLogRepository auditLogRepository;
     private final ObjectMapper objectMapper;
+    private final com.skill.backend.mapper.AuditLogMapper auditLogMapper;
+
+    /**
+     * Récupère tous les logs avec pagination
+     */
+    public org.springframework.data.domain.Page<com.skill.backend.dto.AuditLogDTO> getAllLogs(org.springframework.data.domain.Pageable pageable) {
+        return auditLogRepository.findAllByOrderByDateActionDesc(pageable)
+                .map(auditLogMapper::toDto);
+    }
 
     /**
      * Log une action d'authentification

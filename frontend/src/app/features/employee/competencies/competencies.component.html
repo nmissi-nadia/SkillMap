@@ -91,11 +91,9 @@
 
             <select [ngModel]="selectedLevel()" (ngModelChange)="selectedLevel.set($event ? +$event : null)">
                 <option value="">Tous les niveaux</option>
-                <option value="1">1 - Débutant</option>
-                <option value="2">2 - Notions</option>
-                <option value="3">3 - Autonome</option>
-                <option value="4">4 - Maîtrise</option>
-                <option value="5">5 - Expert</option>
+                @for (lvl of competenceLevels(); track lvl.value) {
+                    <option [value]="lvl.value">{{ lvl.label }}</option>
+                }
             </select>
         </div>
     </div>
