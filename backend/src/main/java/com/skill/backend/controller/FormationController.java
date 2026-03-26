@@ -3,6 +3,7 @@ package com.skill.backend.controller;
 import com.skill.backend.dto.*;
 import com.skill.backend.service.FormationService;
 import com.skill.backend.service.InscriptionFormationService;
+import com.skill.backend.service.NotificationService;
 import com.skill.backend.service.RessourceFormationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,7 @@ public class FormationController {
     private final FormationService formationService;
     private final RessourceFormationService ressourceService;
     private final InscriptionFormationService inscriptionService;
+    private final NotificationService notificationService;
 
     @PostMapping("/formations")
     @org.springframework.security.access.prepost.PreAuthorize("hasAuthority('ROLE_RH')")
@@ -58,6 +60,10 @@ public class FormationController {
     @org.springframework.security.access.prepost.PreAuthorize("hasAnyAuthority('ROLE_RH', 'ROLE_MANAGER', 'ROLE_EMPLOYE')")
     public ResponseEntity<List<FormationDetailDTO>> getEmployeeFormations(
             @PathVariable("employeeId") String employeeId) {
-        return ResponseEntity.ok(inscriptionService.getEmployeeFormations(employeeId));
+        String resolvedId = employeeId;
+        if (employeeId != null && employeeId.contains("@")) {
+            resolvedId = notificationService.getUserIdFromEmail(employeeId);
+        }
+        return ResponseEntity.ok(inscriptionService.getEmployeeFormations(resolvedId));
     }
 }

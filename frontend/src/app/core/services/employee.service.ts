@@ -2,7 +2,8 @@ import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { Employee, EmployeeKPI, TodoItem, Notification } from '../models/employee.model';
+import { Employee, EmployeeKPI, TodoItem } from '../models/employee.model';
+import { Notification } from '../models/notification.model';
 import { EmployeeCompetence } from '../models/employee.model';
 
 /**

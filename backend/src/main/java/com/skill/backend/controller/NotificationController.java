@@ -35,26 +35,37 @@ public class NotificationController {
 
     private String getUserId(Authentication authentication) {
         if (authentication == null) {
-            log.warn("⚠️ Authentication object is null");
-            throw new RuntimeException("Non authentifié");
+            log.warn("⚠️ NotificationController: Authentication is null");
+            throw new RuntimeException("Accès refusé : Authentification manquante");
         }
 
         Object principal = authentication.getPrincipal();
+        log.info("🔍 NotificationController: Principal class = {}", principal.getClass().getName());
         
-        // 1. Essayer de récupérer l'ID directement depuis le Principal (Utilisateur)
+        // 1. Déjà un objet Utilisateur (via notre architecture interne)
         if (principal instanceof Utilisateur) {
-            return ((Utilisateur) principal).getId();
+            String id = ((Utilisateur) principal).getId();
+            if (id != null) return id;
         }
         
-        // 2. Fallback via le repository (si principal est juste le username string)
+        // 2. Principal est un Map (Cas OIDC / Social Login parfois)
+        if (principal instanceof Map && ((Map<?, ?>) principal).containsKey("id")) {
+            return (String) ((Map<?, ?>) principal).get("id");
+        }
+
+        // 3. Fallback : Résolution via Email
         String email = authentication.getName();
-        log.debug("🔍 Resolving userId from email: {}", email);
-        
+        if (email == null || email.equals("anonymousUser")) {
+            log.warn("⚠️ NotificationController: User is anonymous or has no email");
+            throw new RuntimeException("Accès refusé : Utilisateur non authentifié");
+        }
+
+        log.info("🔎 Resolving userId for email: {}", email);
         return utilisateurRepository.findByEmail(email)
                 .map(Utilisateur::getId)
                 .orElseThrow(() -> {
-                    log.error("❌ Utilisateur non trouvé pour l'email: {}", email);
-                    return new RuntimeException("Utilisateur non trouvé: " + email);
+                    log.error("❌ NotificationController: Utilisateur introuvable pour {}", email);
+                    return new RuntimeException("Erreur de session : Utilisateur introuvable");
                 });
     }
 

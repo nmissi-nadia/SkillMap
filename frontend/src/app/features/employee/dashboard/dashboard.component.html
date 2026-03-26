@@ -1,5 +1,4 @@
 <div class="dashboard-container">
-    <!-- Header -->
     <div class="dashboard-content">
         <!-- KPI Cards -->
         <section class="kpi-section">
@@ -105,7 +104,7 @@
             <section class="notifications-section card">
                 <div class="card-header">
                     <h2>Dernières activités</h2>
-                    <a routerLink="/notifications" class="btn-text">Tout voir</a>
+                    <a [routerLink]="['/notifications']" class="btn-text">Tout voir</a>
                 </div>
                 @if (notifications().length > 0) {
                 <div class="notifications-list">
@@ -131,7 +130,7 @@
         <section class="quick-links">
             <h2>Raccourcis</h2>
             <div class="links-grid">
-                <a routerLink="/employee/profile" class="quick-link-card">
+                <a [routerLink]="['/employee/profile']" class="quick-link-card">
                     <div class="link-icon-container">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -144,7 +143,7 @@
                         <p>Gérez vos infos</p>
                     </div>
                 </a>
-                <a routerLink="/employee/competencies" class="quick-link-card">
+                <a [routerLink]="['/employee/competencies']" class="quick-link-card">
                     <div class="link-icon-container">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -158,7 +157,7 @@
                         <p>Suivez vos acquis</p>
                     </div>
                 </a>
-                <a routerLink="/employe/tests" class="quick-link-card">
+                <a [routerLink]="['/employe/tests']" class="quick-link-card">
                     <div class="link-icon-container">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -171,7 +170,7 @@
                         <p>Validez vos skills</p>
                     </div>
                 </a>
-                <a routerLink="/employe/formations" class="quick-link-card">
+                <a [routerLink]="['/employe/formations']" class="quick-link-card">
                     <div class="link-icon-container">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -187,5 +186,4 @@
             </div>
         </section>
     </div>
-    }
 </div>

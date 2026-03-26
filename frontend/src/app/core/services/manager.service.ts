@@ -87,10 +87,10 @@ export class ManagerService {
     }
 
     /**
-     * Évaluer directement une compétence pour un employé
+     * Évaluer directement une compétence pour un employé (Manager)
      */
     evaluateEmployee(employeId: string, evaluation: { competenceId: string; niveau: number; commentaire: string }): Observable<any> {
-        return this.http.post(`${environment.apiUrl}/evaluations/competences/manager/${employeId}`, evaluation);
+        return this.http.post(`${this.apiUrl}/me/team/${employeId}/evaluate`, evaluation);
     }
 
     /**

@@ -1,5 +1,5 @@
 import { RoleUtilisateur } from './role.enum';
-import { Notification } from './notification.model';
+export type { Notification } from './notification.model';
 
 /**
  * Modèle Employé

@@ -2,6 +2,7 @@ package com.skill.backend.controller;
 
 import com.skill.backend.dto.CompetenceEmployeDTO;
 import com.skill.backend.dto.EmployeDTO;
+import com.skill.backend.dto.DirectEvaluationRequestDTO;
 import com.skill.backend.dto.PendingEvaluationDTO;
 import com.skill.backend.dto.TeamStatsDTO;
 import com.skill.backend.dto.ValidationRequestDTO;
@@ -107,6 +108,19 @@ public class ManagerController {
         List<com.skill.backend.dto.TestEmployeDTO> tests = managerService.getAssignedTests(authentication.getName());
         System.out.println("✅ Result: " + tests.size() + " tests found.");
         return ResponseEntity.ok(tests);
+    }
+
+
+    @PostMapping("/me/team/{employeId}/evaluate")
+    @PreAuthorize("hasRole('MANAGER')")
+    @Operation(summary = "Évaluer directement un membre de l'équipe",
+               description = "Permet à un manager d'évaluer une compétence d'un employé sans passer par une auto-évaluation")
+    public ResponseEntity<CompetenceEmployeDTO> evaluateMember(
+            Authentication authentication,
+            @PathVariable String employeId,
+            @RequestBody DirectEvaluationRequestDTO request) {
+        System.out.println("🎯 ManagerController.evaluateMember - Direct evaluation for employee: " + employeId);
+        return ResponseEntity.ok(managerService.evaluateCompetenceDirectly(authentication.getName(), employeId, request));
     }
 
 

@@ -19,7 +19,7 @@ public interface NotificationRepository extends JpaRepository<Notification, Stri
 
     // --- Par userId (plus performant, pas de join) ---
     List<Notification> findByUtilisateurIdOrderByDateEnvoiDesc(String userId);
-    Page<Notification> findByUtilisateurIdOrderByDateEnvoiDesc(String userId, Pageable pageable);
+    Page<Notification> findAllByUtilisateurIdOrderByDateEnvoiDesc(String userId, Pageable pageable);
     
     List<Notification> findByUtilisateurIdAndLuFalseOrderByDateEnvoiDesc(String userId);
     List<Notification> findByUtilisateurIdAndLuFalse(String userId);

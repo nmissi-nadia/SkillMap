@@ -52,3 +52,9 @@ export interface ManagerDashboard {
         employesAffectes: number;
     };
 }
+
+export interface DirectEvaluation {
+    competenceId: string;
+    niveau: number;
+    commentaire: string;
+}

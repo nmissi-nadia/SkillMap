@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional(readOnly = true)
 public class NotificationService {
 
     private final NotificationRepository notificationRepository;
@@ -170,14 +171,14 @@ public class NotificationService {
 
     /** Toutes les notifications d'un utilisateur avec pagination */
     public Page<NotificationDTO> getNotifications(String userId, Pageable pageable) {
-        return notificationRepository.findByUtilisateurIdOrderByDateEnvoiDesc(userId, pageable)
+        return notificationRepository.findAllByUtilisateurIdOrderByDateEnvoiDesc(userId, pageable)
                 .map(notificationMapper::toDto);
     }
 
     /** Récupérer les X dernières notifications (pour le popup) */
     public List<NotificationDTO> getLatestNotifications(String userId, int limit) {
         Pageable limitPage = PageRequest.of(0, limit);
-        return notificationRepository.findByUtilisateurIdOrderByDateEnvoiDesc(userId, limitPage)
+        return notificationRepository.findAllByUtilisateurIdOrderByDateEnvoiDesc(userId, limitPage)
                 .stream().map(notificationMapper::toDto).collect(Collectors.toList());
     }
 

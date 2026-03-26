@@ -28,6 +28,8 @@ public class ManagerService {
     private final TestEmployeRepository testEmployeRepository;
     private final ProjetRepository projetRepository;
     private final CompetenceEmployeRepository competenceEmployeRepository;
+    private final CompetenceRepository competenceRepository;
+    private final NotificationService notificationService;
 
     private Manager getManagerByEmail(String email) {
         Utilisateur utilisateur = utilisateurRepository.findByEmail(email)
@@ -194,6 +196,39 @@ public class ManagerService {
         
         employe.setManager(manager);
         employeRepository.save(employe);
+    }
+
+    @Transactional
+    public CompetenceEmployeDTO evaluateCompetenceDirectly(String managerEmail, String employeId, DirectEvaluationRequestDTO request) {
+        Manager manager = getManagerByEmail(managerEmail);
+        Employe employe = employeRepository.findById(employeId)
+                .orElseThrow(() -> new RuntimeException("Employé non trouvé"));
+
+        if (!manager.getId().equals(employe.getManager().getId())) {
+            throw new RuntimeException("Cet employé n'est pas dans votre équipe");
+        }
+
+        Competence competence = competenceRepository.findById(request.getCompetenceId())
+                .orElseThrow(() -> new RuntimeException("Compétence non trouvée"));
+
+        CompetenceEmploye ce = competenceEmployeRepository.findByEmployeIdAndCompetenceId(employeId, request.getCompetenceId())
+                .orElse(new CompetenceEmploye());
+
+        if (ce.getId() == null) {
+            ce.setEmploye(employe);
+            ce.setCompetence(competence);
+        }
+
+        ce.setNiveauManager(request.getNiveau());
+        ce.setDateEvaluation(java.time.LocalDate.now());
+        ce.setCommentaire(request.getCommentaire());
+        
+        CompetenceEmploye saved = competenceEmployeRepository.save(ce);
+
+        // Notifier l'employé
+        notificationService.notifySkillValidation(employeId, competence.getNom(), true, manager.getId(), manager.getNom());
+
+        return competenceEmployeMapper.toDto(saved);
     }
 
     public List<EmployeDTO> getAvailableEmployes() {
