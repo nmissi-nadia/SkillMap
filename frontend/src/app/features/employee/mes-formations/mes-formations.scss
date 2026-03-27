@@ -227,6 +227,60 @@
 
   mat-icon { font-size: 18px; width: 18px; height: 18px; }
 
+  .no-resources {
+    padding: 1rem;
+    background: rgba(var(--slate-rgb), 0.03);
+    border-radius: 12px;
+    text-align: center;
+    border: 1px dashed rgba(var(--slate-rgb), 0.1);
+
+    .empty-hint {
+      font-size: 0.85rem;
+      color: var(--text-light);
+      font-style: italic;
+    }
+  }
+
+  .manual-action {
+    margin-top: 1rem;
+    padding: 0.5rem;
+    display: flex;
+    justify-content: center;
+  }
+
+  .btn-complete-manual {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 0.85rem;
+    background: linear-gradient(135deg, var(--success), #27ae60);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 15px rgba(39, 174, 96, 0.2);
+
+    mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(39, 174, 96, 0.3);
+      filter: brightness(1.1);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
+
   &:hover {
     border-color: var(--primary);
     color: var(--primary);

@@ -91,6 +91,19 @@ export class MesFormations implements OnInit {
     this.loadMyFormations(); 
   }
 
+  markAsCompleted(formation: FormationDetailDTO): void {
+    const userEmail = this.authService.currentUser()?.email;
+    if (!userEmail || !formation.id) return;
+
+    if (confirm('Voulez-vous marquer cette formation comme terminée ?')) {
+      this.formationService.updateProgress(formation.id, userEmail, 100).subscribe({
+        next: () => {
+          this.loadMyFormations();
+        }
+      });
+    }
+  }
+
   getInscription(formation: FormationDetailDTO) {
     return formation.inscriptions && formation.inscriptions.length > 0
       ? formation.inscriptions[0]

@@ -87,13 +87,21 @@
 
       <div class="card-footer">
         <div class="resources-actions" *ngIf="formation.ressources && formation.ressources.length > 0">
-            <button class="btn-resource" *ngFor="let res of formation.ressources" (click)="openResource(res.url)">
+            <button class="btn-resource" *ngFor="let res of formation.ressources" (click)="trackResourceClick(formation, res)">
                 <mat-icon>{{ res.typeRessource === 'PDF' ? 'picture_as_pdf' : 'link' }}</mat-icon>
                 {{ res.titre }}
             </button>
         </div>
         <div class="no-resources" *ngIf="!formation.ressources || formation.ressources.length === 0">
-            <span class="empty-hint">Aucune ressource pour le moment</span>
+            <span class="empty-hint">Formation sans supports numériques</span>
+        </div>
+        
+        <!-- Manual Completion for Presentiel or No Resources -->
+        <div class="manual-action" *ngIf="getInscription(formation)?.statut !== 'TERMINE' && (formation.typeFormation === 'PRESENTIEL' || !formation.ressources?.length)">
+            <button class="btn-complete-manual" (click)="markAsCompleted(formation)">
+                <mat-icon>verified</mat-icon>
+                <span>Confirmer ma participation</span>
+            </button>
         </div>
       </div>
     </div>

@@ -173,7 +173,7 @@ import { Notification } from '../../../core/models/notification.model';
     /* Dropdown Centered */
     .notif-dropdown {
       position: fixed;
-      top: 62%;
+      top: 250px;
       left: 50%;
       transform: translate(-50%, -50%);
       width: 450px;
@@ -356,7 +356,7 @@ export class NotificationBellComponent implements OnInit, OnDestroy {
     private notifService: NotificationService,
     private router: Router,
     private el: ElementRef
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.subs.push(

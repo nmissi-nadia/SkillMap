@@ -73,11 +73,26 @@ public class FormationController {
             @PathVariable("id") String formationId,
             @PathVariable("employeeId") String employeeId,
             @RequestParam("progress") Integer progress,
-            @RequestParam(value = "score", required = false) Integer score) {
+            @RequestParam(value = "score", required = false) Integer score,
+            org.springframework.security.core.Authentication authentication) {
+        
         String resolvedId = employeeId;
         if (employeeId != null && employeeId.contains("@")) {
             resolvedId = notificationService.getUserIdFromEmail(employeeId);
         }
+
+        // Security Check: EMPLOYE can only update their own progress
+        boolean isRH = authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_RH"));
+        boolean isManager = authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_MANAGER"));
+        
+        if (!isRH && !isManager) {
+            // Must be EMPLOYE, check if updating self
+            String currentUserId = notificationService.getUserIdFromEmail(authentication.getName());
+            if (!currentUserId.equals(resolvedId)) {
+                throw new RuntimeException("Accès refusé : Vous ne pouvez mettre à jour que votre propre progression");
+            }
+        }
+        
         return ResponseEntity.ok(inscriptionService.updateProgress(formationId, resolvedId, progress, score));
     }
 }
