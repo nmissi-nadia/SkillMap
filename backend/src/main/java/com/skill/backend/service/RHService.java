@@ -8,8 +8,8 @@ import com.skill.backend.mapper.EmployeMapper;
 import com.skill.backend.mapper.ManagerMapper;
 import com.skill.backend.mapper.RHMapper;
 import com.skill.backend.enums.InscriptionStatut;
-import com.skill.backend.exception.BadRequestException;
 import com.skill.backend.exception.ResourceNotFoundException;
+import com.skill.backend.exception.UnauthorizedAccessException;
 import com.skill.backend.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -48,7 +48,7 @@ public class RHService {
                 .orElseThrow(() -> new ResourceNotFoundException("Utilisateur non trouvé avec l'email: " + email));
         
         if (utilisateur.getRole() != RoleUtilisateur.RH) {
-            throw new BadRequestException("Accès refusé : l'utilisateur n'a pas le rôle RH");
+            throw new UnauthorizedAccessException("Accès refusé : l'utilisateur n'a pas le rôle RH");
         }
         
         return utilisateur;

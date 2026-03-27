@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, effect } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormationService } from '../../../core/services/formation.service';
@@ -20,16 +20,22 @@ export class MesFormations implements OnInit {
   constructor(
     private formationService: FormationService,
     private authService: AuthService
-  ) { }
+  ) {
+    // Utiliser un effect pour réagir au changement de l'utilisateur (ex: après refresh)
+    effect(() => {
+      const user = this.authService.currentUser();
+      if (user) {
+        this.currentUserId = user.id;
+        this.loadMyFormations();
+      } else {
+        // Optionnel: si l'utilisateur est déconnecté, on peut arrêter le loading
+        this.loading = false;
+      }
+    });
+  }
 
   ngOnInit(): void {
-    const user = this.authService.getCurrentUser();
-    if (user) {
-      this.currentUserId = user.id;
-      this.loadMyFormations();
-    } else {
-      this.loading = false;
-    }
+    // Plus besoin de charger ici, l'effect s'en occupe
   }
 
   loadMyFormations(): void {

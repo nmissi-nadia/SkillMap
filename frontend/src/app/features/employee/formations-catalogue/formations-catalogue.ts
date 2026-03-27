@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { FormationService } from '../../../core/services/formation.service';
@@ -26,12 +26,24 @@ export class FormationsCatalogue implements OnInit {
     private formationService: FormationService,
     private authService: AuthService,
     private snackBar: MatSnackBar
-  ) { }
+  ) {
+    // Utiliser un effect pour réagir au changement de l'utilisateur (ex: après refresh)
+    import('@angular/core').then(m => {
+      m.effect(() => {
+        const user = this.authService.currentUser();
+        if (user) {
+          this.currentUserId = user.id;
+          this.loadCatalogue();
+        } else {
+          // Si pas d'utilisateur, on charge quand même le catalogue mais sans filtre personnel
+          this.loadCatalogue();
+        }
+      });
+    });
+  }
 
   ngOnInit(): void {
-    const user = this.authService.getCurrentUser();
-    if (user) this.currentUserId = user.id;
-    this.loadCatalogue();
+    // L'effect s'occupe du chargement initial
   }
 
   loadCatalogue(): void {

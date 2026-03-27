@@ -50,6 +50,7 @@ public class SecurityConfig {
                                         "/api-docs/**",
                                         "/ws-notifications/**"
                                 ).permitAll()
+                                .requestMatchers("/api/rh/**").hasAuthority("ROLE_RH")
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))

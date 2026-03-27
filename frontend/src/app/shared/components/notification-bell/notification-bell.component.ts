@@ -144,7 +144,7 @@ import { Notification } from '../../../core/models/notification.model';
     /* Dropdown Centered */
     .notif-dropdown {
       position: fixed;
-      top: 50%;
+      top: 58%;
       left: 50%;
       transform: translate(-50%, -50%);
       width: 450px;
@@ -158,7 +158,7 @@ import { Notification } from '../../../core/models/notification.model';
     }
 
     @keyframes zoomIn {
-      from { opacity: 0; transform: translate(-50%, -45%) scale(0.95); }
+      from { opacity: 0; transform: translate(-50%, -53%) scale(0.95); }
       to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
     }
 

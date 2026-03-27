@@ -21,8 +21,7 @@ import java.util.List;
 @RequestMapping("/api/rh")
 @RequiredArgsConstructor
 @Tag(name = "RH", description = "Endpoints pour les Ressources Humaines")
-// TODO: TEMPORAIRE - Désactivé pour debug. Le JWT contient bien ROLE_RH mais Spring Security rejette quand même
-// @PreAuthorize("hasRole('RH')")
+@PreAuthorize("hasAuthority('ROLE_RH')")
 public class RHController {
 
     private final RHService rhService;

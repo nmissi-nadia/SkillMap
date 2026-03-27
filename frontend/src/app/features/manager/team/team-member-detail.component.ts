@@ -406,8 +406,8 @@ import { Employee, EmployeeCompetence } from '../../../core/models/employee.mode
     `]
 })
 export class TeamMemberDetailComponent implements OnInit {
-    private route = inject(ActivatedRoute);
-    private managerService = inject(ManagerService);
+    public route = inject(ActivatedRoute);
+    public managerService = inject(ManagerService);
     
     // Core data
     employee = signal<Employee | null>(null);
