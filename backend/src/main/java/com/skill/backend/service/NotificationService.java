@@ -92,7 +92,7 @@ public class NotificationService {
         createAndPush(employeId,
                 "Affectation à un projet",
                 "Vous avez été affecté(e) au projet « " + projetNom + " »",
-                "ACTION", "/projets", managerId, managerNom);
+                "ACTION", "/employee/dashboard", managerId, managerNom);
     }
 
     /** Notification lors de l'inscription à une formation */
@@ -100,7 +100,7 @@ public class NotificationService {
         createAndPush(employeId,
                 "Inscription à une formation",
                 "Vous avez été inscrit(e) à la formation « " + formationTitre + " »",
-                "ACTION", "/formations", rhId, rhNom);
+                "ACTION", "/employe/formations", rhId, rhNom);
     }
 
     /** Notification lors de l'assignation d'un test technique */
@@ -108,7 +108,7 @@ public class NotificationService {
         createAndPush(employeId,
                 "Nouveau test technique",
                 "Un test technique « " + testTitre + " » vous a été assigné",
-                "ACTION", "/tests", managerId, managerNom);
+                "ACTION", "/employe/tests", managerId, managerNom);
     }
 
     /** Notification lors de la validation d'une compétence */
@@ -119,7 +119,7 @@ public class NotificationService {
                 : "Votre évaluation de « " + competenceNom + " » a été rejetée";
         createAndPush(employeId, titre, contenu,
                 validee ? "SUCCESS" : "ALERTE",
-                "/profile", managerId, managerNom);
+                "/employee/profile", managerId, managerNom);
     }
 
     /** Notification lors de la création d'un compte utilisateur */

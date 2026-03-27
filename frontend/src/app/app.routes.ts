@@ -96,6 +96,12 @@ export const routes: Routes = [
         data: { roles: ['RH'] }
     },
     {
+        path: 'rh/formations/:id',
+        loadComponent: () => import('./features/rh/formations/formation-detail.component').then(m => m.FormationDetailRHComponent),
+        canActivate: [authGuard, roleGuard],
+        data: { roles: ['RH'] }
+    },
+    {
         path: 'rh/audit-logs',
         loadComponent: () => import('./features/rh/audit-logs/audit-logs.component').then(m => m.AuditLogsComponent),
         canActivate: [authGuard, roleGuard],
@@ -188,22 +194,6 @@ export const routes: Routes = [
             { path: 'edit/:id', loadComponent: () => import('./modules/tests/components/edit-test.component').then(m => m.EditTestComponent) },
             { path: ':id', loadComponent: () => import('./modules/tests/components/test-detail.component').then(m => m.TestDetailComponent) },
             { path: 'assign/:id', loadComponent: () => import('./modules/tests/components/assign-test.component').then(m => m.AssignTestComponent) }
-        ]
-    },
-    // Formations V2 Routes
-    {
-        path: 'formations',
-        canActivate: [authGuard],
-        children: [
-            { path: '', loadComponent: () => import('./features/formations/formation-list/formation-list').then(m => m.FormationList) },
-            {
-                path: 'create',
-                loadComponent: () => import('./features/formations/formation-create/formation-create').then(m => m.FormationCreate),
-                canActivate: [roleGuard],
-                data: { roles: ['RH'] }
-            },
-            { path: 'catalogue', loadComponent: () => import('./features/employee/formations-catalogue/formations-catalogue').then(m => m.FormationsCatalogue) },
-            { path: ':id', loadComponent: () => import('./features/formations/formation-detail/formation-detail').then(m => m.FormationDetail) }
         ]
     },
     {

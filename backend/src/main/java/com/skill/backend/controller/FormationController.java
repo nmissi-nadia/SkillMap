@@ -66,4 +66,18 @@ public class FormationController {
         }
         return ResponseEntity.ok(inscriptionService.getEmployeeFormations(resolvedId));
     }
+
+    @PatchMapping("/formations/{id}/inscriptions/{employeeId}/progress")
+    @org.springframework.security.access.prepost.PreAuthorize("hasAnyAuthority('ROLE_RH', 'ROLE_MANAGER', 'ROLE_EMPLOYE')")
+    public ResponseEntity<InscriptionDTO> updateProgress(
+            @PathVariable("id") String formationId,
+            @PathVariable("employeeId") String employeeId,
+            @RequestParam("progress") Integer progress,
+            @RequestParam(value = "score", required = false) Integer score) {
+        String resolvedId = employeeId;
+        if (employeeId != null && employeeId.contains("@")) {
+            resolvedId = notificationService.getUserIdFromEmail(employeeId);
+        }
+        return ResponseEntity.ok(inscriptionService.updateProgress(formationId, resolvedId, progress, score));
+    }
 }

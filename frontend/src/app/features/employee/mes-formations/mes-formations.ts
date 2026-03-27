@@ -5,10 +5,13 @@ import { FormationService } from '../../../core/services/formation.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { FormationDetailDTO } from '../../../core/models/formation.model';
 
+import { MatIconModule } from '@angular/material/icon';
+import { DatePipe } from '@angular/common';
+
 @Component({
   selector: 'app-mes-formations',
   standalone: true,
-  imports: [CommonModule, RouterLink, DecimalPipe],
+  imports: [CommonModule, RouterLink, DecimalPipe, MatIconModule, DatePipe],
   templateUrl: './mes-formations.html',
   styleUrl: './mes-formations.scss',
 })
@@ -21,39 +24,77 @@ export class MesFormations implements OnInit {
     private formationService: FormationService,
     private authService: AuthService
   ) {
-    // Utiliser un effect pour réagir au changement de l'utilisateur (ex: après refresh)
+    // Utiliser un effect pour réagir au changement de l'utilisateur (ex: après refresh/login)
     effect(() => {
       const user = this.authService.currentUser();
+      console.log('MesFormations: User signal changed:', user?.email);
       if (user) {
         this.currentUserId = user.id;
         this.loadMyFormations();
       } else {
-        // Optionnel: si l'utilisateur est déconnecté, on peut arrêter le loading
         this.loading = false;
       }
     });
   }
 
   ngOnInit(): void {
-    // Plus besoin de charger ici, l'effect s'en occupe
+    const user = this.authService.currentUser();
+    if (user && !this.currentUserId) {
+      this.currentUserId = user.id;
+      this.loadMyFormations();
+    }
   }
 
   loadMyFormations(): void {
+    if (!this.currentUserId) return;
     this.loading = true;
+    console.log('📡 [MesFormations] Loading formations for user:', this.currentUserId);
     this.formationService.getEmployeeFormations(this.currentUserId).subscribe({
       next: (data) => {
         this.myFormations = data;
         this.loading = false;
+        console.log('✅ [MesFormations] Formations loaded:', data.length);
       },
       error: (err) => {
-        console.error('Erreur chargement mes formations', err);
+        console.error('❌ [MesFormations] Error loading formations:', err);
         this.loading = false;
-      }
+      },
     });
   }
 
+  trackResourceClick(formation: FormationDetailDTO, resource: any): void {
+    const userEmail = this.authService.currentUser()?.email;
+    if (!userEmail || !formation.id) {
+      window.open(resource.url, '_blank');
+      return;
+    }
+
+    const currentInscription = this.getInscription(formation);
+    const totalResources = formation.ressources?.length || 1;
+    const progressStep = Math.ceil(100 / totalResources);
+    
+    let newProgress = (currentInscription?.progress || 0) + progressStep;
+    if (newProgress > 100) newProgress = 100;
+
+    // Mise à jour optimiste ou silencieuse
+    this.formationService.updateProgress(formation.id, userEmail, newProgress).subscribe({
+      next: () => {
+        this.loadMyFormations(); 
+      }
+    });
+
+    // Ouvrir la ressource
+    window.open(resource.url, '_blank');
+  }
+
+  refresh(): void {
+    this.loadMyFormations(); 
+  }
+
   getInscription(formation: FormationDetailDTO) {
-    return formation.inscriptions?.find((i: any) => i.employeId === this.currentUserId);
+    return formation.inscriptions && formation.inscriptions.length > 0
+      ? formation.inscriptions[0]
+      : null;
   }
 
   countCompleted(): number {

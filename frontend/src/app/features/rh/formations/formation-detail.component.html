@@ -1,0 +1,217 @@
+<div class="fd-shell animate-fade-in" *ngIf="!isLoading(); else loader">
+    <div class="fd-container" *ngIf="formation() as f">
+        <!-- ── Navigation Header ── -->
+        <header class="fd-header">
+            <button class="back-link" (click)="goBack()">
+                <mat-icon>arrow_back</mat-icon>
+                <span>Retour au catalogue</span>
+            </button>
+            <div class="header-main">
+                <div class="header-info">
+                    <span class="type-badge">{{ f.typeFormation }}</span>
+                    <h1 class="title">{{ f.titre }}</h1>
+                    <p class="subtitle">{{ f.lieu || 'Interne' }} • {{ f.lieu || 'En ligne' }}</p>
+                </div>
+                <div class="header-stats">
+                    <div class="completion-pill">
+                        <div class="pill-label">Progression Globale</div>
+                        <div class="pill-value">{{ getAverageProgress() | number:'1.0-0' }}%</div>
+                        <div class="pill-bar">
+                            <div class="fill" [style.width.%]="getAverageProgress()"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- ── Tabs Navigation ── -->
+        <nav class="fd-tabs">
+            <button [class.active]="activeTab() === 'overview'" (click)="setTab('overview')">
+                <mat-icon>dashboard</mat-icon> Vue d'ensemble
+            </button>
+            <button [class.active]="activeTab() === 'participants'" (click)="setTab('participants')">
+                <mat-icon>groups</mat-icon> Participants ({{ budget()?.nombreInscrits || 0 }})
+            </button>
+            <button [class.active]="activeTab() === 'resources'" (click)="setTab('resources')">
+                <mat-icon>attachment</mat-icon> Ressources & Liens
+            </button>
+        </nav>
+
+        <!-- ── Tab Content ── -->
+        <main class="fd-content">
+            
+            <!-- OVERVIEW TAB -->
+            <div class="tab-pane" *ngIf="activeTab() === 'overview'">
+                <div class="overview-grid">
+                    <div class="card main-info">
+                        <h3>Description du Programme</h3>
+                        <p>{{ f.description || 'Aucune description détaillée.' }}</p>
+                        
+                        <div class="info-meta">
+                            <div class="meta-item">
+                                <mat-icon>calendar_today</mat-icon>
+                                <div>
+                                    <span class="label">Date Début</span>
+                                    <span class="value">{{ f.dateDebut | date:'longDate' }}</span>
+                                </div>
+                            </div>
+                            <div class="meta-item">
+                                <mat-icon>psychology</mat-icon>
+                                <div>
+                                    <span class="label">Compétence Cible</span>
+                                    <span class="value">{{ f.competenceNom || 'Générale' }} (Niveau {{ f.niveauCible }})</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card budget-card" *ngIf="budget() as b">
+                        <h3>Analyse Financière</h3>
+                        <div class="stats-row">
+                            <div class="stat-item">
+                                <span class="label">Coût Total Engagé</span>
+                                <span class="value">{{ b.coutTotal | currency:'EUR' }}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="label">Budget Restant</span>
+                                <span class="value highlight">{{ b.budgetRestant | currency:'EUR' }}</span>
+                            </div>
+                        </div>
+                        <div class="budget-chart-sim">
+                            <div class="chart-label">Consommation du budget</div>
+                            <div class="chart-container">
+                                <div class="chart-fill" [style.width.%]="45"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PARTICIPANTS TAB -->
+            <div class="tab-pane" *ngIf="activeTab() === 'participants'">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Employés Inscrits</h3>
+                        <p>Suivez l'avancement individuel et validez les certifications.</p>
+                    </div>
+                    
+                    <div class="participants-table-wrapper">
+                        <table class="fd-table">
+                            <thead>
+                                <tr>
+                                    <th>Collaborateur</th>
+                                    <th>Statut</th>
+                                    <th>Progression</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let p of budget()?.employesStatuts">
+                                    <td>
+                                        <div class="user-info">
+                                            <div class="avatar">{{ p.employeNom[0] }}{{ p.employePrenom[0] }}</div>
+                                            <div class="text">
+                                                <span class="name">{{ p.employePrenom }} {{ p.employeNom }}</span>
+                                                <span class="id">#{{ p.employeId.substring(0,8) }}</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="status-dot" [style.background-color]="getStatutColor(p.statut)"></span>
+                                        {{ p.statut }}
+                                    </td>
+                                    <td>
+                                        <div class="prog-cell">
+                                            <div class="prog-bar"><div class="fill" [style.width.%]="p.progression"></div></div>
+                                            <span>{{ p.progression }}%</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <button class="btn-action-outline" [disabled]="p.valideeParRH || p.progression < 100" 
+                                                (click)="validateCertification(p.employeId)">
+                                            <mat-icon>verified</mat-icon>
+                                            {{ p.valideeParRH ? 'Certifié' : 'Valider Certif.' }}
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr *ngIf="!budget()?.employesStatuts?.length">
+                                    <td colspan="4" class="empty-row">Aucun employé n'est encore inscrit à cette formation.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RESOURCES TAB -->
+            <div class="tab-pane" *ngIf="activeTab() === 'resources'">
+                <div class="card">
+                    <div class="card-header actions">
+                        <h3>Matériel de Formation</h3>
+                        <button class="btn-primary-sm" (click)="openResourceModal()">
+                            <mat-icon>add</mat-icon> Ajouter un lien/doc
+                        </button>
+                    </div>
+
+                    <div class="resources-grid">
+                        <div class="resource-card" *ngFor="let res of f.ressources">
+                            <div class="res-icon">
+                                <mat-icon>{{ res.typeRessource === 'PDF' ? 'picture_as_pdf' : 'link' }}</mat-icon>
+                            </div>
+                            <div class="res-body">
+                                <h4>{{ res.titre }}</h4>
+                                <p>{{ res.url }}</p>
+                                <a [href]="res.url" target="_blank" class="res-link">Ouvrir la ressource</a>
+                            </div>
+                        </div>
+                        <div class="empty-resources" *ngIf="!f.ressources || f.ressources.length === 0">
+                            <mat-icon>folder_open</mat-icon>
+                            <p>Aucune ressource disponible. Ajoutez des supports pour vos apprenants.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+</div>
+
+<!-- ── MODAL AJOUT RESSOURCE ── -->
+<div class="modal-overlay" *ngIf="showResourceModal()" (click)="closeResourceModal()">
+    <div class="modal animate-slide-up" (click)="$event.stopPropagation()">
+        <header class="modal-header">
+            <h3>Nouvelle Ressource</h3>
+            <button class="close-btn" (click)="closeResourceModal()"><mat-icon>close</mat-icon></button>
+        </header>
+        <div class="modal-body">
+            <div class="form-group">
+                <label>Titre de la ressource</label>
+                <input type="text" [(ngModel)]="newResource.titre" placeholder="ex: Support de cours PDF">
+            </div>
+            <div class="form-group">
+                <label>URL / Lien</label>
+                <input type="text" [(ngModel)]="newResource.url" placeholder="https://...">
+            </div>
+            <div class="form-group">
+                <label>Type de ressource</label>
+                <select [(ngModel)]="newResource.typeRessource">
+                    <option value="LIEN">Lien Web / Vidéo</option>
+                    <option value="PDF">Document PDF</option>
+                </select>
+            </div>
+        </div>
+        <footer class="modal-footer">
+            <button class="btn-secondary" (click)="closeResourceModal()">Annuler</button>
+            <button class="btn-primary" (click)="addResource()" [disabled]="isAddingResource()">
+                {{ isAddingResource() ? 'Chargement...' : 'Ajouter' }}
+            </button>
+        </footer>
+    </div>
+</div>
+
+<ng-template #loader>
+    <div class="fd-loader">
+        <div class="spinner"></div>
+        <p>Expertise des données en cours...</p>
+    </div>
+</ng-template>

@@ -2,7 +2,7 @@
 
 Application frontend Angular pour le système de gestion des compétences SkillMap.
 
-## 🚀 Technologies
+##  Technologies
 
 - **Angular 21.1** - Framework frontend
 - **TypeScript 5.9** - Langage de programmation
@@ -10,20 +10,20 @@ Application frontend Angular pour le système de gestion des compétences SkillM
 - **RxJS 7.8** - Programmation réactive
 - **Vitest** - Framework de tests
 
-## 📋 Prérequis
+##  Prérequis
 
 - Node.js (version 18 ou supérieure)
 - npm (version 9 ou supérieure)
 - Backend SkillMap en cours d'exécution sur `http://localhost:8085`
 
-## 🛠️ Installation
+## 🛠 Installation
 
 ```bash
 # Installer les dépendances
 npm install
 ```
 
-## 🏃 Démarrage
+##  Démarrage
 
 ```bash
 # Démarrer le serveur de développement
@@ -33,7 +33,7 @@ npm start
 # Les appels API seront automatiquement proxifiés vers http://localhost:8080
 ```
 
-## 📦 Build
+##  Build
 
 ```bash
 # Build de production
@@ -42,7 +42,7 @@ npm run build
 # Les fichiers seront générés dans le dossier dist/
 ```
 
-## 🧪 Tests
+##  Tests
 
 ```bash
 # Exécuter les tests unitaires
@@ -52,7 +52,7 @@ npm test
 npm run watch
 ```
 
-## 📁 Structure du projet
+##  Structure du projet
 
 ```
 frontend/
@@ -74,7 +74,7 @@ frontend/
 └── package.json            # Dépendances et scripts npm
 ```
 
-## 🔧 Configuration
+##  Configuration
 
 ### Environnements
 
@@ -87,7 +87,7 @@ Le projet utilise deux fichiers d'environnement :
 
 Le fichier `proxy.conf.json` configure le proxy pour rediriger les appels `/api` vers le backend pendant le développement.
 
-## 📝 Commandes utiles
+##  Commandes utiles
 
 ```bash
 # Générer un nouveau composant
@@ -103,21 +103,21 @@ ng generate module nom-du-module
 ng generate interface nom-de-interface
 ```
 
-## 🔗 Intégration avec le Backend
+##  Intégration avec le Backend
 
 Le frontend communique avec le backend via des appels HTTP. Assurez-vous que :
 
-1. Le backend est démarré sur `http://localhost:8080`
+1. Le backend est démarré sur `http://localhost:808`
 2. Le CORS est configuré correctement dans le backend pour accepter les requêtes depuis `http://localhost:4200`
 
-## 📚 Documentation
+##  Documentation
 
 - [Angular Documentation](https://angular.dev)
 - [Angular CLI](https://angular.dev/tools/cli)
 - [RxJS Documentation](https://rxjs.dev)
 - [TypeScript Documentation](https://www.typescriptlang.org/docs)
 
-## 👥 Contribution
+##  Contribution
 
 Pour contribuer au projet :
 
@@ -125,6 +125,6 @@ Pour contribuer au projet :
 2. Développer et tester vos modifications
 3. Soumettre une pull request
 
-## 📄 Licence
+##  Licence
 
 Projet interne SkillMap

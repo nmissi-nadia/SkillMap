@@ -1,6 +1,5 @@
 package com.skill.backend.service;
 
-import com.skill.backend.dto.CompetenceEmployeRequestDTO;
 import com.skill.backend.dto.CompetenceEmployeDTO;
 import com.skill.backend.dto.CompetenceDTO;
 import com.skill.backend.dto.ManagerEvaluationRequestDTO;
@@ -26,6 +25,7 @@ public class CompetenceEvaluationService {
     private final CompetenceEmployeRepository competenceEmployeRepository;
     private final EmployeRepository employeRepository;
     private final CompetenceRepository competenceRepository;
+    private final com.skill.backend.repository.EvaluationRepository evaluationRepository;
     private final AuditLogService auditLogService;
     private final NotificationService notificationService;
 
@@ -33,7 +33,7 @@ public class CompetenceEvaluationService {
      * Auto-évaluation d'une compétence par un employé
      */
     @Transactional
-    public CompetenceEmployeDTO autoEvaluer(String employeId, CompetenceEmployeRequestDTO request) {
+    public com.skill.backend.dto.CompetenceEmployeDTO autoEvaluer(String employeId, com.skill.backend.dto.CompetenceEmployeRequestDTO request) {
         Employe employe = employeRepository.findById(employeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Employe", "id", employeId));
         
@@ -54,9 +54,24 @@ public class CompetenceEvaluationService {
         
         CompetenceEmploye saved = competenceEmployeRepository.save(competenceEmploye);
 
-        auditLogService.logAutoEvaluation(employeId, competence.getId(), request.getNiveauAuto(), request.getCommentaire());
-
+        // --- Synchronisation avec la table Evaluation pour le dashboard Manager ---
         if (employe.getManager() != null) {
+            com.skill.backend.entity.Evaluation evaluation = evaluationRepository
+                .findByEmployeIdAndCompetenceIdAndStatut(employeId, competence.getId(), "EN_ATTENTE")
+                .orElse(new com.skill.backend.entity.Evaluation());
+            
+            evaluation.setEmploye(employe);
+            evaluation.setManager(employe.getManager());
+            evaluation.setCompetence(competence);
+            evaluation.setNiveauAutoEvalue(request.getNiveauAuto());
+            evaluation.setCommentaireEmploye(request.getCommentaire());
+            evaluation.setStatut("EN_ATTENTE");
+            evaluation.setType("competence");
+            evaluation.setDateEvaluation(java.time.LocalDateTime.now());
+            
+            evaluationRepository.save(evaluation);
+
+            // Notification au manager
             notificationService.notifyManagerAutoEvaluation(
                 employe.getManager().getId(),
                 employe.getNom(),
@@ -64,6 +79,8 @@ public class CompetenceEvaluationService {
                 competence.getNom()
             );
         }
+
+        auditLogService.logAutoEvaluation(employeId, competence.getId(), request.getNiveauAuto(), request.getCommentaire());
 
         return toDTO(saved);
     }

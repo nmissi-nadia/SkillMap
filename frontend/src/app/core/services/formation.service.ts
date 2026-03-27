@@ -40,4 +40,10 @@ export class FormationService {
     getEmployeeFormations(employeeId: string): Observable<FormationDetailDTO[]> {
         return this.http.get<FormationDetailDTO[]>(`${this.apiUrl}/employes/${employeeId}/formations`);
     }
+
+    updateProgress(formationId: string, employeeId: string, progress: number, score?: number): Observable<InscriptionDTO> {
+        let url = `${this.apiUrl}/formations/${formationId}/inscriptions/${employeeId}/progress?progress=${progress}`;
+        if (score !== undefined) url += `&score=${score}`;
+        return this.http.patch<InscriptionDTO>(url, {});
+    }
 }

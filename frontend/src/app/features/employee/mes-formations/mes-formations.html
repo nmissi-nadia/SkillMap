@@ -1,135 +1,114 @@
-<div class="mf-shell">
-    <div class="mf-container">
-        <!-- ── HEADER ── -->
-        <header class="mf-header">
-            <div class="header-main">
-                <div class="header-icon-box">
-                    <span class="material-icons">school</span>
-                </div>
-                <div class="header-text">
-                    <p class="header-breadcrumb">Formation > Mes cours</p>
-                    <h1 class="header-title">Mes Formations</h1>
-                </div>
-            </div>
-
-            <div class="header-actions">
-                <a class="btn-secondary" routerLink="/employe/formations/catalogue">
-                    <span class="material-icons">search</span>
-                    Explorer le catalogue
-                </a>
-            </div>
-        </header>
-
-        <!-- ── SUMMARY ── -->
-        <section class="mf-stats" *ngIf="!loading && myFormations.length > 0">
-            <div class="stat-card">
-                <div class="stat-icon total"><span class="material-icons">list_alt</span></div>
-                <div class="stat-info">
-                    <div class="stat-value">{{ myFormations.length }}</div>
-                    <div class="stat-label">Inscrites</div>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon success"><span class="material-icons">check_circle</span></div>
-                <div class="stat-info">
-                    <div class="stat-value">{{ countCompleted() }}</div>
-                    <div class="stat-label">Terminées</div>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon ongoing"><span class="material-icons">pending</span></div>
-                <div class="stat-info">
-                    <div class="stat-value">{{ countInProgress() }}</div>
-                    <div class="stat-label">En cours</div>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon score"><span class="material-icons">trending_up</span></div>
-                <div class="stat-info">
-                    <div class="stat-value" *ngIf="getAverageScore() > 0">{{ getAverageScore() | number:'1.0-0' }}%
-                    </div>
-                    <div class="stat-value" *ngIf="getAverageScore() === 0">—</div>
-                    <div class="stat-label">Score Moyen</div>
-                </div>
-            </div>
-        </section>
-
-        <!-- ── LOADING ── -->
-        <div class="mf-loader-box" *ngIf="loading">
-            <div class="professional-spinner"></div>
-            <p>Synchronisation de votre parcours...</p>
-        </div>
-
-        <!-- ── GRID ── -->
-        <div class="mf-grid" *ngIf="!loading && myFormations.length > 0">
-            <div class="formation-item" *ngFor="let f of myFormations; let i = index">
-
-                <div class="item-card">
-                    <div class="item-header">
-                        <div class="type-tag" [class]="getAccentClass(f.typeFormation)">
-                            <span class="material-icons">{{ getIconForType(f.typeFormation) }}</span>
-                            {{ getTypeLabel(f.typeFormation) }}
-                        </div>
-                        <div class="status-badge" [class]="getStatusClass(getInscription(f)?.statut)">
-                            {{ getStatusLabel(getInscription(f)?.statut) }}
-                        </div>
-                    </div>
-
-                    <h3 class="item-title">{{ f.titre }}</h3>
-
-                    <div class="item-progress-section" *ngIf="getInscription(f) as ins">
-                        <div class="progress-details">
-                            <span class="progress-label">Complétion</span>
-                            <span class="progress-value">{{ ins.progress || 0 }}%</span>
-                        </div>
-                        <div class="progress-track">
-                            <div class="progress-fill" [class]="getAccentClass(f.typeFormation)"
-                                [style.width]="(ins.progress || 0) + '%'">
-                            </div>
-                        </div>
-                        <div class="score-summary" *ngIf="ins.score && ins.score > 0">
-                            <span class="material-icons">grade</span>
-                            Résultat obtenu : <strong>{{ ins.score }}/100</strong>
-                        </div>
-                    </div>
-
-                    <div class="item-resources-section" *ngIf="f.ressources && f.ressources.length > 0">
-                        <p class="section-subtitle">Supports de formation</p>
-                        <div class="resources-list">
-                            <a *ngFor="let res of f.ressources" [href]="res.url" target="_blank" class="resource-link">
-                                <span class="material-icons">{{ res.typeRessource === 'PDF' ? 'picture_as_pdf' : 'link'
-                                    }}</span>
-                                <span class="res-name">{{ res.titre || 'Télécharger' }}</span>
-                                <span class="material-icons chevron">chevron_right</span>
-                            </a>
-                        </div>
-                    </div>
-
-                    <div class="item-footer">
-                        <div class="meta-tag" *ngIf="f.dateDebut">
-                            <span class="material-icons">event</span>
-                            {{ f.dateDebut | date:'dd MMM yyyy':'':'fr' }}
-                        </div>
-                        <div class="meta-tag" *ngIf="f.lieu">
-                            <span class="material-icons">place</span>
-                            {{ f.lieu }}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ── EMPTY ── -->
-        <div class="mf-empty-state" *ngIf="!loading && myFormations.length === 0">
-            <div class="empty-icon-circle">
-                <span class="material-icons">import_contacts</span>
-            </div>
-            <h3 class="empty-title">Aucune formation active</h3>
-            <p class="empty-text">Alimentez vos compétences en vous inscrivant à de nouveaux programmes dans notre
-                catalogue.</p>
-            <a class="btn-primary" routerLink="/employe/formations/catalogue">
-                Accéder au catalogue
-            </a>
-        </div>
+<div class="mes-formations-container animate-fade-in">
+  <!-- Header -->
+  <header class="section-header">
+    <div class="header-left">
+      <div class="icon-box">
+        <mat-icon>school</mat-icon>
+      </div>
+      <div class="text-box">
+        <h1>Mon Parcours de Formation</h1>
+        <p>Gérez vos inscriptions, suivez votre progression et accédez à vos ressources.</p>
+      </div>
     </div>
+    <div class="header-right">
+      <button class="btn-refresh" (click)="refresh()" [disabled]="loading" title="Actualiser mes données">
+        <mat-icon [class.spinning]="loading">refresh</mat-icon>
+        <span>Actualiser</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Statistics Stats Cards -->
+  <div class="stats-overview" *ngIf="myFormations.length > 0">
+    <div class="stat-card">
+      <span class="label">Formations totales</span>
+      <span class="value">{{ myFormations.length }}</span>
+    </div>
+    <div class="stat-card">
+      <span class="label">Terminées</span>
+      <span class="value success">{{ countCompleted() }}</span>
+    </div>
+    <div class="stat-card">
+      <span class="label">En cours</span>
+      <span class="value warning">{{ countInProgress() }}</span>
+    </div>
+    <div class="stat-card">
+      <span class="label">Score Moyen</span>
+      <span class="value primary">{{ getAverageScore() | number:'1.1-1' }}%</span>
+    </div>
+  </div>
+
+  <!-- Content States -->
+  <div class="loading-state" *ngIf="loading">
+    <div class="spinner"></div>
+    <p>Synchronisation de votre parcours...</p>
+  </div>
+
+  <!-- Formations Grid -->
+  <div class="formations-grid" *ngIf="!loading && myFormations.length > 0">
+    @for (formation of myFormations; track formation.id) {
+    <div class="formation-card" [class]="getAccentClass(formation.typeFormation || 'PRESENTIEL')">
+      <div class="card-header">
+        <div class="type-indicator">
+          <mat-icon>{{ getIconForType(formation.typeFormation || 'PRESENTIEL') }}</mat-icon>
+          <span>{{ getTypeLabel(formation.typeFormation || 'PRESENTIEL') }}</span>
+        </div>
+        <div class="status-badge" [class]="getStatusClass(getInscription(formation)?.statut)">
+          {{ getStatusLabel(getInscription(formation)?.statut) }}
+        </div>
+      </div>
+
+      <div class="card-body">
+        <h3>{{ formation.titre }}</h3>
+        <p class="description">{{ formation.description }}</p>
+
+        <div class="meta-info">
+          <div class="meta-item">
+            <mat-icon>business</mat-icon>
+            <span>{{ formation.lieu || 'SkillMap Academy' }}</span>
+          </div>
+          <div class="meta-item">
+            <mat-icon>event</mat-icon>
+            <span>Inscrit le {{ (getInscription(formation)?.dateInscription | date:'dd MMM yyyy') || 'N/A' }}</span>
+          </div>
+        </div>
+
+        <!-- PROGRESS -->
+        <div class="progress-section" *ngIf="getInscription(formation) as ins">
+          <div class="progress-info">
+            <span>Progression</span>
+            <span>{{ ins.progress || 0 }}%</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="ins.progress || 0"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-footer">
+        <div class="resources-actions" *ngIf="formation.ressources && formation.ressources.length > 0">
+            <button class="btn-resource" *ngFor="let res of formation.ressources" (click)="openResource(res.url)">
+                <mat-icon>{{ res.typeRessource === 'PDF' ? 'picture_as_pdf' : 'link' }}</mat-icon>
+                {{ res.titre }}
+            </button>
+        </div>
+        <div class="no-resources" *ngIf="!formation.ressources || formation.ressources.length === 0">
+            <span class="empty-hint">Aucune ressource pour le moment</span>
+        </div>
+      </div>
+    </div>
+    }
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-state animate-slide-up" *ngIf="!loading && myFormations.length === 0">
+    <div class="empty-artwork">
+      <mat-icon>auto_stories</mat-icon>
+    </div>
+    <h2>Votre carnet est vide</h2>
+    <p>Vous n'êtes inscrit à aucune formation pour le moment. Parcourez le catalogue pour booster vos compétences.</p>
+    <button class="btn-primary-large" [routerLink]="['/employe/formations-catalogue']">
+      Explorer le catalogue
+    </button>
+  </div>
 </div>

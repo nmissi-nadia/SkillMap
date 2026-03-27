@@ -13,7 +13,9 @@ import { Notification } from '../../../core/models/notification.model';
     <div class="notif-bell-wrapper">
       <!-- Cloche avec badge -->
       <button class="bell-btn" (click)="toggleDropdown()" [class.active]="isOpen" title="Notifications">
-        <span class="bell-icon">🔔</span>
+        <svg class="w-6 h-6 bell-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+        </svg>
         @if (unreadCount > 0) {
           <span class="badge">{{ unreadCount > 99 ? '99+' : unreadCount }}</span>
         }
@@ -36,13 +38,40 @@ import { Notification } from '../../../core/models/notification.model';
           <div class="notif-list">
             @if (notifications.length === 0) {
               <div class="notif-empty">
-                <span>🎉</span>
+                <div class="empty-icon-wrapper">
+                   <svg class="w-12 h-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                  </svg>
+                </div>
                 <p>Aucune notification</p>
               </div>
             }
             @for (notif of notifications; track notif.id) {
               <div class="notif-item" [class.unread]="!notif.lu" (click)="handleNotifClick(notif)">
-                <span class="notif-type-icon">{{ getTypeIcon(notif.type) }}</span>
+                <span class="notif-type-icon">
+                  @switch (notif.type) {
+                    @case ('SUCCESS') {
+                      <svg class="w-5 h-5 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    }
+                    @case ('ALERTE') {
+                      <svg class="w-5 h-5 text-error" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                      </svg>
+                    }
+                    @case ('ACTION') {
+                      <svg class="w-5 h-5 text-info" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                      </svg>
+                    }
+                    @default {
+                      <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    }
+                  }
+                </span>
                 <div class="notif-content">
                   <p class="notif-title">{{ notif.titre }}</p>
                   <p class="notif-msg">{{ notif.contenu }}</p>
@@ -144,7 +173,7 @@ import { Notification } from '../../../core/models/notification.model';
     /* Dropdown Centered */
     .notif-dropdown {
       position: fixed;
-      top: 58%;
+      top: 62%;
       left: 50%;
       transform: translate(-50%, -50%);
       width: 450px;
@@ -158,7 +187,7 @@ import { Notification } from '../../../core/models/notification.model';
     }
 
     @keyframes zoomIn {
-      from { opacity: 0; transform: translate(-50%, -53%) scale(0.95); }
+      from { opacity: 0; transform: translate(-50%, -55%) scale(0.95); }
       to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
     }
 
@@ -385,14 +414,5 @@ export class NotificationBellComponent implements OnInit, OnDestroy {
       this.refreshLatest();
       this.notifService.fetchUnreadCount();
     });
-  }
-
-  getTypeIcon(type: string): string {
-    switch (type) {
-      case 'SUCCESS': return '✅';
-      case 'ALERTE': return '⚠️';
-      case 'ACTION': return '🔔';
-      default: return 'ℹ️';
-    }
   }
 }
